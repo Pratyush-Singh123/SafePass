@@ -76,8 +76,8 @@ flowchart TD
 
 ```bash
 # 1. Clone the repository
-git clone <your-repo-url>
-cd project
+git clone https://github.com/Pratyush-Singh123/SafePass.git
+cd SafePass
 
 # 2. Install dependencies
 npm install --legacy-peer-deps
@@ -98,7 +98,8 @@ npm run preview
 
 ## 🌐 Live Public Deployment
 
-- **Live URL**: `https://<your-project>.vercel.app` *(Deployable with 1-click on Vercel)*
+- **Live Production URL**: [https://safe-pass-sand.vercel.app](https://safe-pass-sand.vercel.app)
+- **GitHub Repository**: [https://github.com/Pratyush-Singh123/SafePass](https://github.com/Pratyush-Singh123/SafePass)
 - **Demo Video (2–5 min)**: `[Link to YouTube / Google Drive Demo]`
 
 ---
