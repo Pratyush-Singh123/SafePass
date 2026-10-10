@@ -9,15 +9,12 @@ import {
   ShieldAlert,
   Search,
   Loader2,
-  Phone,
   MapPin,
   Globe,
-  Clock,
   Building2,
   Send,
   Check,
   X,
-  ExternalLink,
   Radio,
   FileSpreadsheet,
 } from 'lucide-react';
@@ -26,6 +23,30 @@ const statusConfig: Record<SafetyStatus, { label: string; dot: string; bg: strin
   safe: { label: 'Safe', dot: 'bg-emerald-500', bg: 'bg-emerald-50 text-emerald-800 border-emerald-200', text: 'text-emerald-700' },
   caution: { label: 'Caution', dot: 'bg-amber-500', bg: 'bg-amber-50 text-amber-800 border-amber-200', text: 'text-amber-700' },
   danger: { label: 'Danger / SOS', dot: 'bg-rose-500', bg: 'bg-rose-50 text-rose-800 border-rose-200', text: 'text-rose-700' },
+};
+
+// Rescue progress is saved in the browser (localStorage) so it works with no database.
+// The family StatusPage reads the same key.
+type RescueState = 'searching' | 'rescued' | 'deceased';
+
+interface RescueRecord {
+  state: RescueState;
+  at: string;
+  rescueId: string;
+  shelter?: string;
+  hospital?: string;
+  medical?: boolean;
+}
+
+const RESCUE_KEY = 'safepass_rescue_records';
+
+const loadRecords = (): Record<string, RescueRecord> => {
+  try {
+    const raw = localStorage.getItem(RESCUE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
 };
 
 // Seeded realistic consular roster for Tamil Nadu / Chennai / Kancheepuram disaster zone
@@ -122,8 +143,15 @@ export default function Admin() {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<SafetyStatus | 'all'>('all');
   const [nationalityFilter, setNationalityFilter] = useState<string>('all');
+  const [redZoneOnly, setRedZoneOnly] = useState(false);
   const [broadcastModal, setBroadcastModal] = useState(false);
   const [broadcastSent, setBroadcastSent] = useState(false);
+
+  const [records, setRecords] = useState<Record<string, RescueRecord>>(loadRecords);
+  const [pending, setPending] = useState<{ user: SafePassUser; kind: 'rescued' | 'deceased' } | null>(null);
+  const [shelterInput, setShelterInput] = useState('');
+  const [hospitalInput, setHospitalInput] = useState('');
+  const [medicalNeeded, setMedicalNeeded] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -159,6 +187,22 @@ export default function Admin() {
     })();
   }, []);
 
+  const isClosed = (u: SafePassUser) => {
+    const s = records[u.id]?.state;
+    return s === 'rescued' || s === 'deceased';
+  };
+
+  const getStatusBadge = (u: SafePassUser): { label: string; dot: string; bg: string } => {
+    const rec = records[u.id];
+    if (rec?.state === 'rescued') {
+      return { label: 'Rescued', dot: 'bg-white', bg: 'bg-slate-700 text-white border-slate-700' };
+    }
+    if (rec?.state === 'deceased') {
+      return { label: 'Deceased', dot: 'bg-white', bg: 'bg-slate-700 text-white border-slate-700' };
+    }
+    return statusConfig[u.status];
+  };
+
   const nationalitiesList = ['all', ...Array.from(new Set(users.map((u) => u.nationality)))];
 
   const filtered = users.filter((u) => {
@@ -167,17 +211,28 @@ export default function Admin() {
       u.nationality.toLowerCase().includes(search.toLowerCase()) ||
       (u.location_label?.toLowerCase().includes(search.toLowerCase()) ?? false);
 
-    const matchesStatus = filter === 'all' || u.status === filter;
+    const matchesStatus = filter === 'all' || (u.status === filter && !isClosed(u));
     const matchesNationality = nationalityFilter === 'all' || u.nationality === nationalityFilter;
+    const matchesRedZone = !redZoneOnly || (u.status === 'danger' && !isClosed(u));
 
-    return matchesSearch && matchesStatus && matchesNationality;
+    return matchesSearch && matchesStatus && matchesNationality && matchesRedZone;
   });
 
+  const openCases = users.filter((u) => !isClosed(u));
   const counts = {
     total: users.length,
-    safe: users.filter((u) => u.status === 'safe').length,
-    caution: users.filter((u) => u.status === 'caution').length,
-    danger: users.filter((u) => u.status === 'danger').length,
+    safe: openCases.filter((u) => u.status === 'safe').length,
+    caution: openCases.filter((u) => u.status === 'caution').length,
+    danger: openCases.filter((u) => u.status === 'danger').length,
+  };
+
+  const hasActiveFilters = redZoneOnly || filter !== 'all' || nationalityFilter !== 'all' || search !== '';
+
+  const clearFilters = () => {
+    setRedZoneOnly(false);
+    setFilter('all');
+    setNationalityFilter('all');
+    setSearch('');
   };
 
   const handleSendBroadcast = () => {
@@ -193,6 +248,133 @@ export default function Admin() {
       dateStyle: 'short',
       timeStyle: 'short',
     });
+  };
+
+  const saveRecords = (next: Record<string, RescueRecord>) => {
+    setRecords(next);
+    try {
+      localStorage.setItem(RESCUE_KEY, JSON.stringify(next));
+    } catch {
+      // Storage blocked: the page still works for this session
+    }
+  };
+
+  // Launch Rescue button: start the rescue (the row button becomes "Search Ongoing")
+  const handleLaunchRescue = (u: SafePassUser) => {
+    const rec: RescueRecord = {
+      state: 'searching',
+      at: new Date().toISOString(),
+      rescueId: `RSC-${Date.now().toString().slice(-6)}`,
+    };
+    saveRecords({ ...records, [u.id]: rec });
+  };
+
+  // Clicking "Search Ongoing" opens a popup where the officer picks the final result
+  const openOutcome = (u: SafePassUser) => {
+    setShelterInput('Chengalpattu Government Cyclone Relief Shelter');
+    setHospitalInput('Chengalpattu Medical College Hospital');
+    setMedicalNeeded(false);
+    setPending({ user: u, kind: 'rescued' });
+  };
+
+  // Final result: Rescued or Deceased. After this the row is locked.
+  const confirmOutcome = () => {
+    if (!pending) return;
+    const { user, kind } = pending;
+    const nowIso = new Date().toISOString();
+    const prev = records[user.id];
+    const rescueId = prev?.rescueId ?? `RSC-${Date.now().toString().slice(-6)}`;
+
+    const rec: RescueRecord =
+      kind === 'rescued'
+        ? { state: 'rescued', at: nowIso, rescueId, shelter: shelterInput.trim(), medical: medicalNeeded }
+        : { state: 'deceased', at: nowIso, rescueId, hospital: hospitalInput.trim() };
+
+    saveRecords({ ...records, [user.id]: rec });
+    setPending(null);
+  };
+
+  // Keeps long numbers / phone numbers as text in Excel and escapes quotes
+  const csvCell = (value: string | number) => `"${String(value).replace(/"/g, '""')}"`;
+  const csvText = (value: string) => `="${value.replace(/"/g, '')}"`;
+
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const csvDate = (iso: string) => {
+    const d = new Date(iso);
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
+  // Downloads the citizens currently shown in the table
+  const handleExportCsv = () => {
+    const now = new Date();
+    const countBy = (state: RescueState) => filtered.filter((u) => records[u.id]?.state === state).length;
+
+    const header = [
+      'No.',
+      'Traveler Name',
+      'Nationality',
+      'Location',
+      'Latitude',
+      'Longitude',
+      'Safety Status',
+      'Rescue Status',
+      'Rescue ID',
+      'Shelter / Hospital',
+      'Medical Assistance',
+      'Emergency Contact',
+      'Emergency Phone',
+      'Last Check-in',
+    ];
+
+    const rows = filtered.map((u, i) => {
+      const rec = records[u.id];
+      const rescueLabel =
+        rec?.state === 'searching'
+          ? 'Search Ongoing'
+          : rec?.state === 'rescued'
+          ? 'Rescued'
+          : rec?.state === 'deceased'
+          ? 'Deceased'
+          : 'Not Dispatched';
+      const medical = rec?.state === 'rescued' ? (rec.medical ? 'Needed' : 'Not needed') : '-';
+      const place = rec?.state === 'rescued' ? rec.shelter || '-' : rec?.state === 'deceased' ? rec.hospital || '-' : '-';
+      return [
+        csvCell(i + 1),
+        csvCell(u.name),
+        csvCell(u.nationality),
+        csvCell(u.location_label || '-'),
+        csvCell(u.location_lat != null ? u.location_lat.toFixed(4) : '-'),
+        csvCell(u.location_lng != null ? u.location_lng.toFixed(4) : '-'),
+        csvCell(statusConfig[u.status].label),
+        csvCell(rescueLabel),
+        csvCell(rec?.rescueId || '-'),
+        csvCell(place),
+        csvCell(medical),
+        csvCell(u.emergency_contact_name),
+        csvText(u.emergency_contact_phone),
+        csvCell(csvDate(u.updated_at)),
+      ].join(',');
+    });
+
+    const lines = [
+      csvCell('SAFEPASS - CONSULAR MANIFEST'),
+      `${csvCell('Generated')},${csvCell(csvDate(now.toISOString()))}`,
+      `${csvCell('Total citizens')},${csvCell(filtered.length)}`,
+      `${csvCell('Rescued')},${csvCell(countBy('rescued'))},${csvCell('Search ongoing')},${csvCell(countBy('searching'))},${csvCell('Deceased')},${csvCell(countBy('deceased'))}`,
+      '',
+      header.map(csvCell).join(','),
+      ...rows,
+    ];
+
+    const blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `consular-manifest-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   if (loading) {
@@ -335,6 +517,28 @@ export default function Admin() {
         </div>
       </div>
 
+      {/* Quick-filter chips */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <button
+          onClick={() => setRedZoneOnly(!redZoneOnly)}
+          className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold border transition-all ${
+            redZoneOnly
+              ? 'bg-rose-600 text-white border-rose-600 shadow-sm'
+              : 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100'
+          }`}
+        >
+          <ShieldAlert className="w-3.5 h-3.5" /> High-Risk Red Zone ({counts.danger})
+        </button>
+        {hasActiveFilters && (
+          <button
+            onClick={clearFilters}
+            className="inline-flex items-center gap-1 px-3 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all"
+          >
+            <X className="w-3.5 h-3.5" /> Clear Filters
+          </button>
+        )}
+      </div>
+
       {/* Roster Table */}
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
@@ -347,19 +551,21 @@ export default function Admin() {
                 <th className="px-4 py-3.5">Safety Status</th>
                 <th className="px-4 py-3.5">Emergency Contact</th>
                 <th className="px-4 py-3.5">Last Check-in</th>
+                <th className="px-4 py-3.5">Medical Assistance</th>
                 <th className="px-4 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-xs">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-12 text-slate-400">
+                  <td colSpan={8} className="text-center py-12 text-slate-400">
                     No citizens match the selected filter criteria.
                   </td>
                 </tr>
               ) : (
                 filtered.map((u) => {
-                  const st = statusConfig[u.status];
+                  const st = getStatusBadge(u);
+                  const rec = records[u.id];
                   return (
                     <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="px-5 py-3.5">
@@ -417,13 +623,44 @@ export default function Admin() {
                         </span>
                       </td>
 
+                      {/* Medical assistance: only shown once the person is rescued */}
+                      <td className="px-4 py-3.5">
+                        {rec?.state === 'rescued' ? (
+                          <span
+                            className={`inline-block px-2.5 py-1 rounded-lg text-[11px] font-bold border ${
+                              rec.medical
+                                ? 'bg-rose-50 text-rose-700 border-rose-200'
+                                : 'bg-slate-50 text-slate-600 border-slate-200'
+                            }`}
+                          >
+                            {rec.medical ? 'Needed' : 'Not needed'}
+                          </span>
+                        ) : (
+                          <span className="text-slate-300">—</span>
+                        )}
+                      </td>
+
+                      {/* Rescue actions: only one small button per row */}
                       <td className="px-4 py-3.5 text-right">
-                        <Link
-                          to={`/status?token=${u.share_token}`}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-cyan-600 hover:text-cyan-800 bg-cyan-50 hover:bg-cyan-100 px-2.5 py-1.5 rounded-lg transition-colors border border-cyan-200"
-                        >
-                          <ExternalLink className="w-3 h-3" /> Status Link
-                        </Link>
+                        {rec?.state === 'rescued' || rec?.state === 'deceased' ? (
+                          <span className="inline-block bg-slate-700 text-white font-semibold px-3.5 py-2 rounded-lg text-xs">
+                            {rec.state === 'rescued' ? 'Rescued' : 'Deceased'}
+                          </span>
+                        ) : rec?.state === 'searching' ? (
+                          <button
+                            onClick={() => openOutcome(u)}
+                            className="bg-amber-500 hover:bg-amber-600 text-amber-950 font-semibold px-3.5 py-2 rounded-lg text-xs transition-colors"
+                          >
+                            Search Ongoing
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleLaunchRescue(u)}
+                            className="bg-red-950 hover:bg-red-900 text-white font-semibold px-3.5 py-2 rounded-lg text-xs transition-colors"
+                          >
+                            Launch Rescue
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );
@@ -432,7 +669,105 @@ export default function Admin() {
             </tbody>
           </table>
         </div>
+        <div className="flex items-center justify-between gap-3 flex-wrap border-t border-slate-200 bg-slate-50/80 px-5 py-3.5">
+          <p className="text-xs text-slate-500 font-medium">
+            Showing {filtered.length} of {users.length} citizens
+          </p>
+          <button
+            onClick={handleExportCsv}
+            className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-2"
+          >
+            <FileSpreadsheet className="w-4 h-4" /> Export Consular Manifest (CSV)
+          </button>
+        </div>
       </div>
+
+      {/* Outcome Modal: Rescued / Deceased details */}
+      {pending && (
+        <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-extrabold text-slate-900 text-lg">
+                Update Rescue Result: {pending.user.name}
+              </h3>
+              <button onClick={() => setPending(null)} className="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex gap-2 mb-4">
+              {(['rescued', 'deceased'] as const).map((k) => (
+                <button
+                  key={k}
+                  onClick={() => setPending({ ...pending, kind: k })}
+                  className={`flex-1 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                    pending.kind === k
+                      ? 'bg-slate-900 text-white shadow-sm'
+                      : 'bg-white border border-slate-300 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  {k === 'rescued' ? 'Rescued' : 'Deceased'}
+                </button>
+              ))}
+            </div>
+
+            <div className="space-y-4 mb-5">
+              {pending.kind === 'rescued' ? (
+                <>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Current Shelter Location</label>
+                    <input
+                      type="text"
+                      value={shelterInput}
+                      onChange={(e) => setShelterInput(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 text-xs text-slate-900"
+                    />
+                  </div>
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={medicalNeeded}
+                      onChange={(e) => setMedicalNeeded(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                    Medical assistance needed
+                  </label>
+                </>
+              ) : (
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Current Hospital</label>
+                  <input
+                    type="text"
+                    value={hospitalInput}
+                    onChange={(e) => setHospitalInput(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 text-xs text-slate-900"
+                  />
+                </div>
+              )}
+
+              <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-amber-800 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-600" />
+                <span>This cannot be changed afterwards.</span>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setPending(null)}
+                className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmOutcome}
+                className="bg-slate-900 hover:bg-slate-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow-md transition-all"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Broadcast Consular Advisory Modal */}
       {broadcastModal && (
