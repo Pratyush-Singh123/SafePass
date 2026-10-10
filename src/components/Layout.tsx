@@ -18,6 +18,8 @@ import {
   Navigation,
   Copy,
   Check,
+  Download,
+  WifiOff,
 } from 'lucide-react';
 import {
   isLoggedIn,
@@ -34,6 +36,29 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const [sosModalOpen, setSosModalOpen] = useState(false);
   const [copiedSms, setCopiedSms] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+
+  // Monitor network connectivity status in real time
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    const handleBeforeInstall = (e: any) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+    };
+  }, []);
 
   // Sync auth state when location changes or session updates
   useEffect(() => {
@@ -146,6 +171,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </button>
               )}
 
+              {/* Install PWA Prompt Button */}
+              {installPrompt && (
+                <button
+                  onClick={() => {
+                    installPrompt.prompt();
+                    setInstallPrompt(null);
+                  }}
+                  className="hidden sm:flex items-center gap-1.5 text-xs text-cyan-300 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-700/60 px-2.5 py-1.5 rounded-xl font-bold transition-all shadow-sm"
+                  title="Install SafePass as Offline Emergency App"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Install App</span>
+                </button>
+              )}
+
               <span className="hidden lg:flex items-center gap-1.5 text-xs text-rose-400 font-bold bg-rose-950/60 border border-rose-800/50 px-2.5 py-1 rounded-full">
                 <Radio className="w-3.5 h-3.5 animate-pulse text-rose-400" />
                 <span>Kancheepuram Red Alert</span>
@@ -176,6 +216,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           })}
         </nav>
       </header>
+
+      {/* OFFLINE EMERGENCY STATUS BANNER */}
+      {!isOnline && (
+        <div className="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white px-4 py-2.5 text-xs font-bold shadow-md sticky top-16 z-40">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <WifiOff className="w-4 h-4 text-amber-200 animate-pulse flex-shrink-0" />
+              <span>
+                <strong>CELLULAR / INTERNET OFFLINE:</strong> SafePass Offline Protocol active. Local Calm Voice AI, cached high-ground shelters, and 2G SMS strings are 100% operational without data.
+              </span>
+            </div>
+            <span className="hidden sm:inline-block text-[10px] bg-amber-950/70 border border-amber-300/40 px-2.5 py-0.5 rounded-full font-mono uppercase tracking-wider flex-shrink-0">
+              Zero-Network Mode
+            </span>
+          </div>
+        </div>
+      )}
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
         {children}
