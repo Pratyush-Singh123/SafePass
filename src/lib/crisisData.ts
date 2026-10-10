@@ -1104,7 +1104,7 @@ Ne prenez aucun risque physique pour récupérer des papiers ou bagages dans des
 
 [ACTION CHECKLIST]
 • Les protocoles internationaux humanitaires garantissent le passage sécurisé en zone de catastrophe sans passeport physique.
-• SafePass a synchronisé votre profil sur le registre de crise du Consulat Général de France (/admin).
+• SafePass a synchronisé votre profil sur le registre de crise du Consulat Général de France.
 • Le Consulat à Pondichéry/Chennai et le FRRO délivreront un Laissez-Passer d'urgence dès que la météo le permettra.
 
 [SAFE SHELTER]
@@ -1235,7 +1235,7 @@ No arriesgue su vida física para recuperar maletas o pasaportes en zonas inunda
 
 [ACTION CHECKLIST]
 • Los tratados humanitarios internacionales permiten el tránsito de emergencia en catástrofes sin pasaporte físico.
-• SafePass ha registrado su situación en el panel de control consular (/admin).
+• SafePass ha registrado su situación en el panel de control consular oficial.
 • Su embajada y el FRRO emitirán un salvoconducto de viaje de emergencia en cuanto amaine el temporal.
 
 [SAFE SHELTER]
@@ -1492,7 +1492,7 @@ Notruf Rettungsdienst: 112 | Tamil Nadu Katastrophenschutz: 1070 | Rettungsdiens
 
 [ACTION CHECKLIST]
 • 国際人道プロトコルにより、被災時の移動はパスポート原本がなくても安全に保護されます。
-• SafePassは領事危機管理室（/admin）へ避難情報を共有しています。
+• SafePassは領事危機管理室へ避難情報を共有しています。
 • 天候回復後、領事館およびFRROより緊急渡航書が発行されます。
 
 [SAFE SHELTER]
@@ -1866,7 +1866,7 @@ Do not risk personal safety to retrieve lost bags or documents from flooded room
 
 [ACTION CHECKLIST]
 • International humanitarian protocols grant safe transit during declared catastrophes regardless of missing paper passports.
-• SafePass has logged your citizenship with the diplomatic consular mission on the Consular Command Center (/admin).
+• SafePass has logged your citizenship with the diplomatic consular mission and emergency command center.
 • As soon as rainfall subsides, your embassy liaison and the Foreigners Regional Registration Office (FRRO) will issue an Emergency Travel Certificate (Laissez-Passer).
 
 [SAFE SHELTER]

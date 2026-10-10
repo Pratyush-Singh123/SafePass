@@ -33,6 +33,8 @@ import {
   BatteryCharging,
   SlidersHorizontal,
   ChevronRight,
+  Eye,
+  Lock,
 } from 'lucide-react';
 
 const LANGUAGES = [
@@ -933,7 +935,7 @@ Based on this assessment, should I evacuate to the nearest high-ground shelter o
       user_id: userProfile?.id || null,
       role: 'assistant',
       content: `🚨 CONSULAR EMERGENCY ESCALATION CONFIRMED:
-Ticket ${ticket} dispatched to Consular Crisis Command (/admin).
+Ticket ${ticket} logged with Diplomatic Consular Operations & District Disaster Management.
 
 [CRITICAL WARNING]
 Priority Emergency Flag assigned. The French Diplomatic Liaison Mission in Chennai and District Disaster Operations have your live GPS coordinates logged.
@@ -1107,7 +1109,7 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
           <button
             onClick={handleRelayToEmbassy}
             className="flex items-center gap-1 sm:gap-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 px-3 py-1.5 rounded-xl transition-all shadow-sm shrink-0 cursor-pointer"
-            title="Relay Situation to Consular Roster (/admin)"
+            title="Relay Situation to Diplomatic Mission & 112"
           >
             <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
             <span>SOS</span>
@@ -1711,18 +1713,37 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
               Your distress context and GPS coordinates have been pushed to the diplomatic mission roster and district disaster authorities. A consular liaison officer is alerted.
             </p>
 
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Link
+                to="/status"
+                onClick={() => setEscalationModalOpen(false)}
+                className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
+              >
+                <Eye className="w-3.5 h-3.5" />
+                <span>Track Live Status Card</span>
+              </Link>
+              <a
+                href="tel:112"
+                className="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5 text-center"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                <span>Call 112 Dispatch</span>
+              </a>
+            </div>
+
+            <div className="flex items-center justify-between pt-3 mt-3 border-t border-neutral-800 text-[11px] text-neutral-400">
               <button
                 onClick={() => setEscalationModalOpen(false)}
-                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-semibold py-2.5 rounded-xl text-xs border border-neutral-700"
+                className="text-neutral-400 hover:text-white font-medium cursor-pointer"
               >
-                Close & Return
+                Dismiss
               </button>
               <Link
                 to="/admin"
-                className="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+                className="text-neutral-400 hover:text-cyan-400 font-medium flex items-center gap-1"
+                title="Consular Officer login"
               >
-                View Consular Roster
+                <Lock className="w-3 h-3" /> Officer Roster Login →
               </Link>
             </div>
           </div>

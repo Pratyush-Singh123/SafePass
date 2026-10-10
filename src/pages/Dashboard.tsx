@@ -46,6 +46,7 @@ import {
   ChevronDown,
   ChevronUp,
   Sparkles,
+  Lock,
 } from 'lucide-react';
 
 // Fix Leaflet marker icons
@@ -569,9 +570,10 @@ export default function Dashboard() {
           </Link>
           <Link
             to="/admin"
-            className="flex items-center gap-1.5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-white font-medium px-3.5 py-2 rounded-xl transition-all text-xs sm:text-sm shadow-sm"
+            className="flex items-center gap-1.5 bg-neutral-900 border border-neutral-700/80 hover:border-neutral-600 text-neutral-400 hover:text-white font-medium px-3 py-2 rounded-xl transition-all text-xs sm:text-sm shadow-xs"
+            title="Consular Officer & Disaster Management Authority Login"
           >
-            <Building2 className="w-4 h-4 text-neutral-300" /> <span>Embassy Admin</span>
+            <Lock className="w-3.5 h-3.5 text-neutral-400" /> <span>Officer Portal</span>
           </Link>
         </div>
       </div>
