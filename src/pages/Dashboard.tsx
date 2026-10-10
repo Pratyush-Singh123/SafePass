@@ -9,6 +9,9 @@ import {
   ACTIVE_HAZARD_ZONES,
   VERIFIED_SHELTERS,
   FALLBACK_CYCLONE_WEATHER,
+  getDynamicCycloneWeather,
+  getSecondsUntilNextWeatherUpdate,
+  type DynamicWeatherStage,
   type EmergencyShelter,
   type HazardZone,
 } from '@/lib/crisisData';
@@ -42,6 +45,8 @@ import {
   Database,
   ChevronDown,
   ChevronUp,
+  Sparkles,
+  Lock,
 } from 'lucide-react';
 
 // Fix Leaflet marker icons
@@ -238,6 +243,9 @@ function generateSafeEvacuationRoute(
 export default function Dashboard() {
   const [user, setUser] = useState<SafePassUser | null>(null);
   const [weather, setWeather] = useState<WeatherData | null>(FALLBACK_CYCLONE_WEATHER);
+  const [dynamicWeather, setDynamicWeather] = useState<DynamicWeatherStage | null>(null);
+  const [weatherOffset, setWeatherOffset] = useState<number>(0);
+  const [secondsUntilNextForecast, setSecondsUntilNextForecast] = useState<number>(getSecondsUntilNextWeatherUpdate());
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState(false);
@@ -317,34 +325,45 @@ export default function Dashboard() {
     })();
   }, [userId]);
 
+  // 1-second countdown ticker for the 3-minute IMD satellite bulletin
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSecondsUntilNextForecast(getSecondsUntilNextWeatherUpdate());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Update dynamic weather whenever user, coordinates, or manual offset change
+  useEffect(() => {
+    const lat = user?.location_lat ?? 12.6269;
+    const lng = user?.location_lng ?? 80.1932;
+    const label = user?.location_label || undefined;
+    const name = user?.name || undefined;
+
+    const dynamic = getDynamicCycloneWeather(lat, lng, label, name, weatherOffset);
+    setDynamicWeather(dynamic);
+    setWeather(dynamic);
+
+    // Periodically verify if the 3-minute window epoch changed
+    const autoRefresh = setInterval(() => {
+      const refreshed = getDynamicCycloneWeather(lat, lng, label, name, weatherOffset);
+      setDynamicWeather(refreshed);
+      setWeather(refreshed);
+    }, 10000);
+
+    return () => clearInterval(autoRefresh);
+  }, [user?.location_lat, user?.location_lng, user?.location_label, user?.name, weatherOffset]);
+
   const fetchWeather = async (lat: number | null, lng: number | null, city?: string) => {
     setWeatherLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (lat && lng) {
-        params.set('lat', String(lat));
-        params.set('lng', String(lng));
-      } else if (city) {
-        params.set('city', city);
-      }
-      const res = await fetch(
-        `${supabaseUrl}/functions/v1/weather?${params}`,
-        { headers: { Authorization: `Bearer ${supabaseAnonKey}` } },
-      );
-      if (res.ok) {
-        const data = await res.json();
-        if (data && !data.error) {
-          setWeather(data as WeatherData);
-          setWeatherLoading(false);
-          return;
-        }
-      }
-    } catch {
-      // Fallback
-    }
-    // High-impact localized cyclone weather fallback for Tamil Nadu / Kancheepuram
-    setWeather(FALLBACK_CYCLONE_WEATHER);
+    const dynamic = getDynamicCycloneWeather(lat, lng, city, user?.name, weatherOffset);
+    setDynamicWeather(dynamic);
+    setWeather(dynamic);
     setWeatherLoading(false);
+  };
+
+  const handleCycleWeatherForecast = () => {
+    setWeatherOffset((prev) => prev + 1);
   };
 
   const updateStatus = async (status: SafetyStatus) => {
@@ -495,10 +514,12 @@ export default function Dashboard() {
               <span className="bg-white text-red-700 font-extrabold text-xs px-2 py-0.5 rounded-full uppercase tracking-wider">
                 Official Alert
               </span>
-              <p className="font-bold text-sm sm:text-base text-white">Cyclone Alert Level 3 — Coastal Warning Active</p>
+              <p className="font-bold text-sm sm:text-base text-white">
+                {dynamicWeather?.officialWarningHeadline || 'Cyclone Alert Level 3 — Coastal Warning Active'}
+              </p>
             </div>
             <p className="text-xs sm:text-sm text-red-100 mt-0.5">
-              Regional Met Centre issued Red Warning for Kancheepuram / Chennai coast. Avoid low-lying corridors.
+              {dynamicWeather?.alerts?.[0]?.description || 'Regional Met Centre issued Red Warning for Kancheepuram / Chennai coast. Avoid low-lying corridors.'}
             </p>
           </div>
         </div>
@@ -549,9 +570,10 @@ export default function Dashboard() {
           </Link>
           <Link
             to="/admin"
-            className="flex items-center gap-1.5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-white font-medium px-3.5 py-2 rounded-xl transition-all text-xs sm:text-sm shadow-sm"
+            className="flex items-center gap-1.5 bg-neutral-900 border border-neutral-700/80 hover:border-neutral-600 text-neutral-400 hover:text-white font-medium px-3 py-2 rounded-xl transition-all text-xs sm:text-sm shadow-xs"
+            title="Consular Officer & Disaster Management Authority Login"
           >
-            <Building2 className="w-4 h-4 text-neutral-300" /> <span>Embassy Admin</span>
+            <Lock className="w-3.5 h-3.5 text-neutral-400" /> <span>Officer Portal</span>
           </Link>
         </div>
       </div>
@@ -1070,13 +1092,42 @@ export default function Dashboard() {
 
           {/* Severe Weather Card */}
           <div className="bg-neutral-900 rounded-2xl shadow-sm border border-neutral-800 p-6 text-white">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-bold text-white text-base">Weather & Disaster Warnings</h2>
-              {weatherLoading && <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />}
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+              <div>
+                <h2 className="font-bold text-white text-base">Weather & Disaster Warnings</h2>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-400 bg-emerald-950/80 border border-emerald-600/50 px-2 py-0.5 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    IMD Radar Active • Stage {dynamicWeather?.stageNumber || 1}/4
+                  </span>
+                  <span className="text-[11px] font-mono text-neutral-400">
+                    Next Bulletin: {String(Math.floor(secondsUntilNextForecast / 60)).padStart(2, '0')}:{String(secondsUntilNextForecast % 60).padStart(2, '0')}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={handleCycleWeatherForecast}
+                  title="Simulate next 3-minute meteorological forecast stage"
+                  className="inline-flex items-center gap-1 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-cyan-400 hover:text-cyan-300 text-xs font-bold px-2.5 py-1.5 rounded-xl transition-all shadow-xs"
+                >
+                  <Sparkles className="w-3.5 h-3.5" /> ⚡ +3m Forecast
+                </button>
+                {weatherLoading && <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />}
+              </div>
             </div>
 
             {weather && (
               <div>
+                {/* 3-Minute Stage Description Pill */}
+                {dynamicWeather?.stageTitle && (
+                  <div className="mb-3 px-3 py-1.5 rounded-xl bg-neutral-800/60 border border-neutral-700/60 text-xs text-cyan-300 font-semibold flex items-center justify-between">
+                    <span>Forecast: {dynamicWeather.stageTitle}</span>
+                    <span className="text-[11px] font-mono text-neutral-400">Auto-cycles every 3m</span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <p className="text-3xl font-extrabold text-white">{weather.temp}°C</p>

@@ -464,7 +464,7 @@ export default function Onboarding() {
                 />
               </div>
               <p className="mt-1.5 text-xs text-neutral-400">
-                🔒 You will receive a 4-digit verification code before registration completes. For your security, future logins are strictly tied to this mobile number.
+                🔒 You will receive a 4-digit verification code before registration completes.
               </p>
             </div>
 

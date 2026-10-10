@@ -390,19 +390,21 @@ export default function StatusPage() {
             <div
               className={`mb-6 rounded-2xl p-4 sm:p-5 border ${
                 rescue.state === 'searching'
-                  ? 'bg-amber-50 border-amber-200'
-                  : 'bg-slate-100 border-slate-300'
+                  ? 'bg-amber-950/40 border-amber-800/60'
+                  : rescue.state === 'rescued'
+                  ? 'bg-emerald-950/40 border-emerald-800/60'
+                  : 'bg-neutral-800 border-neutral-700'
               }`}
             >
               <div className="flex items-center gap-2 mb-2">
                 <LifeBuoy
-                  className={`w-4 h-4 ${rescue.state === 'searching' ? 'text-amber-700' : 'text-slate-700'}`}
+                  className={`w-4 h-4 ${rescue.state === 'searching' ? 'text-amber-400' : rescue.state === 'rescued' ? 'text-emerald-400' : 'text-neutral-400'}`}
                 />
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Rescue Status</span>
+                <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Rescue Status</span>
               </div>
               <p
                 className={`text-lg font-extrabold ${
-                  rescue.state === 'searching' ? 'text-amber-800' : 'text-slate-900'
+                  rescue.state === 'searching' ? 'text-amber-300' : rescue.state === 'rescued' ? 'text-emerald-300' : 'text-white'
                 }`}
               >
                 {rescue.state === 'searching'
@@ -411,24 +413,24 @@ export default function StatusPage() {
                   ? 'Rescued'
                   : 'Deceased'}
               </p>
-              <div className="mt-2 space-y-0.5 text-xs text-slate-700">
+              <div className="mt-2 space-y-0.5 text-xs text-neutral-300">
                 <p>
-                  Rescue ID: <span className="font-mono font-bold">{rescue.rescueId}</span>
+                  Rescue ID: <span className="font-mono font-bold text-white">{rescue.rescueId}</span>
                 </p>
                 <p>Updated: {formatDate(rescue.at)}</p>
                 {rescue.state === 'rescued' && (
                   <>
                     <p>
-                      Current shelter: <strong>{rescue.shelter || 'Relief shelter'}</strong>
+                      Current shelter: <strong className="text-white">{rescue.shelter || 'Relief shelter'}</strong>
                     </p>
                     <p>
-                      Medical assistance: <strong>{rescue.medical ? 'Needed' : 'Not needed'}</strong>
+                      Medical assistance: <strong className="text-white">{rescue.medical ? 'Needed' : 'Not needed'}</strong>
                     </p>
                   </>
                 )}
                 {rescue.state === 'deceased' && (
                   <p>
-                    Current hospital: <strong>{rescue.hospital || 'Not recorded'}</strong>
+                    Current hospital: <strong className="text-white">{rescue.hospital || 'Not recorded'}</strong>
                   </p>
                 )}
               </div>

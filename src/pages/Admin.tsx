@@ -23,9 +23,9 @@ import {
 import { FRESH_TEN_RECORDS } from '@/lib/auth';
 
 const statusConfig: Record<SafetyStatus, { label: string; dot: string; bg: string; text: string }> = {
-  safe: { label: 'Safe', dot: 'bg-emerald-500', bg: 'bg-emerald-50 text-emerald-800 border-emerald-200', text: 'text-emerald-700' },
-  caution: { label: 'Caution', dot: 'bg-amber-500', bg: 'bg-amber-50 text-amber-800 border-amber-200', text: 'text-amber-700' },
-  danger: { label: 'Danger / SOS', dot: 'bg-rose-500', bg: 'bg-rose-50 text-rose-800 border-rose-200', text: 'text-rose-700' },
+  safe: { label: 'Safe', dot: 'bg-emerald-400', bg: 'bg-emerald-950/60 text-emerald-300 border-emerald-800/60', text: 'text-emerald-400' },
+  caution: { label: 'Caution', dot: 'bg-amber-400', bg: 'bg-amber-950/60 text-amber-300 border-amber-800/60', text: 'text-amber-400' },
+  danger: { label: 'Danger / SOS', dot: 'bg-rose-400', bg: 'bg-rose-950/60 text-rose-300 border-rose-800/60', text: 'text-rose-400' },
 };
 
 // Rescue progress is saved in the browser (localStorage) so it works with no database.
@@ -175,10 +175,10 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const getStatusBadge = (u: SafePassUser): { label: string; dot: string; bg: string } => {
     const rec = records[u.id];
     if (rec?.state === 'rescued') {
-      return { label: 'Rescued', dot: 'bg-white', bg: 'bg-slate-700 text-white border-slate-700' };
+      return { label: 'Rescued', dot: 'bg-emerald-400', bg: 'bg-emerald-950/60 text-emerald-300 border-emerald-800/60' };
     }
     if (rec?.state === 'deceased') {
-      return { label: 'Deceased', dot: 'bg-white', bg: 'bg-slate-700 text-white border-slate-700' };
+      return { label: 'Deceased', dot: 'bg-neutral-400', bg: 'bg-neutral-800 text-neutral-300 border-neutral-700' };
     }
     return statusConfig[u.status];
   };
@@ -432,40 +432,40 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
       {/* Aggregate Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4">
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5">
+        <div className="bg-neutral-900 rounded-2xl shadow-md border border-neutral-800 p-4 sm:p-5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Registered Citizens</span>
-            <Users className="w-4 h-4 text-slate-400" />
+            <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Registered Citizens</span>
+            <Users className="w-4 h-4 text-neutral-400" />
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900">{counts.total}</p>
-          <p className="text-[11px] text-slate-400 mt-1">Active in crisis corridor</p>
+          <p className="text-2xl sm:text-3xl font-extrabold text-white">{counts.total}</p>
+          <p className="text-[11px] text-neutral-400 mt-1">Active in crisis corridor</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5">
+        <div className="bg-neutral-900 rounded-2xl shadow-md border border-neutral-800 p-4 sm:p-5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Confirmed Safe</span>
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+            <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Confirmed Safe</span>
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-emerald-600">{counts.safe}</p>
-          <p className="text-[11px] text-emerald-600/70 mt-1">Sheltered in high ground</p>
+          <p className="text-2xl sm:text-3xl font-extrabold text-emerald-400">{counts.safe}</p>
+          <p className="text-[11px] text-emerald-300/70 mt-1">Sheltered in high ground</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5">
+        <div className="bg-neutral-900 rounded-2xl shadow-md border border-neutral-800 p-4 sm:p-5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Under Caution</span>
-            <AlertTriangle className="w-4 h-4 text-amber-500" />
+            <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Under Caution</span>
+            <AlertTriangle className="w-4 h-4 text-amber-400" />
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-amber-600">{counts.caution}</p>
-          <p className="text-[11px] text-amber-600/70 mt-1">Restricted transit zone</p>
+          <p className="text-2xl sm:text-3xl font-extrabold text-amber-400">{counts.caution}</p>
+          <p className="text-[11px] text-amber-300/70 mt-1">Restricted transit zone</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-rose-200 bg-rose-50/30 p-4 sm:p-5">
+        <div className="bg-neutral-900 rounded-2xl shadow-md border border-rose-900/60 bg-rose-950/20 p-4 sm:p-5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-rose-600 uppercase tracking-wider">Distress / SOS</span>
-            <ShieldAlert className="w-4 h-4 text-rose-600 animate-pulse" />
+            <span className="text-xs font-bold text-rose-400 uppercase tracking-wider">Distress / SOS</span>
+            <ShieldAlert className="w-4 h-4 text-rose-400 animate-pulse" />
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-rose-600">{counts.danger}</p>
-          <p className="text-[11px] text-rose-600/80 font-bold mt-1">Priority rescue queue</p>
+          <p className="text-2xl sm:text-3xl font-extrabold text-rose-400">{counts.danger}</p>
+          <p className="text-[11px] text-rose-300/80 font-bold mt-1">Priority rescue queue</p>
         </div>
       </div>
 
@@ -570,11 +570,11 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                   ? f === 'safe'
                     ? 'bg-emerald-600 text-white shadow-sm'
                     : f === 'caution'
-                    ? 'bg-amber-500 text-white shadow-sm'
+                    ? 'bg-amber-500 text-neutral-950 font-extrabold shadow-sm'
                     : f === 'danger'
                     ? 'bg-rose-600 text-white shadow-sm'
-                    : 'bg-slate-900 text-white shadow-sm'
-                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                    : 'bg-cyan-600 text-white shadow-sm'
+                  : 'bg-neutral-800 border border-neutral-700 text-neutral-300 hover:bg-neutral-700 hover:text-white'
               }`}
             >
               {f === 'all' ? 'All Statuses' : statusConfig[f].label}
@@ -590,7 +590,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
           className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold border transition-all ${
             redZoneOnly
               ? 'bg-rose-600 text-white border-rose-600 shadow-sm'
-              : 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100'
+              : 'bg-rose-950/40 text-rose-300 border-rose-800/60 hover:bg-rose-900/50'
           }`}
         >
           <ShieldAlert className="w-3.5 h-3.5" /> High-Risk Red Zone ({counts.danger})
@@ -598,7 +598,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="inline-flex items-center gap-1 px-3 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all"
+            className="inline-flex items-center gap-1 px-3 py-2 rounded-full text-xs font-bold bg-neutral-800 text-neutral-300 border border-neutral-700 hover:bg-neutral-700 hover:text-white transition-all"
           >
             <X className="w-3.5 h-3.5" /> Clear Filters
           </button>
@@ -606,11 +606,11 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       </div>
 
       {/* Roster Table */}
-      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-neutral-900 rounded-3xl shadow-xl border border-neutral-800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 text-[11px] font-bold uppercase tracking-wider">
+              <tr className="bg-neutral-950/60 border-b border-neutral-800 text-neutral-400 text-[11px] font-bold uppercase tracking-wider">
                 <th className="px-5 py-3.5">Traveler Name</th>
                 <th className="px-4 py-3.5">Nationality</th>
                 <th className="px-4 py-3.5">Disaster Zone Location</th>
@@ -621,10 +621,10 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                 <th className="px-4 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-xs">
+            <tbody className="divide-y divide-neutral-800 text-xs">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-12 text-slate-400">
+                  <td colSpan={8} className="text-center py-12 text-neutral-400">
                     No citizens match the selected filter criteria.
                   </td>
                 </tr>
@@ -633,34 +633,34 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                   const st = getStatusBadge(u);
                   const rec = records[u.id];
                   return (
-                    <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
+                    <tr key={u.id} className="hover:bg-neutral-800/50 transition-colors">
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-full bg-cyan-100 text-cyan-800 font-bold flex items-center justify-center text-xs">
+                          <div className="w-8 h-8 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-800/60 font-bold flex items-center justify-center text-xs">
                             {u.name.charAt(0)}
                           </div>
                           <div>
-                            <p className="font-bold text-slate-900">{u.name}</p>
-                            <p className="text-[11px] text-slate-400 font-mono">ID: {u.id.substring(0, 10)}</p>
+                            <p className="font-bold text-white">{u.name}</p>
+                            <p className="text-[11px] text-neutral-400 font-mono">ID: {u.id.substring(0, 10)}</p>
                           </div>
                         </div>
                       </td>
 
                       <td className="px-4 py-3.5">
-                        <span className="font-semibold text-slate-700 flex items-center gap-1.5">
-                          <Globe className="w-3.5 h-3.5 text-slate-400" />
+                        <span className="font-semibold text-neutral-200 flex items-center gap-1.5">
+                          <Globe className="w-3.5 h-3.5 text-neutral-400" />
                           {u.nationality}
                         </span>
                       </td>
 
                       <td className="px-4 py-3.5">
                         <div className="max-w-xs">
-                          <p className="font-medium text-slate-800 truncate flex items-center gap-1">
-                            <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                          <p className="font-medium text-neutral-200 truncate flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0" />
                             {u.location_label || 'Mahabalipuram, Coastal Zone'}
                           </p>
                           {u.location_lat && u.location_lng && (
-                            <p className="text-[11px] font-mono text-slate-400">
+                            <p className="text-[11px] font-mono text-neutral-400">
                               {u.location_lat.toFixed(4)}, {u.location_lng.toFixed(4)}
                             </p>
                           )}
@@ -676,15 +676,15 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
                       <td className="px-4 py-3.5">
                         <div>
-                          <p className="font-semibold text-slate-800">{u.emergency_contact_name}</p>
-                          <a href={`tel:${u.emergency_contact_phone}`} className="text-cyan-600 hover:underline text-[11px] font-mono">
+                          <p className="font-semibold text-neutral-200">{u.emergency_contact_name}</p>
+                          <a href={`tel:${u.emergency_contact_phone}`} className="text-cyan-400 hover:underline text-[11px] font-mono">
                             {u.emergency_contact_phone}
                           </a>
                         </div>
                       </td>
 
                       <td className="px-4 py-3.5">
-                        <span className="text-slate-500 font-medium">
+                        <span className="text-neutral-400 font-medium">
                           {formatDate(u.updated_at)}
                         </span>
                       </td>
@@ -695,34 +695,34 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                           <span
                             className={`inline-block px-2.5 py-1 rounded-lg text-[11px] font-bold border ${
                               rec.medical
-                                ? 'bg-rose-50 text-rose-700 border-rose-200'
-                                : 'bg-slate-50 text-slate-600 border-slate-200'
+                                ? 'bg-rose-950/60 text-rose-300 border-rose-800/60'
+                                : 'bg-neutral-800 text-neutral-300 border-neutral-700'
                             }`}
                           >
                             {rec.medical ? 'Needed' : 'Not needed'}
                           </span>
                         ) : (
-                          <span className="text-slate-300">—</span>
+                          <span className="text-neutral-500">—</span>
                         )}
                       </td>
 
                       {/* Rescue actions: only one small button per row */}
                       <td className="px-4 py-3.5 text-right">
                         {rec?.state === 'rescued' || rec?.state === 'deceased' ? (
-                          <span className="inline-block bg-slate-700 text-white font-semibold px-3.5 py-2 rounded-lg text-xs">
+                          <span className="inline-block bg-neutral-800 border border-neutral-700 text-neutral-200 font-semibold px-3.5 py-2 rounded-lg text-xs">
                             {rec.state === 'rescued' ? 'Rescued' : 'Deceased'}
                           </span>
                         ) : rec?.state === 'searching' ? (
                           <button
                             onClick={() => openOutcome(u)}
-                            className="bg-amber-500 hover:bg-amber-600 text-amber-950 font-semibold px-3.5 py-2 rounded-lg text-xs transition-colors"
+                            className="bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold px-3.5 py-2 rounded-lg text-xs transition-colors"
                           >
                             Search Ongoing
                           </button>
                         ) : (
                           <button
                             onClick={() => handleLaunchRescue(u)}
-                            className="bg-red-950 hover:bg-red-900 text-white font-semibold px-3.5 py-2 rounded-lg text-xs transition-colors"
+                            className="bg-rose-600 hover:bg-rose-500 text-white font-bold px-3.5 py-2 rounded-lg text-xs transition-colors shadow-sm"
                           >
                             Launch Rescue
                           </button>
@@ -735,13 +735,13 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             </tbody>
           </table>
         </div>
-        <div className="flex items-center justify-between gap-3 flex-wrap border-t border-slate-200 bg-slate-50/80 px-5 py-3.5">
-          <p className="text-xs text-slate-500 font-medium">
+        <div className="flex items-center justify-between gap-3 flex-wrap border-t border-neutral-800 bg-neutral-950/60 px-5 py-3.5">
+          <p className="text-xs text-neutral-400 font-medium">
             Showing {filtered.length} of {users.length} citizens
           </p>
           <button
             onClick={handleExportCsv}
-            className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-2"
+            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-2"
           >
             <FileSpreadsheet className="w-4 h-4" /> Export Consular Manifest (CSV)
           </button>
@@ -750,13 +750,13 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
       {/* Outcome Modal: Rescued / Deceased details */}
       {pending && (
-        <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-neutral-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-neutral-800 text-white">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-extrabold text-slate-900 text-lg">
+              <h3 className="font-extrabold text-white text-lg">
                 Update Rescue Result: {pending.user.name}
               </h3>
-              <button onClick={() => setPending(null)} className="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+              <button onClick={() => setPending(null)} className="text-neutral-400 hover:text-white p-1 rounded-lg">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -768,8 +768,8 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                   onClick={() => setPending({ ...pending, kind: k })}
                   className={`flex-1 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${
                     pending.kind === k
-                      ? 'bg-slate-900 text-white shadow-sm'
-                      : 'bg-white border border-slate-300 text-slate-600 hover:bg-slate-50'
+                      ? 'bg-cyan-600 text-white shadow-sm'
+                      : 'bg-neutral-800 border border-neutral-700 text-neutral-300 hover:bg-neutral-700 hover:text-white'
                   }`}
                 >
                   {k === 'rescued' ? 'Rescued' : 'Deceased'}
@@ -781,38 +781,42 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {pending.kind === 'rescued' ? (
                 <>
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Current Shelter Location</label>
+                    <label className="block text-xs font-bold text-neutral-300 mb-1">Current Shelter Location</label>
                     <input
                       type="text"
                       value={shelterInput}
                       onChange={(e) => setShelterInput(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 text-xs text-slate-900"
+                      placeholder="e.g. Mahabalipuram Relief Center"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-700 bg-neutral-800 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 text-xs text-white placeholder-neutral-500"
+                      style={{ color: '#ffffff', WebkitTextFillColor: '#ffffff', backgroundColor: '#262626', fontSize: '14px' }}
                     />
                   </div>
-                  <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
+                  <label className="flex items-center gap-2 text-xs font-bold text-neutral-300 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={medicalNeeded}
                       onChange={(e) => setMedicalNeeded(e.target.checked)}
-                      className="w-4 h-4"
+                      className="w-4 h-4 rounded accent-cyan-500"
                     />
                     Medical assistance needed
                   </label>
                 </>
               ) : (
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Current Hospital</label>
+                  <label className="block text-xs font-bold text-neutral-300 mb-1">Current Hospital</label>
                   <input
                     type="text"
                     value={hospitalInput}
                     onChange={(e) => setHospitalInput(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 text-xs text-slate-900"
+                    placeholder="e.g. Chengalpattu Government Hospital"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-700 bg-neutral-800 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 text-xs text-white placeholder-neutral-500"
+                    style={{ color: '#ffffff', WebkitTextFillColor: '#ffffff', backgroundColor: '#262626', fontSize: '14px' }}
                   />
                 </div>
               )}
 
-              <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-amber-800 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-600" />
+              <div className="bg-amber-950/40 p-3 rounded-xl border border-amber-900/50 text-xs text-amber-300 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-400" />
                 <span>This cannot be changed afterwards.</span>
               </div>
             </div>
@@ -820,13 +824,13 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setPending(null)}
-                className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-xs"
+                className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-semibold px-4 py-2.5 rounded-xl text-xs border border-neutral-700"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmOutcome}
-                className="bg-slate-900 hover:bg-slate-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow-md transition-all"
+                className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow-md transition-all cursor-pointer"
               >
                 Confirm
               </button>
@@ -962,44 +966,58 @@ export default function Admin() {
   return (
     <div className="max-w-sm mx-auto animate-fade-in py-12">
       <div className="text-center mb-6">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-900 text-cyan-400 rounded-2xl mb-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-neutral-900 border border-neutral-800 text-cyan-400 rounded-2xl mb-4 shadow-xl">
           <Building2 className="w-8 h-8" />
         </div>
-        <h1 className="text-2xl font-extrabold text-slate-900 mb-1">Consular Admin Login</h1>
-        <p className="text-slate-500 text-sm">Authorized embassy and TNDMA officers only.</p>
+        <h1 className="text-2xl font-extrabold text-white mb-1 tracking-tight">Consular Admin Login</h1>
+        <p className="text-neutral-400 text-sm">Authorized embassy and TNDMA officers only.</p>
       </div>
-      <form onSubmit={handleLogin} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+      <form onSubmit={handleLogin} className="bg-neutral-900 rounded-3xl shadow-2xl border border-neutral-800 p-6 sm:p-7 space-y-4 text-white">
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5">Username</label>
+          <label className="block text-xs font-bold text-neutral-300 mb-1.5">Username</label>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             autoComplete="username"
-            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-sm text-slate-900"
+            placeholder="admin"
+            className="w-full px-4 py-2.5 rounded-xl border border-neutral-700 bg-neutral-800 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm text-white placeholder-neutral-500"
+            style={{
+              color: '#ffffff',
+              WebkitTextFillColor: '#ffffff',
+              backgroundColor: '#262626',
+              fontSize: '16px',
+            }}
             required
           />
         </div>
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5">Password</label>
+          <label className="block text-xs font-bold text-neutral-300 mb-1.5">Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
-            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-sm text-slate-900"
+            placeholder="••••••••"
+            className="w-full px-4 py-2.5 rounded-xl border border-neutral-700 bg-neutral-800 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm text-white placeholder-neutral-500"
+            style={{
+              color: '#ffffff',
+              WebkitTextFillColor: '#ffffff',
+              backgroundColor: '#262626',
+              fontSize: '16px',
+            }}
             required
           />
         </div>
         {loginError && (
-          <div className="flex items-center gap-2 text-red-600 text-xs bg-red-50 rounded-xl p-3 border border-red-100">
+          <div className="flex items-center gap-2 text-red-400 text-xs bg-red-950/50 rounded-xl p-3 border border-red-900/60">
             <AlertTriangle className="w-4 h-4 flex-shrink-0" />
             {loginError}
           </div>
         )}
         <button
           type="submit"
-          className="w-full bg-slate-900 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition-all shadow-md text-sm flex items-center justify-center gap-2"
+          className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl transition-all shadow-md text-sm flex items-center justify-center gap-2 cursor-pointer"
         >
           <Lock className="w-4 h-4" /> Log In
         </button>
