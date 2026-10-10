@@ -169,3 +169,14 @@ select:focus,
 textarea:focus {
   outline: none;
 }
+
+/* Ensure all form inputs have sharp, visible text contrast and dark autofill */
+input, select, textarea {
+  color-scheme: dark;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #737373;
+}
+

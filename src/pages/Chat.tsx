@@ -1254,7 +1254,7 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
 
         {/* Input Form */}
         <div
-          className={`border-t p-3 sm:p-4 ${batterySaver ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'}`}
+          className={`border-t p-3 sm:p-4 ${batterySaver ? 'bg-slate-950 border-slate-800' : 'bg-neutral-900 border-neutral-800'}`}
         >
           <div className="flex items-end gap-2">
             <textarea
@@ -1267,7 +1267,7 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
               className={`flex-1 resize-none border rounded-xl px-4 py-3 text-sm focus:outline-none max-h-32 shadow-2xs ${
                 batterySaver
                   ? 'bg-slate-900 border-slate-800 text-slate-100 placeholder-slate-500 focus:border-emerald-500'
-                  : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200'
+                  : 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20'
               }`}
               style={{ minHeight: '44px' }}
             />
