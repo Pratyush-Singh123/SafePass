@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import type { SafePassUser } from '@/lib/types';
-import { createSession } from '@/lib/auth';
+import { createSession, saveRegisteredUser } from '@/lib/auth';
 import {
   User,
   Globe,
@@ -77,22 +77,42 @@ export default function Onboarding() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setSubmitting(true);
 
-    if (!formData.name || !formData.nationality || !formData.emergency_contact_name || !formData.emergency_contact_phone) {
-      setError('Please fill in all required fields.');
-      setSubmitting(false);
+    // --- Strict Data Validation ---
+    const trimmedName = formData.name.trim();
+    if (!trimmedName || trimmedName.length < 2) {
+      setError('Please enter a valid traveler full name (minimum 2 characters).');
       return;
     }
 
+    if (!formData.nationality) {
+      setError('Please select your country of citizenship for consular protection.');
+      return;
+    }
+
+    const trimmedContactName = formData.emergency_contact_name.trim();
+    if (!trimmedContactName || trimmedContactName.length < 2) {
+      setError('Please enter your emergency contact full name (minimum 2 characters).');
+      return;
+    }
+
+    const trimmedPhone = formData.emergency_contact_phone.trim();
+    const phoneRegex = /^\+?[\d\s\-().]{7,20}$/;
+    if (!trimmedPhone || !phoneRegex.test(trimmedPhone)) {
+      setError('Please enter a valid emergency contact phone number with country code (e.g. +33 6 42 19 88 01 or +91 98765 43210).');
+      return;
+    }
+
+    setSubmitting(true);
+
     const payload = {
-      name: formData.name,
+      name: trimmedName,
       nationality: formData.nationality,
       location_lat: location?.lat ?? 12.6269,
       location_lng: location?.lng ?? 80.1932,
-      location_label: formData.location_label || 'Mahabalipuram Coastal Zone, Tamil Nadu',
-      emergency_contact_name: formData.emergency_contact_name,
-      emergency_contact_phone: formData.emergency_contact_phone,
+      location_label: formData.location_label.trim() || 'Mahabalipuram Coastal Zone, Tamil Nadu',
+      emergency_contact_name: trimmedContactName,
+      emergency_contact_phone: trimmedPhone,
       status: 'caution' as const,
     };
 
@@ -114,7 +134,7 @@ export default function Onboarding() {
 
     // Zero-fail local profile persistence
     if (!user) {
-      const fallbackId = 'demo-user-' + Math.random().toString(36).substring(2, 9);
+      const fallbackId = 'user-' + Math.random().toString(36).substring(2, 9);
       const fallbackToken = 'token-' + Math.random().toString(36).substring(2, 10);
       user = {
         id: fallbackId,
@@ -132,6 +152,8 @@ export default function Onboarding() {
       };
     }
 
+    // Register user locally for persistent login checks
+    saveRegisteredUser(user);
     createSession(user);
 
     // Reset previous chat history so new traveler gets fresh greeting in their own country language

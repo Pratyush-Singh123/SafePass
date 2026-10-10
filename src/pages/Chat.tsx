@@ -764,6 +764,52 @@ export default function Chat() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const handleLanguageChange = (newLang: string) => {
+    setSelectedLanguage(newLang);
+    localStorage.setItem('safepass_selected_language', newLang);
+
+    // Dynamically update chat messages so the AI guidance appears in the new language
+    setMessages((prev) => {
+      const newWelcome = getWelcomeMessage(userProfile, newLang);
+      if (prev.length <= 1) {
+        return [newWelcome];
+      }
+
+      // Update the initial welcome message in the conversation thread
+      const updated = prev.map((m) => {
+        if (m.id.startsWith('welcome-') || m.id === 'welcome') {
+          return newWelcome;
+        }
+        return m;
+      });
+
+      const switchNoticeContent =
+        newLang === 'es'
+          ? `🌐 Idioma cambiado a Español. SafePass responderá en Español con instrucciones de evacuación locales para Mahabalipuram.`
+          : newLang === 'de'
+          ? `🌐 Sprache auf Deutsch geändert. SafePass antwortet nun auf Deutsch mit verifizierten Krisenhinweisen für Mahabalipuram.`
+          : newLang === 'fr'
+          ? `🌐 Langue mise à jour en Français. SafePass vous assiste en français avec les consignes d'urgence consulaires.`
+          : newLang === 'ja'
+          ? `🌐 言語を日本語に変更しました。SafePassはマハバリプラム地域の緊急避難情報を日本語で案内します。`
+          : newLang === 'ta'
+          ? `🌐 மொழி தமிழாக மாற்றப்பட்டது. SafePass மாமல்லபுரம் புயல் வழிகாட்டுதல்களை தமிழில் வழங்கும்.`
+          : newLang === 'hi'
+          ? `🌐 भाषा हिन्दी में बदल दी गई है। SafePass अब महाबलीपुरम क्षेत्र के आपातकालीन निर्देश हिन्दी में प्रदान करेगा।`
+          : `🌐 Language updated to English. SafePass is providing verified emergency evacuation guidance for Mahabalipuram.`;
+
+      const noticeMsg: ChatMessage = {
+        id: `lang-notice-${Date.now()}`,
+        user_id: userProfile?.id || null,
+        role: 'assistant',
+        content: switchNoticeContent,
+        created_at: new Date().toISOString(),
+      };
+
+      return [...updated, noticeMsg];
+    });
+  };
+
   const sendMessage = async (overrideText?: string) => {
     const textToSend = overrideText ?? input.trim();
     if (!textToSend || loading) return;
@@ -971,27 +1017,27 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
         </div>
       )}
 
-      {/* Streamlined Calm Header (Only 3 high-clarity controls) */}
+      {/* Streamlined Calm Header (Responsive & No-Overflow on Mobile/Compact Screens) */}
       <div
-        className={`flex items-center justify-between gap-3 mb-2.5 p-3 rounded-2xl border transition-all ${
+        className={`flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-3 mb-2.5 p-2.5 sm:p-3 rounded-2xl border transition-all ${
           batterySaver
             ? 'bg-slate-950 border-slate-800 text-slate-100'
             : 'bg-white border-slate-200 text-slate-900 shadow-sm'
         }`}
       >
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
           <div
-            className={`p-2 rounded-xl text-white shadow-sm ${
+            className={`p-1.5 sm:p-2 rounded-xl text-white shadow-sm flex-shrink-0 ${
               batterySaver ? 'bg-emerald-900 text-emerald-200' : 'bg-gradient-to-tr from-cyan-600 to-sky-500'
             }`}
           >
-            <Shield className="w-5 h-5" />
+            <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-base sm:text-lg font-extrabold tracking-tight">The Calm Voice</h1>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <h1 className="text-sm sm:text-base font-extrabold tracking-tight truncate">The Calm Voice</h1>
               <span
-                className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                className={`flex items-center gap-1 text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full flex-shrink-0 ${
                   batterySaver
                     ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
                     : 'bg-emerald-100 text-emerald-800'
@@ -1001,29 +1047,25 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
                 SafePass AI
               </span>
             </div>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate hidden xs:block sm:block">
               Calm crisis guidance • Mahabalipuram Zone
             </p>
           </div>
         </div>
 
-        {/* 3 Streamlined Header Controls */}
-        <div className="flex items-center gap-2">
+        {/* 3 Streamlined Header Controls (No button blowout or right-edge clipping) */}
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           {/* Language Selector */}
           <div
-            className={`flex items-center gap-1 border rounded-xl px-2 py-1.5 text-xs ${
+            className={`flex items-center gap-1 border rounded-xl px-1.5 sm:px-2 py-1.5 text-xs ${
               batterySaver ? 'bg-slate-900 border-slate-700' : 'bg-slate-50 border-slate-200'
             }`}
           >
-            <Globe2 className="w-3.5 h-3.5 text-slate-400" />
+            <Globe2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
             <select
               value={selectedLanguage}
-              onChange={(e) => {
-                const newLang = e.target.value;
-                setSelectedLanguage(newLang);
-                localStorage.setItem('safepass_selected_language', newLang);
-              }}
-              className="bg-transparent font-bold text-xs outline-none cursor-pointer"
+              onChange={(e) => handleLanguageChange(e.target.value)}
+              className="bg-transparent font-bold text-xs outline-none cursor-pointer max-w-[85px] sm:max-w-none"
             >
               {LANGUAGES.map((lang) => (
                 <option key={lang.code} value={lang.code} className="bg-slate-900 text-white">
@@ -1036,14 +1078,14 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
           {/* Centralized Crisis Tools Drawer Trigger */}
           <button
             onClick={() => setToolsModalOpen(true)}
-            className={`flex items-center gap-1.5 text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded-xl border transition-all ${
+            className={`flex items-center gap-1 sm:gap-1.5 text-xs font-bold px-2 sm:px-3 py-1.5 rounded-xl border transition-all flex-shrink-0 ${
               batterySaver
                 ? 'bg-slate-900 hover:bg-slate-800 border-slate-700 text-slate-200'
                 : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 shadow-2xs'
             }`}
             title="Open Emergency Toolkit"
           >
-            <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-600" />
+            <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-600 flex-shrink-0" />
             <span className="hidden sm:inline">Crisis Tools</span>
             <span className="sm:hidden">Tools</span>
           </button>
@@ -1051,10 +1093,10 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
           {/* Primary SOS / Consular Escalation Button */}
           <button
             onClick={handleRelayToEmbassy}
-            className="flex items-center gap-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 px-3 py-1.5 rounded-xl transition-all shadow-sm"
+            className="flex items-center gap-1 sm:gap-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 px-2.5 sm:px-3 py-1.5 rounded-xl transition-all shadow-sm flex-shrink-0"
             title="Relay Situation to Consular Roster (/admin)"
           >
-            <ShieldAlert className="w-3.5 h-3.5" />
+            <ShieldAlert className="w-3.5 h-3.5 flex-shrink-0" />
             <span>SOS</span>
           </button>
         </div>

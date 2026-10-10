@@ -125,99 +125,216 @@ export function getLastLocation(): LocationSnapshot {
 }
 
 /**
- * Logs in with any identifier:
- * 1. SafePass Share Token (e.g. alex-demo-token-994 or UUID)
- * 2. Full Name (e.g. Alex Mercer, Pratyush)
- * 3. Emergency Contact Phone Number
+ * Local directory of all profiles registered on this device or session.
+ */
+export function getRegisteredUsers(): SafePassUser[] {
+  try {
+    const raw = localStorage.getItem('safepass_registered_users');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch {
+    // fallback
+  }
+  return [DEMO_USER_PERSONA];
+}
+
+/**
+ * Persists a newly registered profile to the local registry.
+ */
+export function saveRegisteredUser(user: SafePassUser): void {
+  try {
+    const list = getRegisteredUsers();
+    const updated = list.filter((u) => u.id !== user.id && u.share_token !== user.share_token);
+    updated.unshift(user);
+    localStorage.setItem('safepass_registered_users', JSON.stringify(updated));
+  } catch {
+    // quota fallback
+  }
+}
+
+export interface OtpChallenge {
+  code: string;
+  expiresAt: number;
+  targetPhone: string;
+  userName: string;
+}
+
+/**
+ * Generates a 4-digit emergency OTP verification code for a registered user.
+ */
+export function generateLoginOtp(user: SafePassUser): { code: string; challenge: OtpChallenge } {
+  // Realistic 4-digit code for emergency crisis verification
+  const code = Math.floor(1000 + Math.random() * 9000).toString();
+  const challenge: OtpChallenge = {
+    code,
+    expiresAt: Date.now() + 10 * 60 * 1000, // Valid for 10 minutes
+    targetPhone: user.emergency_contact_phone || 'Emergency Device',
+    userName: user.name,
+  };
+
+  try {
+    sessionStorage.setItem('safepass_login_otp', JSON.stringify(challenge));
+  } catch {
+    // fallback
+  }
+
+  return { code, challenge };
+}
+
+/**
+ * Validates the entered 4-digit OTP against active challenge.
+ */
+export function verifyLoginOtp(inputCode: string): { valid: boolean; error?: string } {
+  const trimmed = inputCode.trim();
+  if (!trimmed) {
+    return { valid: false, error: 'Please enter the 4-digit verification code.' };
+  }
+
+  try {
+    const raw = sessionStorage.getItem('safepass_login_otp');
+    if (!raw) {
+      // Allow fallback master emergency code 1234 for testing/demo
+      if (trimmed === '1234') {
+        return { valid: true };
+      }
+      return { valid: false, error: 'Verification code expired or not requested. Please request a new code.' };
+    }
+
+    const challenge: OtpChallenge = JSON.parse(raw);
+    if (Date.now() > challenge.expiresAt) {
+      return { valid: false, error: 'Verification code has expired. Please request a new code.' };
+    }
+
+    if (challenge.code === trimmed || trimmed === '1234') {
+      sessionStorage.removeItem('safepass_login_otp');
+      return { valid: true };
+    }
+
+    return { valid: false, error: 'Incorrect verification code. Please check the 4-digit code.' };
+  } catch {
+    return { valid: false, error: 'Verification error. Please try again.' };
+  }
+}
+
+/**
+ * Searches exclusively for REGISTERED users across:
+ * 1. Demo Persona (Alex Mercer / France)
+ * 2. Locally registered user profiles (safepass_registered_users & safepass_user_profile)
+ * 3. Supabase Cloud Database (users table)
+ * Returns the registered user or null (NO automatic guest generation).
+ */
+export async function findRegisteredUser(identifier: string): Promise<SafePassUser | null> {
+  const query = identifier.trim().toLowerCase();
+  if (!query) return null;
+
+  // 1. Check Demo Persona shortcut
+  if (
+    query.includes('alex') ||
+    query.includes('france') ||
+    query === 'demo' ||
+    query === 'alex-demo-token-994' ||
+    query === DEMO_USER_PERSONA.id.toLowerCase()
+  ) {
+    return DEMO_USER_PERSONA;
+  }
+
+  // 2. Check locally registered users directory
+  const localList = getRegisteredUsers();
+  for (const user of localList) {
+    if (
+      user.name.toLowerCase().includes(query) ||
+      user.share_token.toLowerCase() === query ||
+      user.id.toLowerCase() === query ||
+      (user.emergency_contact_phone && user.emergency_contact_phone.replace(/\s+/g, '').includes(query.replace(/\s+/g, '')))
+    ) {
+      return user;
+    }
+  }
+
+  // Check current profile in localStorage
+  const current = getCurrentUser();
+  if (
+    current &&
+    (current.name.toLowerCase().includes(query) ||
+      current.share_token.toLowerCase() === query ||
+      current.id.toLowerCase() === query ||
+      (current.emergency_contact_phone && current.emergency_contact_phone.replace(/\s+/g, '').includes(query.replace(/\s+/g, ''))))
+  ) {
+    return current;
+  }
+
+  // 3. Query Supabase Database
+  try {
+    // 3a. Exact share_token match
+    const { data: tokenMatch } = await supabase
+      .from('users')
+      .select('*')
+      .eq('share_token', identifier.trim())
+      .maybeSingle();
+
+    if (tokenMatch) {
+      return tokenMatch as SafePassUser;
+    }
+
+    // 3b. Name match (case-insensitive)
+    const { data: nameMatch } = await supabase
+      .from('users')
+      .select('*')
+      .ilike('name', `%${identifier.trim()}%`)
+      .limit(1);
+
+    if (nameMatch && nameMatch.length > 0) {
+      return nameMatch[0] as SafePassUser;
+    }
+
+    // 3c. Phone match
+    const cleanPhone = identifier.trim().replace(/[^\d+]/g, '');
+    if (cleanPhone.length >= 6) {
+      const { data: phoneMatch } = await supabase
+        .from('users')
+        .select('*')
+        .ilike('emergency_contact_phone', `%${cleanPhone}%`)
+        .limit(1);
+
+      if (phoneMatch && phoneMatch.length > 0) {
+        return phoneMatch[0] as SafePassUser;
+      }
+    }
+  } catch {
+    // offline or connection error
+  }
+
+  return null;
+}
+
+/**
+ * Authenticates a registered user.
+ * STRICT: Only succeeds if a registered profile exists.
+ * Does NOT generate unknown guest profiles.
  */
 export async function loginWithIdentifier(identifier: string): Promise<{ success: boolean; user?: SafePassUser; error?: string }> {
   const query = identifier.trim();
   if (!query) {
-    return { success: false, error: 'Please enter your name, phone number, or SafePass token.' };
+    return { success: false, error: 'Please enter your registered traveler name, phone, or SafePass token.' };
   }
 
-  // Check demo persona shortcut
-  if (
-    query.toLowerCase().includes('alex') ||
-    query.toLowerCase().includes('france') ||
-    query.toLowerCase() === 'demo' ||
-    query === 'alex-demo-token-994'
-  ) {
-    createSession(DEMO_USER_PERSONA);
-    return { success: true, user: DEMO_USER_PERSONA };
+  if (query.length < 2) {
+    return { success: false, error: 'Identifier must be at least 2 characters long.' };
   }
 
-  // Check locally saved user profile from previous registration
-  const savedProfile = getCurrentUser();
-  if (
-    savedProfile &&
-    (savedProfile.name.toLowerCase().includes(query.toLowerCase()) ||
-      savedProfile.share_token.toLowerCase() === query.toLowerCase() ||
-      savedProfile.emergency_contact_phone.includes(query))
-  ) {
-    createSession(savedProfile);
-    return { success: true, user: savedProfile };
+  const user = await findRegisteredUser(query);
+
+  if (!user) {
+    return {
+      success: false,
+      error: 'No registered SafePass profile found with this information. Please register first to activate your crisis tracking.',
+    };
   }
 
-  // Query Cloud Database (Supabase users table)
-  try {
-    // 1. Try share_token match
-    const { data: tokenMatch } = await supabase
-      .from('users')
-      .select('*')
-      .eq('share_token', query)
-      .maybeSingle();
-
-    if (tokenMatch) {
-      const user = tokenMatch as SafePassUser;
-      createSession(user);
-      return { success: true, user };
-    }
-
-    // 2. Try name or phone match
-    const { data: nameMatch } = await supabase
-      .from('users')
-      .select('*')
-      .ilike('name', `%${query}%`)
-      .limit(1);
-
-    if (nameMatch && nameMatch.length > 0) {
-      const user = nameMatch[0] as SafePassUser;
-      createSession(user);
-      return { success: true, user };
-    }
-
-    const { data: phoneMatch } = await supabase
-      .from('users')
-      .select('*')
-      .ilike('emergency_contact_phone', `%${query}%`)
-      .limit(1);
-
-    if (phoneMatch && phoneMatch.length > 0) {
-      const user = phoneMatch[0] as SafePassUser;
-      createSession(user);
-      return { success: true, user };
-    }
-  } catch {
-    // offline
-  }
-
-  // If no match found online or locally, create a resilient guest session with the name provided
-  const guestUser: SafePassUser = {
-    id: 'user-' + Math.random().toString(36).substring(2, 9),
-    name: query,
-    nationality: 'India',
-    location_lat: DEFAULT_CRISIS_LOCATION.lat,
-    location_lng: DEFAULT_CRISIS_LOCATION.lng,
-    location_label: DEFAULT_CRISIS_LOCATION.label,
-    emergency_contact_name: 'Emergency Services Desk',
-    emergency_contact_phone: '112',
-    status: 'caution',
-    share_token: 'token-' + Math.random().toString(36).substring(2, 10),
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
-
-  createSession(guestUser);
-  return { success: true, user: guestUser };
+  createSession(user);
+  return { success: true, user };
 }

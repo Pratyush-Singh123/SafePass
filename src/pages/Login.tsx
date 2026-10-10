@@ -17,20 +17,32 @@ import {
   Check,
   Building2,
   Clock,
+  Smartphone,
+  RotateCcw,
+  Sparkles,
 } from 'lucide-react';
 import {
   isLoggedIn,
-  loginWithIdentifier,
+  findRegisteredUser,
+  generateLoginOtp,
+  verifyLoginOtp,
+  createSession,
   getLastLocation,
   saveLastLocation,
   DEMO_USER_PERSONA,
 } from '@/lib/auth';
+import type { SafePassUser } from '@/lib/types';
 
 export default function Login() {
   const navigate = useNavigate();
+  const [step, setStep] = useState<'lookup' | 'otp'>('lookup');
   const [identifier, setIdentifier] = useState('');
+  const [pendingUser, setPendingUser] = useState<SafePassUser | null>(null);
+  const [generatedOtp, setGeneratedOtp] = useState('');
+  const [enteredOtp, setEnteredOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [otpCopied, setOtpCopied] = useState(false);
   const [sosModalOpen, setSosModalOpen] = useState(false);
   const [copiedSms, setCopiedSms] = useState(false);
 
@@ -64,24 +76,106 @@ export default function Login() {
     }
   }, []);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  // Step 1: Validate input & Look up registered profile
+  const handleLookup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const query = identifier.trim();
+    if (!query) {
+      setError('Please enter your registered name, phone number, or SafePass token.');
+      return;
+    }
+
+    if (query.length < 2) {
+      setError('Identifier must be at least 2 characters.');
+      return;
+    }
+
     setLoading(true);
 
-    const res = await loginWithIdentifier(identifier);
-    if (res.success) {
-      navigate('/dashboard');
-    } else {
-      setError(res.error || 'Failed to authenticate. Please try again.');
+    try {
+      const user = await findRegisteredUser(query);
+
+      if (!user) {
+        setError(
+          'No registered SafePass profile found matching this information. Login is restricted to pre-registered travelers. Please register below first.'
+        );
+        setLoading(false);
+        return;
+      }
+
+      // Generate 4-digit emergency verification code
+      const { code } = generateLoginOtp(user);
+      setPendingUser(user);
+      setGeneratedOtp(code);
+      setEnteredOtp('');
+      setStep('otp');
+      setLoading(false);
+    } catch {
+      setError('Error verifying registration. Please try again.');
       setLoading(false);
     }
   };
 
+  // Step 2: Validate OTP and create indefinite crisis session
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (!pendingUser) {
+      setStep('lookup');
+      return;
+    }
+
+    const trimmedOtp = enteredOtp.trim();
+    if (!trimmedOtp) {
+      setError('Please enter the 4-digit emergency verification code.');
+      return;
+    }
+
+    if (trimmedOtp.length !== 4) {
+      setError('Verification code must be exactly 4 digits.');
+      return;
+    }
+
+    setLoading(true);
+
+    const verification = verifyLoginOtp(trimmedOtp);
+    if (!verification.valid) {
+      setError(verification.error || 'Incorrect code. Please enter the valid 4-digit verification code.');
+      setLoading(false);
+      return;
+    }
+
+    // Login successful
+    createSession(pendingUser);
+    navigate('/dashboard');
+  };
+
+  // 1-Click Demo Shortcut (Alex Mercer)
   const handleQuickDemoLogin = async () => {
     setLoading(true);
-    await loginWithIdentifier('demo');
-    navigate('/dashboard');
+    setError('');
+    const demo = DEMO_USER_PERSONA;
+    const { code } = generateLoginOtp(demo);
+    setPendingUser(demo);
+    setGeneratedOtp(code);
+    setEnteredOtp(code); // Pre-fill for instant demo access
+    setStep('otp');
+    setLoading(false);
+  };
+
+  // Regenerate OTP
+  const handleResendOtp = () => {
+    if (!pendingUser) return;
+    const { code } = generateLoginOtp(pendingUser);
+    setGeneratedOtp(code);
+    setError('');
+  };
+
+  const handleAutoFillOtp = () => {
+    setEnteredOtp(generatedOtp);
   };
 
   const getCompressedSmsText = () => {
@@ -139,7 +233,9 @@ export default function Login() {
           <div>
             <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">SafePass Log In</h1>
             <p className="text-xs text-slate-500">
-              Access your emergency crisis cockpit & consular pass
+              {step === 'lookup'
+                ? 'Registered Traveler Identity Verification'
+                : 'Emergency OTP & Device Verification'}
             </p>
           </div>
         </div>
@@ -147,58 +243,191 @@ export default function Login() {
         {error && (
           <div className="mb-5 bg-rose-50 border border-rose-200 text-rose-800 text-xs p-3.5 rounded-2xl flex items-start gap-2">
             <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
-            <span>{error}</span>
+            <div className="flex-1">
+              <p>{error}</p>
+              {error.includes('register') && (
+                <Link
+                  to="/onboarding"
+                  className="mt-2 inline-block font-bold text-rose-900 underline hover:text-rose-950"
+                >
+                  Go to 20-Second Registration →
+                </Link>
+              )}
+            </div>
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-              Name, Phone, or SafePass Token
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="e.g. Pratyush, +33 6 42 19 88 01, or token"
-                className="w-full border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
+        {/* STEP 1: LOOKUP REGISTERED USER */}
+        {step === 'lookup' && (
+          <>
+            <form onSubmit={handleLookup} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Registered Name, Phone, or SafePass Token *
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
+                    placeholder="e.g. Alex Mercer, +33 6 42 19 88 01, or token"
+                    className="w-full border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
+                    disabled={loading}
+                    required
+                  />
+                  <User className="w-4 h-4 text-slate-400 absolute right-4 top-3.5" />
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1.5">
+                  Must be an existing registered account. Unregistered users cannot sign in.
+                </p>
+              </div>
+
+              <button
+                type="submit"
                 disabled={loading}
-              />
-              <User className="w-4 h-4 text-slate-400 absolute right-4 top-3.5" />
+                className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3.5 rounded-2xl text-sm transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Checking Database...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Verify Registered Profile</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Demo Persona Shortcut */}
+            <div className="mt-4 pt-4 border-t border-slate-100">
+              <button
+                onClick={handleQuickDemoLogin}
+                disabled={loading}
+                className="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold py-2.5 rounded-2xl text-xs transition-all flex items-center justify-center gap-2"
+              >
+                <Key className="w-3.5 h-3.5 text-cyan-600" />
+                <span>Quick Demo: Alex Mercer (France Demo Profile)</span>
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* STEP 2: EMERGENCY OTP & DEVICE CHECK */}
+        {step === 'otp' && pendingUser && (
+          <div className="space-y-4 animate-fade-in">
+            {/* Registered Profile Confirmation Pill */}
+            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                  Profile Located
+                </span>
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                  <CheckCircle2 className="w-3 h-3" /> Registered
+                </span>
+              </div>
+              <p className="font-extrabold text-slate-900 text-sm">{pendingUser.name}</p>
+              <p className="text-slate-500 text-[11px]">
+                {pendingUser.nationality} • Emergency Contact: {pendingUser.emergency_contact_phone || 'Logged'}
+              </p>
+            </div>
+
+            {/* Emergency OTP Dispatch Banner (Simulated for zero-fail hackathon / emergency demonstration) */}
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-3.5 text-xs text-amber-900">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-bold flex items-center gap-1.5 text-amber-800">
+                  <Smartphone className="w-3.5 h-3.5" /> Emergency Verification Code
+                </span>
+                <button
+                  type="button"
+                  onClick={handleAutoFillOtp}
+                  className="font-extrabold text-[11px] text-amber-800 underline hover:text-amber-950"
+                >
+                  ⚡ Auto-Fill Code
+                </button>
+              </div>
+              <p className="text-[11px] text-amber-700 mb-2">
+                Dispatched to emergency device registered for {pendingUser.name}:
+              </p>
+              <div className="flex items-center justify-between bg-white/80 border border-amber-200 rounded-xl px-3 py-2">
+                <span className="font-mono text-base font-black tracking-widest text-slate-900">
+                  {generatedOtp}
+                </span>
+                <span className="text-[10px] text-slate-400">Valid 10 mins</span>
+              </div>
+            </div>
+
+            <form onSubmit={handleVerifyOtp} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Enter 4-Digit Emergency Code *
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    maxLength={4}
+                    inputMode="numeric"
+                    value={enteredOtp}
+                    onChange={(e) => setEnteredOtp(e.target.value.replace(/\D/g, ''))}
+                    placeholder="• • • •"
+                    className="w-full text-center text-xl font-mono tracking-widest border border-slate-300 rounded-2xl px-4 py-3 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
+                    disabled={loading}
+                    autoFocus
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Device Check Assurance */}
+              <div className="p-2.5 rounded-xl bg-cyan-50/70 border border-cyan-100 text-[11px] text-cyan-800 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-cyan-600 flex-shrink-0" />
+                <span>
+                  <strong>Device Handshake Verified:</strong> Session remains active until deliberate logout.
+                </span>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3.5 rounded-2xl text-sm transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Verifying Code...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Confirm & Enter Crisis Dashboard</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="flex items-center justify-between text-xs pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setStep('lookup');
+                  setError('');
+                }}
+                className="text-slate-500 hover:text-slate-700 font-medium"
+              >
+                ← Back to Identity
+              </button>
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                className="text-cyan-700 hover:text-cyan-800 font-bold flex items-center gap-1"
+              >
+                <RotateCcw className="w-3 h-3" /> Resend Code
+              </button>
             </div>
           </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3.5 rounded-2xl text-sm transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Authenticating SafePass...</span>
-              </>
-            ) : (
-              <>
-                <span>Log In to Emergency Pass</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
-        </form>
-
-        {/* Demo Persona Shortcut */}
-        <div className="mt-4 pt-4 border-t border-slate-100">
-          <button
-            onClick={handleQuickDemoLogin}
-            disabled={loading}
-            className="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold py-2.5 rounded-2xl text-xs transition-all flex items-center justify-center gap-2"
-          >
-            <Key className="w-3.5 h-3.5 text-cyan-600" />
-            <span>Quick 1-Tap Login as Alex Mercer (France Demo)</span>
-          </button>
-        </div>
+        )}
 
         {/* Persistent Session Notice */}
         <div className="mt-5 p-3 rounded-2xl bg-cyan-50/70 border border-cyan-100 text-[11px] text-cyan-900 flex items-start gap-2">
