@@ -5,7 +5,7 @@
 > **Final Submission Deadline**: Saturday, 10/10/2026 @ 8:30 PM (9:00 PM Final Buffer)
 
 [![Live Web App](https://img.shields.io/badge/Live%20App-safe--pass--sand.vercel.app-00C7B7?style=for-the-badge&logo=vercel&logoColor=white)](https://safe-pass-sand.vercel.app)
-[![Demo Video](https://img.shields.io/badge/Demo%20Video-Watch%20on%20YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=REPLACE_WITH_YOUR_YOUTUBE_VIDEO_ID)
+[![Demo Video](https://img.shields.io/badge/Demo%20Video-Watch%20on%20Google%20Drive-4285F4?style=for-the-badge&logo=googledrive&logoColor=white)](https://drive.google.com/file/d/1mwyfQLAgUbn6ETDSNULg8-rzq2ZETFKL/view?usp=drive_link)
 [![GitHub Repo](https://img.shields.io/badge/GitHub-SafePass%20Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Pratyush-Singh123/SafePass)
 
 **Technologies & APIs**: React 18.3 • TypeScript 5.5 • Vite 5.4 • Tailwind CSS 3.4 • Leaflet 1.9 • Supabase (PostgreSQL & Edge Functions) • Web SpeechSynthesis API • Browser Geolocation API
@@ -14,7 +14,7 @@
 
 ## 🎥 Demonstration Video
 
-* **Video Walkthrough**: **[Watch on YouTube](https://www.youtube.com/watch?v=REPLACE_WITH_YOUR_YOUTUBE_VIDEO_ID)**
+* **Video Walkthrough**: **[Watch on Google Drive](https://drive.google.com/file/d/1mwyfQLAgUbn6ETDSNULg8-rzq2ZETFKL/view?usp=drive_link)**
 
 ---
 
@@ -74,7 +74,7 @@ npm run preview
 
 * **Live Web App**: [https://safe-pass-sand.vercel.app](https://safe-pass-sand.vercel.app)
 * **Consular Officer Portal (`/admin`)**: [https://safe-pass-sand.vercel.app/admin](https://safe-pass-sand.vercel.app/admin) (Username: `admin` | Password: `admin@123`)
-* **Demo Video**: [https://www.youtube.com/watch?v=REPLACE_WITH_YOUR_YOUTUBE_VIDEO_ID](https://www.youtube.com/watch?v=REPLACE_WITH_YOUR_YOUTUBE_VIDEO_ID)
+* **Demo Video**: [https://drive.google.com/file/d/1mwyfQLAgUbn6ETDSNULg8-rzq2ZETFKL/view?usp=drive_link](https://drive.google.com/file/d/1mwyfQLAgUbn6ETDSNULg8-rzq2ZETFKL/view?usp=drive_link)
 * **GitHub Repository**: [https://github.com/Pratyush-Singh123/SafePass](https://github.com/Pratyush-Singh123/SafePass)
 
 ---
