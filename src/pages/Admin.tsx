@@ -17,6 +17,7 @@ import {
   X,
   Radio,
   FileSpreadsheet,
+  Lock,
 } from 'lucide-react';
 
 const statusConfig: Record<SafetyStatus, { label: string; dot: string; bg: string; text: string }> = {
@@ -137,7 +138,7 @@ const DEMO_CONSULAR_ROSTER: SafePassUser[] = [
   },
 ];
 
-export default function Admin() {
+function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [users, setUsers] = useState<SafePassUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -421,6 +422,12 @@ export default function Admin() {
           >
             Tourist View
           </Link>
+          <button
+            onClick={onLogout}
+            className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all border border-slate-700"
+          >
+            Log Out
+          </button>
         </div>
       </div>
 
@@ -840,6 +847,102 @@ export default function Admin() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// Demo login for the consular admin page (credentials are in the code, so this is for the demo only)
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'admin@123';
+const ADMIN_AUTH_KEY = 'safepass_admin_auth';
+
+export default function Admin() {
+  const [authed, setAuthed] = useState<boolean>(() => {
+    try {
+      return sessionStorage.getItem(ADMIN_AUTH_KEY) === 'yes';
+    } catch {
+      return false;
+    }
+  });
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (username.trim() === ADMIN_USER && password === ADMIN_PASS) {
+      try {
+        sessionStorage.setItem(ADMIN_AUTH_KEY, 'yes');
+      } catch {
+        // Storage blocked: login still works for this visit
+      }
+      setLoginError('');
+      setAuthed(true);
+    } else {
+      setLoginError('Incorrect username or password.');
+    }
+  };
+
+  const handleLogout = () => {
+    try {
+      sessionStorage.removeItem(ADMIN_AUTH_KEY);
+    } catch {
+      // ignore
+    }
+    setUsername('');
+    setPassword('');
+    setAuthed(false);
+  };
+
+  if (authed) {
+    return <AdminDashboard onLogout={handleLogout} />;
+  }
+
+  return (
+    <div className="max-w-sm mx-auto animate-fade-in py-12">
+      <div className="text-center mb-6">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-900 text-cyan-400 rounded-2xl mb-4">
+          <Building2 className="w-8 h-8" />
+        </div>
+        <h1 className="text-2xl font-extrabold text-slate-900 mb-1">Consular Admin Login</h1>
+        <p className="text-slate-500 text-sm">Authorized embassy and TNDMA officers only.</p>
+      </div>
+      <form onSubmit={handleLogin} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+        <div>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5">Username</label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="username"
+            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-sm text-slate-900"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5">Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-sm text-slate-900"
+            required
+          />
+        </div>
+        {loginError && (
+          <div className="flex items-center gap-2 text-red-600 text-xs bg-red-50 rounded-xl p-3 border border-red-100">
+            <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+            {loginError}
+          </div>
+        )}
+        <button
+          type="submit"
+          className="w-full bg-slate-900 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition-all shadow-md text-sm flex items-center justify-center gap-2"
+        >
+          <Lock className="w-4 h-4" /> Log In
+        </button>
+      </form>
     </div>
   );
 }
