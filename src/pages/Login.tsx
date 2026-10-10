@@ -20,6 +20,7 @@ import {
   Smartphone,
   RotateCcw,
   Sparkles,
+  ExternalLink,
 } from 'lucide-react';
 import {
   isLoggedIn,
@@ -31,6 +32,7 @@ import {
   saveLastLocation,
   DEMO_USER_PERSONA,
 } from '@/lib/auth';
+import { sendOtpToMobilePhone, getMobileSmsDeepLink } from '@/lib/sms';
 import type { SafePassUser } from '@/lib/types';
 
 export default function Login() {
@@ -105,11 +107,12 @@ export default function Login() {
         return;
       }
 
-      // Generate 4-digit emergency verification code
+      // Generate 4-digit emergency verification code and dispatch SMS
       const { code } = generateLoginOtp(user);
       setPendingUser(user);
       setGeneratedOtp(code);
       setEnteredOtp('');
+      await sendOtpToMobilePhone(user.emergency_contact_phone || 'Emergency Mobile', code, user.name);
       setStep('otp');
       setLoading(false);
     } catch {
@@ -162,16 +165,18 @@ export default function Login() {
     setPendingUser(demo);
     setGeneratedOtp(code);
     setEnteredOtp(code); // Pre-fill for instant demo access
+    await sendOtpToMobilePhone(demo.emergency_contact_phone, code, demo.name);
     setStep('otp');
     setLoading(false);
   };
 
   // Regenerate OTP
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     if (!pendingUser) return;
     const { code } = generateLoginOtp(pendingUser);
     setGeneratedOtp(code);
     setError('');
+    await sendOtpToMobilePhone(pendingUser.emergency_contact_phone || 'Emergency Mobile', code, pendingUser.name);
   };
 
   const handleAutoFillOtp = () => {
@@ -356,6 +361,15 @@ export default function Login() {
                   {generatedOtp}
                 </span>
                 <span className="text-[10px] text-slate-400">Valid 10 mins</span>
+              </div>
+
+              <div className="mt-2.5 flex items-center gap-3 text-[11px]">
+                <a
+                  href={getMobileSmsDeepLink(pendingUser.emergency_contact_phone || '', generatedOtp)}
+                  className="inline-flex items-center gap-1 text-cyan-700 hover:text-cyan-900 font-bold underline"
+                >
+                  <ExternalLink className="w-3 h-3" /> Open in Phone Messages App
+                </a>
               </div>
             </div>
 
