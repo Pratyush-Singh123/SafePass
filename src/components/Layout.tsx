@@ -255,27 +255,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* INTENTIONAL LOGOUT SAFETY CONFIRMATION MODAL */}
       {logoutModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 border border-slate-200 shadow-2xl text-slate-900">
-            <div className="flex items-center gap-2.5 mb-3 text-amber-700">
-              <div className="p-2 bg-amber-100 rounded-xl">
-                <AlertTriangle className="w-5 h-5 text-amber-600" />
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-neutral-900 rounded-3xl max-w-sm w-full p-6 border border-neutral-800 shadow-2xl text-white">
+            <div className="flex items-center gap-2.5 mb-3 text-amber-400">
+              <div className="p-2 bg-amber-950/80 border border-amber-800/60 rounded-xl">
+                <AlertTriangle className="w-5 h-5 text-amber-400" />
               </div>
-              <h3 className="font-extrabold text-base text-slate-900">Log Out of SafePass?</h3>
+              <h3 className="font-extrabold text-base text-white">Log Out of SafePass?</h3>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed mb-5">
+            <p className="text-xs text-neutral-300 leading-relaxed mb-5">
               In an active crisis zone, remaining logged in gives you instant, 1-tap access to evacuation maps and consular safety broadcasts without needing network authentication.
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setLogoutModalOpen(false)}
-                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs"
+                className="flex-1 bg-neutral-800 hover:bg-neutral-750 border border-neutral-700 text-neutral-200 font-bold py-2.5 rounded-xl text-xs cursor-pointer"
               >
                 Stay Logged In
               </button>
               <button
                 onClick={handleConfirmLogout}
-                className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md"
+                className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md cursor-pointer"
               >
                 Log Out Now
               </button>
@@ -286,34 +286,34 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* GLOBAL ZERO-AUTH EMERGENCY SOS MODAL (For logged-out users) */}
       {sosModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 border border-slate-200 shadow-2xl text-slate-900 max-h-[92vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-neutral-900 rounded-3xl max-w-lg w-full p-6 sm:p-7 border border-neutral-800 shadow-2xl text-white max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
-                <div className="p-2.5 bg-rose-100 text-rose-700 rounded-2xl">
+                <div className="p-2.5 bg-rose-950 text-rose-400 border border-rose-800/60 rounded-2xl">
                   <ShieldAlert className="w-6 h-6 animate-pulse" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-900 text-base">Location-Aware Emergency Lifeline</h3>
-                  <p className="text-[11px] text-slate-500">1-Tap Direct Dial & 2G GSM SMS</p>
+                  <h3 className="font-extrabold text-white text-base">Location-Aware Emergency Lifeline</h3>
+                  <p className="text-[11px] text-neutral-400">1-Tap Direct Dial & 2G GSM SMS</p>
                 </div>
               </div>
               <button
                 onClick={() => setSosModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-neutral-400 hover:text-white p-1 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="bg-slate-900 text-white rounded-2xl p-4 mb-4 border border-slate-800">
+            <div className="bg-neutral-950 text-white rounded-2xl p-4 mb-4 border border-neutral-800">
               <div className="flex items-center gap-1.5 text-cyan-400 text-[11px] font-bold uppercase tracking-wider mb-1">
                 <Navigation className="w-3.5 h-3.5" /> Last Known Location
               </div>
-              <p className="font-bold text-xs sm:text-sm text-slate-100 mb-1">
+              <p className="font-bold text-xs sm:text-sm text-neutral-100 mb-1">
                 {lastLocation.label}
               </p>
-              <p className="font-mono text-[11px] text-slate-400">
+              <p className="font-mono text-[11px] text-neutral-400">
                 GPS: {lastLocation.lat.toFixed(4)}° N, {lastLocation.lng.toFixed(4)}° E
               </p>
             </div>
@@ -321,64 +321,64 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
               <a
                 href="tel:112"
-                className="flex items-center justify-between p-3 rounded-2xl border border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-950 font-bold text-xs"
+                className="flex items-center justify-between p-3 rounded-2xl border border-rose-800/80 bg-rose-950/70 hover:bg-rose-900/80 text-white font-bold text-xs"
               >
                 <span>National Emergency</span>
-                <span className="font-mono text-rose-700 font-extrabold">112</span>
+                <span className="font-mono text-rose-400 font-extrabold">112</span>
               </a>
 
               <a
                 href="tel:1070"
-                className="flex items-center justify-between p-3 rounded-2xl border border-sky-300 bg-sky-50 hover:bg-sky-100 text-sky-950 font-bold text-xs"
+                className="flex items-center justify-between p-3 rounded-2xl border border-sky-800/80 bg-sky-950/70 hover:bg-sky-900/80 text-white font-bold text-xs"
               >
                 <span>State Disaster (TNSDMA)</span>
-                <span className="font-mono text-sky-700 font-extrabold">1070</span>
+                <span className="font-mono text-sky-400 font-extrabold">1070</span>
               </a>
 
               <a
                 href="tel:1077"
-                className="flex items-center justify-between p-3 rounded-2xl border border-indigo-300 bg-indigo-50 hover:bg-indigo-100 text-indigo-950 font-bold text-xs"
+                className="flex items-center justify-between p-3 rounded-2xl border border-indigo-800/80 bg-indigo-950/70 hover:bg-indigo-900/80 text-white font-bold text-xs"
               >
                 <span>District Collectorate</span>
-                <span className="font-mono text-indigo-700 font-extrabold">1077</span>
+                <span className="font-mono text-indigo-400 font-extrabold">1077</span>
               </a>
 
               <a
                 href="tel:108"
-                className="flex items-center justify-between p-3 rounded-2xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-950 font-bold text-xs"
+                className="flex items-center justify-between p-3 rounded-2xl border border-emerald-800/80 bg-emerald-950/70 hover:bg-emerald-900/80 text-white font-bold text-xs"
               >
                 <span>Medical Ambulance</span>
-                <span className="font-mono text-emerald-700 font-extrabold">108</span>
+                <span className="font-mono text-emerald-400 font-extrabold">108</span>
               </a>
 
               <a
                 href="tel:+914428461450"
-                className="flex items-center justify-between p-3 rounded-2xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-xs col-span-1 sm:col-span-2"
+                className="flex items-center justify-between p-3 rounded-2xl border border-amber-800/80 bg-amber-950/70 hover:bg-amber-900/80 text-white font-bold text-xs col-span-1 sm:col-span-2"
               >
                 <span>Tourist Police Squad</span>
-                <span className="font-mono text-amber-800 text-[11px]">+91 44 2846 1450</span>
+                <span className="font-mono text-amber-400 text-[11px]">+91 44 2846 1450</span>
               </a>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 mb-4">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-1.5">
-                <Radio className="w-4 h-4 text-amber-600" />
+            <div className="p-3.5 rounded-2xl bg-neutral-950 border border-neutral-800 mb-4">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-neutral-300 mb-1.5">
+                <Radio className="w-4 h-4 text-amber-400" />
                 <span>2G GSM Offline SMS String:</span>
               </div>
-              <div className="bg-slate-900 text-emerald-400 p-2.5 rounded-xl font-mono text-[11px] leading-relaxed break-all mb-3 select-all">
+              <div className="bg-neutral-900 text-emerald-400 p-2.5 rounded-xl font-mono text-[11px] leading-relaxed break-all mb-3 select-all border border-neutral-800">
                 {getCompressedSmsText()}
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={handleCopySms}
-                  className="flex-1 bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1.5"
+                  className="flex-1 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  {copiedSms ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copiedSms ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-neutral-400" />}
                   <span>{copiedSms ? 'Copied' : 'Copy SMS'}</span>
                 </button>
                 <a
                   href={`sms:112?body=${encodeURIComponent(getCompressedSmsText())}`}
-                  className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1.5"
+                  className="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1.5"
                 >
                   Launch SMS to 112
                 </a>
@@ -387,7 +387,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             <button
               onClick={() => setSosModalOpen(false)}
-              className="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs"
+              className="w-full bg-neutral-800 hover:bg-neutral-700 text-white font-bold py-2.5 rounded-xl text-xs border border-neutral-700 cursor-pointer"
             >
               Close Lifeline
             </button>

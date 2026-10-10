@@ -470,7 +470,7 @@ function CrisisMessageRenderer({
   return (
     <div className="space-y-2.5">
       {intro && (
-        <div className={`font-medium text-xs sm:text-sm leading-relaxed ${isBatterySaver ? 'text-slate-200' : 'text-slate-800'}`}>
+        <div className={`font-medium text-xs sm:text-sm leading-relaxed ${isBatterySaver ? 'text-slate-200' : 'text-neutral-100'}`}>
           {intro}
         </div>
       )}
@@ -481,13 +481,13 @@ function CrisisMessageRenderer({
           className={`rounded-xl p-3 border transition-all ${
             isBatterySaver
               ? 'bg-rose-950/40 border-rose-800 text-rose-200'
-              : 'bg-rose-50/95 border-rose-200 text-rose-950'
+              : 'bg-rose-950/60 border-rose-800/80 text-rose-200'
           }`}
         >
           <div className="flex items-start gap-2">
-            <AlertTriangle className="w-4 h-4 text-rose-600 mt-0.5 flex-shrink-0" />
+            <AlertTriangle className="w-4 h-4 text-rose-400 mt-0.5 flex-shrink-0" />
             <div>
-              <span className="text-[10px] font-black uppercase text-rose-700 tracking-wider block mb-0.5">
+              <span className="text-[10px] font-black uppercase text-rose-300 tracking-wider block mb-0.5">
                 Critical Warning
               </span>
               <p className="text-xs sm:text-sm font-semibold leading-snug">
@@ -504,17 +504,17 @@ function CrisisMessageRenderer({
           className={`rounded-xl p-3 border transition-all ${
             isBatterySaver
               ? 'bg-emerald-950/40 border-emerald-800 text-emerald-200'
-              : 'bg-emerald-50/80 border-emerald-200 text-emerald-950'
+              : 'bg-emerald-950/60 border-emerald-800/80 text-emerald-200'
           }`}
         >
-          <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-emerald-800 tracking-wider mb-2">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Tactical Action Protocol
+          <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-emerald-300 tracking-wider mb-2">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Tactical Action Protocol
           </div>
           <div className="space-y-1.5">
             {checklist.map((item, idx) => (
               <div key={idx} className="flex items-start gap-2 text-xs sm:text-sm leading-snug">
-                <span className="text-emerald-700 font-bold mt-0.5 flex-shrink-0">✓</span>
-                <span className="font-medium">{item}</span>
+                <span className="text-emerald-400 font-bold mt-0.5 flex-shrink-0">✓</span>
+                <span className="font-medium text-emerald-100">{item}</span>
               </div>
             ))}
           </div>
@@ -522,16 +522,16 @@ function CrisisMessageRenderer({
       )}
 
       {/* Compact Action Chips (Shelter, Calling & Consular SOS) */}
-      <div className={`pt-2 border-t flex flex-wrap items-center gap-2 ${isBatterySaver ? 'border-slate-800' : 'border-slate-200/70'}`}>
+      <div className={`pt-2 border-t flex flex-wrap items-center gap-2 ${isBatterySaver ? 'border-slate-800' : 'border-neutral-700/80'}`}>
         {shelter && (
           <Link
             to="/dashboard"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-800 bg-sky-50 hover:bg-sky-100 border border-sky-200 px-2.5 py-1.5 rounded-xl transition-all shadow-2xs"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-300 bg-sky-950/80 hover:bg-sky-900 border border-sky-700/60 px-2.5 py-1.5 rounded-xl transition-all shadow-2xs"
             title={shelter}
           >
-            <Building2 className="w-3.5 h-3.5 text-sky-600" />
+            <Building2 className="w-3.5 h-3.5 text-sky-400" />
             <span className="truncate max-w-[190px]">Shelter: {shelter.split('(')[0].trim()}</span>
-            <Navigation className="w-3 h-3 text-sky-500" />
+            <Navigation className="w-3 h-3 text-sky-400" />
           </Link>
         )}
 
@@ -539,7 +539,7 @@ function CrisisMessageRenderer({
           <a
             key={i}
             href={`tel:${num}`}
-            className="inline-flex items-center gap-1 text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2.5 py-1.5 rounded-xl transition-all shadow-2xs"
+            className="inline-flex items-center gap-1 text-xs font-bold text-amber-300 bg-amber-950/80 hover:bg-amber-900 border border-amber-700/60 px-2.5 py-1.5 rounded-xl transition-all shadow-2xs"
           >
             <Phone className="w-3 h-3 text-amber-600" />
             <span>Call {num}</span>
@@ -548,7 +548,7 @@ function CrisisMessageRenderer({
 
         <button
           onClick={onRelayEmbassy}
-          className="inline-flex items-center gap-1 text-xs font-bold text-rose-800 bg-rose-50 hover:bg-rose-100 border border-rose-200 px-2.5 py-1.5 rounded-xl transition-all shadow-2xs ml-auto"
+          className="inline-flex items-center gap-1 text-xs font-bold text-rose-300 bg-rose-950/80 hover:bg-rose-900 border border-rose-800/60 px-2.5 py-1.5 rounded-xl transition-all shadow-2xs ml-auto cursor-pointer"
         >
           <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
           <span>Relay Embassy</span>
@@ -829,12 +829,22 @@ export default function Chat() {
     let reply = '';
 
     try {
+      const langObj = LANGUAGES.find((l) => l.code === selectedLanguage);
+      const langName = langObj ? langObj.label : selectedLanguage;
+
+      const userTextWithLang =
+        selectedLanguage !== 'en'
+          ? `${textToSend}\n\n[CRITICAL REQUIREMENT: Please respond entirely and fluently in ${langName} (${selectedLanguage}) to assist the traveler in their preferred language.]`
+          : textToSend;
+
       const conversationMessages = [
-        ...messages.filter((m) => m.id !== 'welcome').map((m) => ({
-          role: m.role,
-          content: m.content,
-        })),
-        { role: 'user', content: textToSend },
+        ...messages
+          .filter((m) => m.id !== 'welcome' && !m.id.startsWith('lang-notice-'))
+          .map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        { role: 'user', content: userTextWithLang },
       ];
 
       const res = await fetch(`${supabaseUrl}/functions/v1/claude-chat`, {
@@ -1017,55 +1027,59 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
         </div>
       )}
 
-      {/* Streamlined Calm Header (Responsive & No-Overflow on Mobile/Compact Screens) */}
+      {/* Streamlined Calm Header (Responsive & Zero-Overflow on Mobile/Compact Screens) */}
       <div
-        className={`flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-3 mb-2.5 p-2.5 sm:p-3 rounded-2xl border transition-all ${
+        className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 mb-2.5 p-2.5 sm:p-3 rounded-2xl border transition-all ${
           batterySaver
             ? 'bg-slate-950 border-slate-800 text-slate-100'
             : 'bg-neutral-900 border-neutral-800 text-white shadow-sm'
         }`}
       >
-        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-          <div
-            className={`p-1.5 sm:p-2 rounded-xl text-white shadow-sm flex-shrink-0 ${
-              batterySaver ? 'bg-emerald-900 text-emerald-200' : 'bg-gradient-to-tr from-cyan-600 to-sky-500'
-            }`}
-          >
-            <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-              <h1 className="text-sm sm:text-base font-extrabold tracking-tight truncate text-white">The Calm Voice</h1>
-              <span
-                className={`flex items-center gap-1 text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full flex-shrink-0 ${
-                  batterySaver
-                    ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
-                    : 'bg-emerald-950 text-emerald-300 border border-emerald-700/60'
-                }`}
-              >
-                <span className={`w-1.5 h-1.5 rounded-full bg-emerald-400 ${batterySaver ? '' : 'animate-pulse'}`} />
-                SafePass AI
-              </span>
+        <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-2.5 min-w-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <div
+              className={`p-1.5 sm:p-2 rounded-xl text-white shadow-sm shrink-0 ${
+                batterySaver ? 'bg-emerald-900 text-emerald-200' : 'bg-gradient-to-tr from-cyan-600 to-sky-500'
+              }`}
+            >
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <p className="text-[10px] sm:text-[11px] text-neutral-300 truncate hidden xs:block sm:block">
-              Calm crisis guidance • Mahabalipuram Zone
-            </p>
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <h1 className="text-sm sm:text-base font-extrabold tracking-tight truncate text-white">The Calm Voice</h1>
+                <span
+                  className={`flex items-center gap-1 text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full shrink-0 ${
+                    batterySaver
+                      ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                      : 'bg-emerald-950 text-emerald-300 border border-emerald-700/60'
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full bg-emerald-400 ${batterySaver ? '' : 'animate-pulse'}`} />
+                  SafePass AI
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* 3 Streamlined Header Controls (No button blowout or right-edge clipping) */}
-        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+        {/* 3 Streamlined Header Controls: Language, Tools, SOS */}
+        <div className="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2 w-full sm:w-auto">
           {/* Language Selector */}
           <div
-            className={`flex items-center gap-1 border rounded-xl px-1.5 sm:px-2 py-1.5 text-xs ${
-              batterySaver ? 'bg-slate-900 border-slate-700 text-white' : 'bg-neutral-900 border-neutral-700 text-white'
+            className={`flex items-center gap-1 border rounded-xl px-2 py-1.5 text-xs flex-1 sm:flex-initial justify-center sm:justify-start ${
+              batterySaver ? 'bg-slate-900 border-slate-700 text-white' : 'bg-neutral-800 border-neutral-700 text-white'
             }`}
           >
-            <Globe2 className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0" />
+            <Globe2 className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
             <select
               value={selectedLanguage}
               onChange={(e) => handleLanguageChange(e.target.value)}
-              className="bg-transparent font-bold text-xs outline-none cursor-pointer max-w-[85px] sm:max-w-none text-white"
+              className="bg-transparent font-bold text-xs outline-none cursor-pointer text-white w-full sm:w-auto"
+              style={{
+                color: '#ffffff',
+                WebkitTextFillColor: '#ffffff',
+                backgroundColor: '#262626',
+              }}
             >
               {LANGUAGES.map((lang) => (
                 <option key={lang.code} value={lang.code} className="bg-neutral-900 text-white">
@@ -1078,25 +1092,24 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
           {/* Centralized Crisis Tools Drawer Trigger */}
           <button
             onClick={() => setToolsModalOpen(true)}
-            className={`flex items-center gap-1 sm:gap-1.5 text-xs font-bold px-2 sm:px-3 py-1.5 rounded-xl border transition-all flex-shrink-0 ${
+            className={`flex items-center gap-1 sm:gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer ${
               batterySaver
                 ? 'bg-slate-900 hover:bg-slate-800 border-slate-700 text-slate-200'
-                : 'bg-neutral-900 hover:bg-neutral-800 border-neutral-700 text-white shadow-xs'
+                : 'bg-neutral-800 hover:bg-neutral-750 border-neutral-700 text-white shadow-xs'
             }`}
             title="Open Emergency Toolkit"
           >
-            <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
-            <span className="hidden sm:inline">Crisis Tools</span>
-            <span className="sm:hidden">Tools</span>
+            <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+            <span>Tools</span>
           </button>
 
           {/* Primary SOS / Consular Escalation Button */}
           <button
             onClick={handleRelayToEmbassy}
-            className="flex items-center gap-1 sm:gap-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 px-2.5 sm:px-3 py-1.5 rounded-xl transition-all shadow-sm flex-shrink-0"
+            className="flex items-center gap-1 sm:gap-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 px-3 py-1.5 rounded-xl transition-all shadow-sm shrink-0 cursor-pointer"
             title="Relay Situation to Consular Roster (/admin)"
           >
-            <ShieldAlert className="w-3.5 h-3.5 flex-shrink-0" />
+            <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
             <span>SOS</span>
           </button>
         </div>
@@ -1105,7 +1118,7 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
       {/* Main Chat Box */}
       <div
         className={`flex-1 rounded-3xl border flex flex-col overflow-hidden transition-all ${
-          batterySaver ? 'bg-slate-950 border-slate-800 shadow-none' : 'bg-white border-slate-200 shadow-sm'
+          batterySaver ? 'bg-slate-950 border-slate-800 shadow-none' : 'bg-neutral-900 border-neutral-800 shadow-xl text-white'
         }`}
       >
         {/* Messages Viewport */}
@@ -1138,7 +1151,7 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
                         ? 'bg-cyan-600 text-white rounded-tr-sm shadow-sm'
                         : batterySaver
                         ? 'bg-slate-900 border border-slate-800 text-slate-100 rounded-tl-sm'
-                        : 'bg-slate-50 border border-slate-200 text-slate-800 rounded-tl-sm shadow-sm'
+                        : 'bg-neutral-800/90 border border-neutral-700 text-white rounded-tl-sm shadow-sm'
                     }`}
                   >
                     {isUser ? (
@@ -1155,21 +1168,21 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
                     {!isUser && (
                       <div
                         className={`mt-2.5 pt-2 border-t flex items-center justify-between text-xs ${
-                          batterySaver ? 'border-slate-800 text-slate-400' : 'border-slate-200/60 text-slate-400'
+                          batterySaver ? 'border-slate-800 text-slate-400' : 'border-neutral-700/80 text-neutral-400'
                         }`}
                       >
                         <span className="text-[10px] font-semibold flex items-center gap-1">
-                          <Shield className="w-3 h-3 text-cyan-500" /> Verified Protocol
+                          <Shield className="w-3 h-3 text-cyan-400" /> Verified Protocol
                         </span>
                         <button
                           onClick={() => copyGuidance(msg.id, msg.content)}
                           className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-lg border transition-colors ${
                             batterySaver
                               ? 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white'
-                              : 'bg-white text-slate-500 hover:text-cyan-700 border-slate-200'
+                              : 'bg-neutral-800 text-neutral-200 hover:text-white border-neutral-700'
                           }`}
                         >
-                          {isCopied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                          {isCopied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
                           <span>{isCopied ? 'Copied' : 'Copy'}</span>
                         </button>
                       </div>
@@ -1192,7 +1205,7 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
                 </div>
                 <div
                   className={`border rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-2 ${
-                    batterySaver ? 'bg-slate-900 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-600'
+                    batterySaver ? 'bg-slate-900 border-slate-800 text-slate-300' : 'bg-neutral-800 border-neutral-700 text-neutral-300'
                   }`}
                 >
                   <div className="flex items-center gap-1.5">
@@ -1210,23 +1223,23 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
         {/* Streamlined Single-Row Inquiry Bar (Category Dropdown + Quick Prompt Chips) */}
         <div
           className={`px-3 py-2 border-t flex items-center gap-2 overflow-x-auto whitespace-nowrap ${
-            batterySaver ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+            batterySaver ? 'bg-black border-neutral-800' : 'bg-neutral-900 border-neutral-800'
           }`}
         >
           {/* Category Dropdown Pill */}
           <div
             className={`flex-shrink-0 flex items-center gap-1 border rounded-xl px-2 py-1 text-xs ${
-              batterySaver ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200 shadow-2xs'
+              batterySaver ? 'bg-slate-900 border-slate-700 text-white' : 'bg-neutral-800 border-neutral-700 text-white shadow-sm'
             }`}
           >
-            <span className="text-cyan-600">⚡</span>
+            <span className="text-cyan-400">⚡</span>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-transparent font-bold text-xs outline-none cursor-pointer pr-1"
+              className="bg-transparent font-bold text-xs text-white outline-none cursor-pointer pr-1"
             >
               {CRISIS_CATEGORIES.map((cat) => (
-                <option key={cat.id} value={cat.id} className="bg-slate-900 text-white">
+                <option key={cat.id} value={cat.id} className="bg-neutral-900 text-white">
                   {cat.label[selectedLanguage] || cat.label.en}
                 </option>
               ))}
@@ -1243,7 +1256,7 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
                 className={`inline-flex items-center text-xs px-2.5 py-1 rounded-xl border transition-all font-medium disabled:opacity-50 flex-shrink-0 ${
                   batterySaver
                     ? 'bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800'
-                    : 'bg-white hover:bg-cyan-50 hover:text-cyan-800 hover:border-cyan-300 text-slate-700 border-slate-200 shadow-2xs'
+                    : 'bg-neutral-800/90 hover:bg-neutral-750 hover:text-cyan-300 text-neutral-200 border-neutral-700 shadow-xs'
                 }`}
               >
                 {promptText}
@@ -1254,7 +1267,7 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
 
         {/* Input Form */}
         <div
-          className={`border-t p-3 sm:p-4 ${batterySaver ? 'bg-slate-950 border-slate-800' : 'bg-neutral-900 border-neutral-800'}`}
+          className={`border-t p-3 sm:p-4 ${batterySaver ? 'bg-black border-slate-800' : 'bg-neutral-900 border-neutral-800'}`}
         >
           <div className="flex items-end gap-2">
             <textarea
@@ -1264,12 +1277,18 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
               onKeyDown={handleKeyDown}
               placeholder={`Describe your emergency in ${LANGUAGES.find((l) => l.code === selectedLanguage)?.label || 'any language'}...`}
               rows={1}
-              className={`flex-1 resize-none border rounded-xl px-4 py-3 text-sm focus:outline-none max-h-32 shadow-2xs ${
+              className={`flex-1 resize-none border rounded-xl px-4 py-3 text-base sm:text-sm focus:outline-none max-h-32 shadow-2xs ${
                 batterySaver
                   ? 'bg-slate-900 border-slate-800 text-slate-100 placeholder-slate-500 focus:border-emerald-500'
                   : 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20'
               }`}
-              style={{ minHeight: '44px' }}
+              style={{
+                minHeight: '44px',
+                fontSize: '16px',
+                color: '#ffffff',
+                WebkitTextFillColor: '#ffffff',
+                caretColor: '#22d3ee',
+              }}
             />
             <button
               onClick={() => sendMessage()}
@@ -1277,7 +1296,7 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
               className={`flex-shrink-0 p-3 rounded-xl transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ${
                 batterySaver
                   ? 'bg-emerald-600 hover:bg-emerald-500 text-black font-bold'
-                  : 'bg-cyan-600 hover:bg-cyan-700 text-white'
+                  : 'bg-cyan-600 hover:bg-cyan-500 text-white font-bold'
               }`}
               title="Send Message"
             >
@@ -1285,13 +1304,13 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
             </button>
           </div>
 
-          <div className="flex items-center justify-between text-[11px] text-slate-400 mt-2">
+          <div className="flex items-center justify-between text-[11px] text-neutral-400 mt-2">
             <span className="flex items-center gap-1">
               <Phone className="w-3 h-3 text-rose-500" /> Life-threatening emergency? Dial 112 directly.
             </span>
             <button
               onClick={() => setToolsModalOpen(true)}
-              className="text-[11px] text-cyan-600 hover:underline font-medium"
+              className="text-[11px] text-cyan-400 hover:text-cyan-300 font-medium"
             >
               Open Crisis Toolkit 🛠️
             </button>
@@ -1301,21 +1320,21 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
 
       {/* CENTRAL CRISIS TOOLKIT MODAL (Organizes all 6 secondary tools without cluttering screen) */}
       {toolsModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 border border-slate-200 shadow-2xl text-slate-900 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-neutral-900 rounded-3xl max-w-lg w-full p-6 sm:p-7 border border-neutral-800 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
-                <div className="p-2.5 bg-cyan-100 text-cyan-800 rounded-2xl">
+                <div className="p-2.5 bg-cyan-950/80 text-cyan-400 rounded-2xl border border-cyan-800/50">
                   <SlidersHorizontal className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-900 text-base">Emergency Crisis Toolkit</h3>
-                  <p className="text-[11px] text-slate-500">Offline redundancies & psychological stabilization</p>
+                  <h3 className="font-extrabold text-white text-base">Emergency Crisis Toolkit</h3>
+                  <p className="text-[11px] text-neutral-400">Offline redundancies & psychological stabilization</p>
                 </div>
               </div>
               <button
                 onClick={() => setToolsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-neutral-400 hover:text-white p-1"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1328,14 +1347,14 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
                   setToolsModalOpen(false);
                   setBreathingModalOpen(true);
                 }}
-                className="text-left p-3.5 rounded-2xl border border-teal-200 bg-teal-50/70 hover:bg-teal-100/70 transition-all group"
+                className="text-left p-3.5 rounded-2xl border border-teal-500/30 bg-teal-950/40 hover:bg-teal-950/70 transition-all group"
               >
                 <div className="flex items-center justify-between mb-1.5">
-                  <HeartPulse className="w-5 h-5 text-teal-600 animate-pulse" />
+                  <HeartPulse className="w-5 h-5 text-teal-400 animate-pulse" />
                   <ChevronRight className="w-4 h-4 text-teal-400 group-hover:translate-x-0.5 transition-transform" />
                 </div>
-                <h4 className="font-bold text-xs text-teal-950">30s Calm Breathing</h4>
-                <p className="text-[11px] text-teal-700 mt-0.5 leading-snug">
+                <h4 className="font-bold text-xs text-teal-200">30s Calm Breathing</h4>
+                <p className="text-[11px] text-teal-400/80 mt-0.5 leading-snug">
                   Guided box-breathing to reduce panic and lower adrenaline.
                 </p>
               </button>
@@ -1346,14 +1365,14 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
                   setToolsModalOpen(false);
                   setTriageModalOpen(true);
                 }}
-                className="text-left p-3.5 rounded-2xl border border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100/70 transition-all group"
+                className="text-left p-3.5 rounded-2xl border border-indigo-500/30 bg-indigo-950/40 hover:bg-indigo-950/70 transition-all group"
               >
                 <div className="flex items-center justify-between mb-1.5">
-                  <Activity className="w-5 h-5 text-indigo-600" />
+                  <Activity className="w-5 h-5 text-indigo-400" />
                   <ChevronRight className="w-4 h-4 text-indigo-400 group-hover:translate-x-0.5 transition-transform" />
                 </div>
-                <h4 className="font-bold text-xs text-indigo-950">Rapid SBAR Triage</h4>
-                <p className="text-[11px] text-indigo-700 mt-0.5 leading-snug">
+                <h4 className="font-bold text-xs text-indigo-200">Rapid SBAR Triage</h4>
+                <p className="text-[11px] text-indigo-400/80 mt-0.5 leading-snug">
                   10s assessment of flood water, battery, and dependents.
                 </p>
               </button>
@@ -1364,14 +1383,14 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
                   setToolsModalOpen(false);
                   setSmsModalOpen(true);
                 }}
-                className="text-left p-3.5 rounded-2xl border border-amber-200 bg-amber-50/70 hover:bg-amber-100/70 transition-all group"
+                className="text-left p-3.5 rounded-2xl border border-amber-500/30 bg-amber-950/40 hover:bg-amber-950/70 transition-all group"
               >
                 <div className="flex items-center justify-between mb-1.5">
-                  <Radio className="w-5 h-5 text-amber-600" />
+                  <Radio className="w-5 h-5 text-amber-400" />
                   <ChevronRight className="w-4 h-4 text-amber-400 group-hover:translate-x-0.5 transition-transform" />
                 </div>
-                <h4 className="font-bold text-xs text-amber-950">2G SMS Fallback</h4>
-                <p className="text-[11px] text-amber-700 mt-0.5 leading-snug">
+                <h4 className="font-bold text-xs text-amber-200">2G SMS Fallback</h4>
+                <p className="text-[11px] text-amber-400/80 mt-0.5 leading-snug">
                   Compressed 140-char GPS distress text for network blackouts.
                 </p>
               </button>
@@ -1381,18 +1400,18 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
                 onClick={toggleBatterySaver}
                 className={`text-left p-3.5 rounded-2xl border transition-all ${
                   batterySaver
-                    ? 'border-emerald-500 bg-emerald-100 text-emerald-950'
-                    : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800'
+                    ? 'border-emerald-500/50 bg-emerald-950/60 text-emerald-200'
+                    : 'border-neutral-800 bg-neutral-800/60 hover:bg-neutral-800 text-neutral-200'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1.5">
-                  <BatteryCharging className={`w-5 h-5 ${batterySaver ? 'text-emerald-700' : 'text-slate-600'}`} />
-                  <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${batterySaver ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700'}`}>
+                  <BatteryCharging className={`w-5 h-5 ${batterySaver ? 'text-emerald-400' : 'text-neutral-400'}`} />
+                  <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${batterySaver ? 'bg-emerald-600 text-white' : 'bg-neutral-700 text-neutral-300'}`}>
                     {batterySaver ? 'ACTIVE' : 'OFF'}
                   </span>
                 </div>
                 <h4 className="font-bold text-xs">Battery Saver Mode</h4>
-                <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                <p className="text-[11px] text-neutral-400 mt-0.5 leading-snug">
                   {batterySaver ? 'OLED black mode active. Tap to turn off.' : 'Switch to OLED monochrome black to save power.'}
                 </p>
               </button>
@@ -1400,14 +1419,14 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
               {/* Tool 5: Export Log */}
               <button
                 onClick={handleExportTranscript}
-                className="text-left p-3.5 rounded-2xl border border-sky-200 bg-sky-50/70 hover:bg-sky-100/70 transition-all group"
+                className="text-left p-3.5 rounded-2xl border border-sky-500/30 bg-sky-950/40 hover:bg-sky-950/70 transition-all group"
               >
                 <div className="flex items-center justify-between mb-1.5">
-                  <Download className="w-5 h-5 text-sky-600" />
-                  <span className="text-[10px] font-bold text-sky-700">{exportedLog ? 'Downloaded!' : '.TXT'}</span>
+                  <Download className="w-5 h-5 text-sky-400" />
+                  <span className="text-[10px] font-bold text-sky-300">{exportedLog ? 'Downloaded!' : '.TXT'}</span>
                 </div>
-                <h4 className="font-bold text-xs text-sky-950">Export Incident Log</h4>
-                <p className="text-[11px] text-sky-700 mt-0.5 leading-snug">
+                <h4 className="font-bold text-xs text-sky-200">Export Incident Log</h4>
+                <p className="text-[11px] text-sky-400/80 mt-0.5 leading-snug">
                   Download chat transcript for consular liaison & insurance.
                 </p>
               </button>
@@ -1415,29 +1434,29 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
               {/* Tool 6: Evacuation Map */}
               <Link
                 to="/dashboard"
-                className="text-left p-3.5 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-slate-100/70 transition-all group"
+                className="text-left p-3.5 rounded-2xl border border-neutral-800 bg-neutral-800/60 hover:bg-neutral-800 transition-all group"
               >
                 <div className="flex items-center justify-between mb-1.5">
-                  <Navigation className="w-5 h-5 text-cyan-600" />
-                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                  <Navigation className="w-5 h-5 text-cyan-400" />
+                  <ChevronRight className="w-4 h-4 text-neutral-500 group-hover:translate-x-0.5 transition-transform" />
                 </div>
-                <h4 className="font-bold text-xs text-slate-900">Evacuation Map</h4>
-                <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                <h4 className="font-bold text-xs text-white">Evacuation Map</h4>
+                <p className="text-[11px] text-neutral-400 mt-0.5 leading-snug">
                   View verified shelters and flooded zones on live map.
                 </p>
               </Link>
             </div>
 
-            <div className="flex items-center justify-between pt-3 border-t border-slate-200 text-xs">
+            <div className="flex items-center justify-between pt-3 border-t border-neutral-800 text-xs">
               <button
                 onClick={() => setClearConfirmOpen(true)}
-                className="text-rose-600 hover:text-rose-800 font-bold flex items-center gap-1.5"
+                className="text-rose-400 hover:text-rose-300 font-bold flex items-center gap-1.5"
               >
                 <RefreshCw className="w-3.5 h-3.5" /> Restart / Clear Chat
               </button>
               <button
                 onClick={() => setToolsModalOpen(false)}
-                className="bg-slate-900 text-white font-bold px-4 py-2 rounded-xl text-xs"
+                className="bg-neutral-800 hover:bg-neutral-700 text-white font-bold px-4 py-2 rounded-xl text-xs border border-neutral-700"
               >
                 Done
               </button>
@@ -1514,68 +1533,68 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
 
       {/* MODAL 2: Rapid SBAR Emergency Triage Checklist */}
       {triageModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 border border-slate-200 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-neutral-900 rounded-3xl max-w-md w-full p-6 sm:p-7 border border-neutral-800 shadow-2xl text-white">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
-                <div className="p-2.5 bg-indigo-100 text-indigo-700 rounded-2xl">
+                <div className="p-2.5 bg-indigo-950/80 text-indigo-400 rounded-2xl border border-indigo-800/50">
                   <Activity className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-900 text-base">Rapid SBAR Triage Checklist</h3>
-                  <p className="text-[11px] text-slate-500">10-Second Crisis Assessment</p>
+                  <h3 className="font-extrabold text-white text-base">Rapid SBAR Triage Checklist</h3>
+                  <p className="text-[11px] text-neutral-400">10-Second Crisis Assessment</p>
                 </div>
               </div>
               <button
                 onClick={() => setTriageModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-neutral-400 hover:text-white p-1"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-600 mb-4">
+            <p className="text-xs text-neutral-300 mb-4">
               Select your current situation to give the AI precise situational context:
             </p>
 
             <div className="space-y-2.5 mb-6">
-              <label className="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
-                <span className="text-xs font-semibold text-slate-800">Is water actively rising around your building?</span>
+              <label className="flex items-center justify-between p-3 rounded-xl border border-neutral-800 hover:bg-neutral-800/60 bg-neutral-950/50 cursor-pointer">
+                <span className="text-xs font-semibold text-neutral-200">Is water actively rising around your building?</span>
                 <input
                   type="checkbox"
                   checked={triageAnswers.risingWater}
                   onChange={(e) => setTriageAnswers({ ...triageAnswers, risingWater: e.target.checked })}
-                  className="w-4 h-4 text-cyan-600 rounded"
+                  className="w-4 h-4 text-cyan-500 rounded bg-neutral-800 border-neutral-700 accent-cyan-500"
                 />
               </label>
 
-              <label className="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
-                <span className="text-xs font-semibold text-slate-800">Do you have clean drinking water for 24 hours?</span>
+              <label className="flex items-center justify-between p-3 rounded-xl border border-neutral-800 hover:bg-neutral-800/60 bg-neutral-950/50 cursor-pointer">
+                <span className="text-xs font-semibold text-neutral-200">Do you have clean drinking water for 24 hours?</span>
                 <input
                   type="checkbox"
                   checked={triageAnswers.hasWater}
                   onChange={(e) => setTriageAnswers({ ...triageAnswers, hasWater: e.target.checked })}
-                  className="w-4 h-4 text-cyan-600 rounded"
+                  className="w-4 h-4 text-cyan-500 rounded bg-neutral-800 border-neutral-700 accent-cyan-500"
                 />
               </label>
 
-              <label className="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
-                <span className="text-xs font-semibold text-slate-800">Are you with young children or elderly dependents?</span>
+              <label className="flex items-center justify-between p-3 rounded-xl border border-neutral-800 hover:bg-neutral-800/60 bg-neutral-950/50 cursor-pointer">
+                <span className="text-xs font-semibold text-neutral-200">Are you with young children or elderly dependents?</span>
                 <input
                   type="checkbox"
                   checked={triageAnswers.hasDependents}
                   onChange={(e) => setTriageAnswers({ ...triageAnswers, hasDependents: e.target.checked })}
-                  className="w-4 h-4 text-cyan-600 rounded"
+                  className="w-4 h-4 text-cyan-500 rounded bg-neutral-800 border-neutral-700 accent-cyan-500"
                 />
               </label>
 
-              <label className="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
-                <span className="text-xs font-semibold text-slate-800">Is your phone battery below 25%?</span>
+              <label className="flex items-center justify-between p-3 rounded-xl border border-neutral-800 hover:bg-neutral-800/60 bg-neutral-950/50 cursor-pointer">
+                <span className="text-xs font-semibold text-neutral-200">Is your phone battery below 25%?</span>
                 <input
                   type="checkbox"
                   checked={triageAnswers.lowBattery}
                   onChange={(e) => setTriageAnswers({ ...triageAnswers, lowBattery: e.target.checked })}
-                  className="w-4 h-4 text-cyan-600 rounded"
+                  className="w-4 h-4 text-cyan-500 rounded bg-neutral-800 border-neutral-700 accent-cyan-500"
                 />
               </label>
             </div>
@@ -1583,13 +1602,13 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
             <div className="flex gap-2">
               <button
                 onClick={() => setTriageModalOpen(false)}
-                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl text-xs"
+                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-semibold py-2.5 rounded-xl text-xs border border-neutral-700"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCompleteTriage}
-                className="flex-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+                className="flex-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
               >
                 Submit Triage to AI Assistant
               </button>
@@ -1600,45 +1619,45 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
 
       {/* MODAL 3: 2G SMS Compressed Distress Generator */}
       {smsModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 border border-slate-200 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-neutral-900 rounded-3xl max-w-md w-full p-6 sm:p-7 border border-neutral-800 shadow-2xl text-white">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
-                <div className="p-2.5 bg-amber-100 text-amber-700 rounded-2xl">
+                <div className="p-2.5 bg-amber-950/80 text-amber-400 rounded-2xl border border-amber-800/50">
                   <Radio className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-900 text-base">2G Compressed SMS Fallback</h3>
-                  <p className="text-[11px] text-slate-500">For Network Blackouts & 2G GSM Towers</p>
+                  <h3 className="font-extrabold text-white text-base">2G Compressed SMS Fallback</h3>
+                  <p className="text-[11px] text-neutral-400">For Network Blackouts & 2G GSM Towers</p>
                 </div>
               </div>
               <button
                 onClick={() => setSmsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-neutral-400 hover:text-white p-1"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-600 mb-3">
+            <p className="text-xs text-neutral-300 mb-3">
               If cellular internet drops, this compressed 140-character emergency string transmits your vital coordinates via standard 2G SMS to local disaster services:
             </p>
 
-            <div className="bg-slate-900 text-emerald-400 p-3.5 rounded-2xl font-mono text-xs leading-relaxed break-all border border-slate-800 mb-4 select-all">
+            <div className="bg-black text-emerald-400 p-3.5 rounded-2xl font-mono text-xs leading-relaxed break-all border border-neutral-800 mb-4 select-all">
               {getCompressedSmsText()}
             </div>
 
             <div className="flex gap-2">
               <button
                 onClick={handleCopySms}
-                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5"
+                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-bold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 border border-neutral-700"
               >
-                {copiedSms ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedSms ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                 {copiedSms ? 'Copied to Clipboard' : 'Copy SMS Text'}
               </button>
               <a
                 href={`sms:112?body=${encodeURIComponent(getCompressedSmsText())}`}
-                className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+                className="flex-1 bg-amber-600 hover:bg-amber-500 text-black font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
               >
                 Launch Native SMS
               </a>
@@ -1649,59 +1668,59 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
 
       {/* MODAL 4: Consular Escalation Confirmation Modal */}
       {escalationModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 border border-slate-200 shadow-2xl text-slate-900">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-neutral-900 rounded-3xl max-w-md w-full p-6 sm:p-7 border border-neutral-800 shadow-2xl text-white">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
-                <div className="p-2.5 bg-rose-100 text-rose-700 rounded-2xl">
+                <div className="p-2.5 bg-rose-950/80 text-rose-400 rounded-2xl border border-rose-800/50">
                   <ShieldAlert className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-900 text-base">Consular Escalation Broadcast</h3>
-                  <p className="text-[11px] text-slate-500">Ticket Ref: #{escalatedTicket || 'EMB-2026-4819'}</p>
+                  <h3 className="font-extrabold text-white text-base">Consular Escalation Broadcast</h3>
+                  <p className="text-[11px] text-neutral-400">Ticket Ref: #{escalatedTicket || 'EMB-2026-4819'}</p>
                 </div>
               </div>
               <button
                 onClick={() => setEscalationModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-neutral-400 hover:text-white p-1"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="bg-rose-50 border border-rose-200 rounded-2xl p-3.5 text-xs text-rose-950 mb-4 space-y-1.5">
+            <div className="bg-rose-950/30 border border-rose-900/50 rounded-2xl p-3.5 text-xs text-rose-200 mb-4 space-y-1.5">
               <div className="flex justify-between font-bold">
-                <span>Citizen:</span>
-                <span>{userProfile?.name || 'Alex Mercer'} ({userProfile?.nationality || 'France'})</span>
+                <span className="text-neutral-300">Citizen:</span>
+                <span className="text-white">{userProfile?.name || 'Alex Mercer'} ({userProfile?.nationality || 'France'})</span>
               </div>
               <div className="flex justify-between">
-                <span>Location:</span>
-                <span className="font-mono">12.6269° N, 80.1932° E</span>
+                <span className="text-neutral-300">Location:</span>
+                <span className="font-mono text-cyan-300">12.6269° N, 80.1932° E</span>
               </div>
               <div className="flex justify-between">
-                <span>Consular Status:</span>
-                <span className="font-bold text-rose-700 uppercase">DANGER / PRIORITY LIAISON</span>
+                <span className="text-neutral-300">Consular Status:</span>
+                <span className="font-bold text-rose-400 uppercase">DANGER / PRIORITY LIAISON</span>
               </div>
               <div className="flex justify-between">
-                <span>Assigned Consulate:</span>
-                <span>Consulat Général de France (Chennai)</span>
+                <span className="text-neutral-300">Assigned Consulate:</span>
+                <span className="text-white">Consulat Général de France (Chennai)</span>
               </div>
             </div>
 
-            <p className="text-xs text-slate-600 mb-5 leading-relaxed">
+            <p className="text-xs text-neutral-300 mb-5 leading-relaxed">
               Your distress context and GPS coordinates have been pushed to the diplomatic mission roster and district disaster authorities. A consular liaison officer is alerted.
             </p>
 
             <div className="flex gap-2">
               <button
                 onClick={() => setEscalationModalOpen(false)}
-                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl text-xs"
+                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-semibold py-2.5 rounded-xl text-xs border border-neutral-700"
               >
                 Close & Return
               </button>
               <Link
                 to="/admin"
-                className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+                className="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
               >
                 View Consular Roster
               </Link>
@@ -1712,22 +1731,22 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
 
       {/* MODAL 5: Clear Chat Confirmation Modal */}
       {clearConfirmOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 border border-slate-200 shadow-2xl text-slate-900">
-            <h3 className="font-extrabold text-base mb-2">Reset Crisis Chat?</h3>
-            <p className="text-xs text-slate-600 mb-5 leading-relaxed">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-neutral-900 rounded-3xl max-w-sm w-full p-6 border border-neutral-800 shadow-2xl text-white">
+            <h3 className="font-extrabold text-base mb-2 text-white">Reset Crisis Chat?</h3>
+            <p className="text-xs text-neutral-300 mb-5 leading-relaxed">
               This will clear the current chat history on this device and restart from the localized crisis briefing. Your registered profile will remain safe.
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setClearConfirmOpen(false)}
-                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl text-xs"
+                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-semibold py-2.5 rounded-xl text-xs border border-neutral-700"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmClearChat}
-                className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md"
+                className="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-md"
               >
                 Yes, Reset Chat
               </button>

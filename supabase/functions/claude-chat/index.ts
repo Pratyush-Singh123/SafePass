@@ -25,7 +25,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { messages, user_id } = await req.json();
+    const { messages, user_id, language } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(
@@ -47,6 +47,11 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    let systemPrompt = SYSTEM_PROMPT;
+    if (language && language !== 'en') {
+      systemPrompt += `\n\nCRITICAL LANGUAGE REQUIREMENT: The user has selected language "${language}". You MUST provide your entire response in this language (${language}), while keeping local emergency numbers (e.g. 112, 1070, 108) and proper location names (Mahabalipuram, ECR) accurate.`;
+    }
+
     const claudeResponse = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -57,7 +62,7 @@ Deno.serve(async (req: Request) => {
       body: JSON.stringify({
         model: "claude-3-5-sonnet-20241022",
         max_tokens: 1024,
-        system: SYSTEM_PROMPT,
+        system: systemPrompt,
         messages: messages.map((m: { role: string; content: string }) => ({
           role: m.role,
           content: m.content,

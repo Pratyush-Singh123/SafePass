@@ -422,7 +422,14 @@ export default function Onboarding() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g. Alex Mercer"
-                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-base sm:text-sm"
+                  style={{
+                    color: '#ffffff',
+                    WebkitTextFillColor: '#ffffff',
+                    caretColor: '#22d3ee',
+                    backgroundColor: '#262626',
+                    fontSize: '16px',
+                  }}
                   required
                 />
               </div>
@@ -445,7 +452,14 @@ export default function Onboarding() {
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="+33 6 42 19 88 01 or +91 98765 43210"
-                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm font-mono"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-base sm:text-sm font-mono"
+                  style={{
+                    color: '#ffffff',
+                    WebkitTextFillColor: '#ffffff',
+                    caretColor: '#22d3ee',
+                    backgroundColor: '#262626',
+                    fontSize: '16px',
+                  }}
                   required
                 />
               </div>
@@ -464,7 +478,13 @@ export default function Onboarding() {
                 <select
                   value={formData.nationality}
                   onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
-                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all appearance-none text-sm"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all appearance-none text-base sm:text-sm"
+                  style={{
+                    color: '#ffffff',
+                    WebkitTextFillColor: '#ffffff',
+                    backgroundColor: '#262626',
+                    fontSize: '16px',
+                  }}
                   required
                 >
                   <option value="" className="bg-neutral-800 text-neutral-400">Select your nationality</option>
@@ -501,7 +521,14 @@ export default function Onboarding() {
                   value={formData.location_label}
                   onChange={(e) => setFormData({ ...formData, location_label: e.target.value })}
                   placeholder="e.g. Mahabalipuram Beach Resort, ECR Road, Tamil Nadu"
-                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-base sm:text-sm"
+                  style={{
+                    color: '#ffffff',
+                    WebkitTextFillColor: '#ffffff',
+                    caretColor: '#22d3ee',
+                    backgroundColor: '#262626',
+                    fontSize: '16px',
+                  }}
                 />
               </div>
               {location && (
@@ -535,7 +562,14 @@ export default function Onboarding() {
                     value={formData.emergency_contact_name}
                     onChange={(e) => setFormData({ ...formData, emergency_contact_name: e.target.value })}
                     placeholder="e.g. Claire Mercer (Sister)"
-                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-base sm:text-sm"
+                    style={{
+                      color: '#ffffff',
+                      WebkitTextFillColor: '#ffffff',
+                      caretColor: '#22d3ee',
+                      backgroundColor: '#262626',
+                      fontSize: '16px',
+                    }}
                   />
                 </div>
               </div>
@@ -552,7 +586,14 @@ export default function Onboarding() {
                     value={formData.emergency_contact_phone}
                     onChange={(e) => setFormData({ ...formData, emergency_contact_phone: e.target.value })}
                     placeholder="+33 6 12 34 56 78"
-                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-base sm:text-sm font-mono"
+                    style={{
+                      color: '#ffffff',
+                      WebkitTextFillColor: '#ffffff',
+                      caretColor: '#22d3ee',
+                      backgroundColor: '#262626',
+                      fontSize: '16px',
+                    }}
                   />
                 </div>
               </div>
@@ -642,10 +683,19 @@ export default function Onboarding() {
                 type="text"
                 maxLength={4}
                 inputMode="numeric"
+                pattern="[0-9]*"
                 value={enteredOtp}
                 onChange={(e) => setEnteredOtp(e.target.value.replace(/\D/g, ''))}
                 placeholder="• • • •"
-                className="w-full text-center text-2xl font-mono tracking-widest border border-neutral-700 bg-neutral-800 text-white rounded-2xl px-4 py-3.5 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all outline-none"
+                className="w-full text-center text-3xl font-mono tracking-widest border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-400 rounded-2xl px-4 py-3.5 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all outline-none"
+                style={{
+                  color: '#ffffff',
+                  WebkitTextFillColor: '#ffffff',
+                  caretColor: '#22d3ee',
+                  backgroundColor: '#262626',
+                  fontSize: '28px',
+                  letterSpacing: '0.25em',
+                }}
                 disabled={submitting}
                 autoFocus
                 required

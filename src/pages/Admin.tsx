@@ -232,17 +232,30 @@ export default function Admin() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by tourist name, nationality, or hotel location..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-neutral-700 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-xs sm:text-sm text-white bg-neutral-800 placeholder-neutral-500"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-neutral-700 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-base sm:text-sm text-white bg-neutral-800 placeholder-neutral-400"
+            style={{
+              color: '#ffffff',
+              WebkitTextFillColor: '#ffffff',
+              caretColor: '#22d3ee',
+              backgroundColor: '#262626',
+              fontSize: '16px',
+            }}
           />
         </div>
 
         {/* Nationality Dropdown */}
-        <div className="flex items-center gap-2 bg-neutral-800 px-3 py-2 rounded-xl border border-neutral-700 text-xs sm:text-sm">
+        <div className="flex items-center gap-2 bg-neutral-800 px-3 py-2 rounded-xl border border-neutral-700 text-base sm:text-sm">
           <Globe className="w-4 h-4 text-neutral-400" />
           <select
             value={nationalityFilter}
             onChange={(e) => setNationalityFilter(e.target.value)}
-            className="bg-transparent font-semibold text-white outline-none cursor-pointer"
+            className="bg-transparent font-semibold text-white outline-none cursor-pointer text-base sm:text-sm"
+            style={{
+              color: '#ffffff',
+              WebkitTextFillColor: '#ffffff',
+              backgroundColor: '#262626',
+              fontSize: '14px',
+            }}
           >
             {nationalitiesList.map((nat) => (
               <option key={nat} value={nat} className="bg-neutral-900 text-white">
@@ -377,21 +390,21 @@ export default function Admin() {
 
       {/* Broadcast Consular Advisory Modal */}
       {broadcastModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-200">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-neutral-900 rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-neutral-800 text-white">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
-                <div className="p-2.5 bg-cyan-100 text-cyan-700 rounded-2xl">
+                <div className="p-2.5 bg-cyan-950/80 text-cyan-400 rounded-2xl border border-cyan-800/50">
                   <Radio className="w-6 h-6 animate-pulse" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-900 text-lg">Broadcast Consular Advisory</h3>
-                  <p className="text-xs text-slate-500">Official SMS & Push Bulletin to Citizens</p>
+                  <h3 className="font-extrabold text-white text-lg">Broadcast Consular Advisory</h3>
+                  <p className="text-xs text-neutral-400">Official SMS & Push Bulletin to Citizens</p>
                 </div>
               </div>
               <button
                 onClick={() => setBroadcastModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-neutral-400 hover:text-white p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -399,27 +412,29 @@ export default function Admin() {
 
             <div className="space-y-4 mb-6">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Target Geographic Zone</label>
+                <label className="block text-xs font-bold text-neutral-300 mb-1">Target Geographic Zone</label>
                 <input
                   type="text"
                   readOnly
                   value="Kancheepuram & Coastal Chengalpattu Red Warning Zone"
-                  className="w-full bg-slate-100 text-slate-700 font-semibold px-3.5 py-2.5 rounded-xl text-xs border border-slate-200"
+                  className="w-full bg-neutral-800 text-neutral-200 font-semibold px-3.5 py-2.5 rounded-xl text-xs border border-neutral-700"
+                  style={{ fontSize: '16px', color: '#ffffff', WebkitTextFillColor: '#ffffff' }}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Advisory Message Content</label>
+                <label className="block text-xs font-bold text-neutral-300 mb-1">Advisory Message Content</label>
                 <textarea
                   readOnly
                   rows={4}
                   value="[CONSULAR EMERGENCY ADVISORY - LEVEL 3] Extreme coastal surge detected on ECR corridor. Do NOT attempt transit to Chennai airport. Move immediately to verified high-ground shelter or contact Consular Officer at +91 44 2857 4000."
-                  className="w-full bg-slate-50 text-slate-800 font-medium p-3 rounded-xl text-xs border border-slate-200 resize-none"
+                  className="w-full bg-neutral-800 text-neutral-200 font-medium p-3 rounded-xl text-xs border border-neutral-700 resize-none"
+                  style={{ fontSize: '16px', color: '#ffffff', WebkitTextFillColor: '#ffffff' }}
                 />
               </div>
 
-              <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-amber-800 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-600" />
+              <div className="bg-amber-950/30 p-3 rounded-xl border border-amber-900/50 text-xs text-amber-200 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-400" />
                 <span>This advisory will reach all {counts.total} registered foreign travelers and notify local disaster liaison officers.</span>
               </div>
             </div>
@@ -427,14 +442,14 @@ export default function Admin() {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setBroadcastModal(false)}
-                className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-xs"
+                className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-semibold px-4 py-2.5 rounded-xl text-xs border border-neutral-700"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSendBroadcast}
                 disabled={broadcastSent}
-                className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all"
+                className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all"
               >
                 {broadcastSent ? (
                   <><Check className="w-4 h-4 text-white" /> Dispatched Successfully!</>
