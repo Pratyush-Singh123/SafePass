@@ -31,18 +31,6 @@ During extreme coastal weather events (such as Bay of Bengal cyclones and flash 
 
 ---
 
-## ⚡ Evaluator Persona Presets
-
-Test diverse emergency scenarios in 1 click on the [Registration Page](https://safe-pass-sand.vercel.app/onboarding) or [Login Page](https://safe-pass-sand.vercel.app/login):
-
-| Persona | Nationality & Flag | Scenario & Location | Status |
-| :--- | :--- | :--- | :--- |
-| **Alex Mercer** | 🇫🇷 France | Mahabalipuram Coastal Heritage Zone (`12.6269° N, 80.1932° E`) | 🔴 **High Danger**: Severe Coastal Surge |
-| **Kenji Sato** | 🇯🇵 Japan | Sholinganallur Tech Corridor (`12.9010° N, 80.2279° E`) | 🟢 **Safe Haven**: Consular Liaison Point |
-| **Emma Watson** | 🇬🇧 United Kingdom | Kovalam ECR Beachfront (`12.7892° N, 80.2520° E`) | 🟡 **Caution**: Estuary Backwaters Inundation |
-
----
-
 ## 🚀 Local Development Setup
 
 ### Prerequisites
