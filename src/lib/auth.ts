@@ -21,6 +21,7 @@ export const DEMO_USER_PERSONA: SafePassUser = {
   id: 'demo-alex-mercer',
   name: 'Alex Mercer',
   nationality: 'France',
+  phone: '+33 6 42 19 88 01',
   location_lat: 12.6269,
   location_lng: 80.1932,
   location_label: 'Mahabalipuram Coastal Heritage Zone, Chengalpattu / Kancheepuram',
@@ -148,7 +149,12 @@ export function getRegisteredUsers(): SafePassUser[] {
 export function saveRegisteredUser(user: SafePassUser): void {
   try {
     const list = getRegisteredUsers();
-    const updated = list.filter((u) => u.id !== user.id && u.share_token !== user.share_token);
+    const updated = list.filter((u) => {
+      if (u.id === user.id) return false;
+      if (u.share_token === user.share_token) return false;
+      if (user.phone && u.phone && doPhonesMatch(user.phone, u.phone)) return false;
+      return true;
+    });
     updated.unshift(user);
     localStorage.setItem('safepass_registered_users', JSON.stringify(updated));
   } catch {
@@ -172,7 +178,7 @@ export function generateLoginOtp(user: SafePassUser): { code: string; challenge:
   const challenge: OtpChallenge = {
     code,
     expiresAt: Date.now() + 10 * 60 * 1000, // Valid for 10 minutes
-    targetPhone: user.emergency_contact_phone || 'Emergency Device',
+    targetPhone: user.phone || user.emergency_contact_phone || 'Emergency Device',
     userName: user.name,
   };
 
@@ -221,6 +227,125 @@ export function verifyLoginOtp(inputCode: string): { valid: boolean; error?: str
 }
 
 /**
+ * Normalizes phone numbers to digits-only for resilient international/local matching.
+ */
+export function extractPhoneDigits(phone?: string | null): string {
+  if (!phone) return '';
+  return phone.replace(/\D/g, '');
+}
+
+/**
+ * Checks whether two phone numbers match (handles leading +, country codes, and spaces).
+ */
+export function doPhonesMatch(phoneA?: string | null, phoneB?: string | null): boolean {
+  const digitsA = extractPhoneDigits(phoneA);
+  const digitsB = extractPhoneDigits(phoneB);
+  if (!digitsA || !digitsB) return false;
+  if (digitsA === digitsB) return true;
+  // Suffix matching for local vs international formatting (e.g. 9876543210 vs 919876543210)
+  if (digitsA.length >= 7 && digitsB.length >= 7) {
+    return digitsA.endsWith(digitsB) || digitsB.endsWith(digitsA);
+  }
+  return false;
+}
+
+/**
+ * Searches exclusively for REGISTERED users SOLELY by their Mobile Phone Number.
+ * This guarantees privacy and security by preventing unauthorized users from guessing names.
+ */
+export async function findRegisteredUserByPhone(inputPhone: string): Promise<SafePassUser | null> {
+  const cleanDigits = extractPhoneDigits(inputPhone);
+  if (cleanDigits.length < 6) return null;
+
+  // 1. Check Demo Persona (Alex Mercer's mobile: +33 6 42 19 88 01)
+  if (
+    doPhonesMatch(inputPhone, DEMO_USER_PERSONA.phone) ||
+    doPhonesMatch(inputPhone, DEMO_USER_PERSONA.emergency_contact_phone)
+  ) {
+    return DEMO_USER_PERSONA;
+  }
+
+  // 2. Check locally registered users directory
+  const localList = getRegisteredUsers();
+  for (const user of localList) {
+    if (
+      doPhonesMatch(inputPhone, user.phone) ||
+      doPhonesMatch(inputPhone, user.emergency_contact_phone)
+    ) {
+      return user;
+    }
+  }
+
+  // 3. Check current profile in localStorage
+  const current = getCurrentUser();
+  if (
+    current &&
+    (doPhonesMatch(inputPhone, current.phone) ||
+      doPhonesMatch(inputPhone, current.emergency_contact_phone))
+  ) {
+    return current;
+  }
+
+  // 4. Check Supabase Database
+  try {
+    const last4 = cleanDigits.slice(-4);
+    const { data } = await supabase
+      .from('users')
+      .select('*')
+      .ilike('emergency_contact_phone', `%${last4}%`)
+      .limit(10);
+
+    if (data && data.length > 0) {
+      for (const row of data) {
+        if (
+          doPhonesMatch(inputPhone, row.emergency_contact_phone) ||
+          doPhonesMatch(inputPhone, (row as any).phone)
+        ) {
+          return {
+            ...row,
+            phone: (row as any).phone || row.emergency_contact_phone,
+          } as SafePassUser;
+        }
+      }
+    }
+  } catch {
+    // offline fallback
+  }
+
+  return null;
+}
+
+/**
+ * Authenticates a registered user SOLELY by mobile phone number.
+ */
+export async function loginWithPhoneNumber(phone: string): Promise<{ success: boolean; user?: SafePassUser; error?: string }> {
+  const trimmed = phone.trim();
+  if (!trimmed) {
+    return { success: false, error: 'Please enter your registered mobile phone number.' };
+  }
+
+  const digits = extractPhoneDigits(trimmed);
+  if (digits.length < 7) {
+    return {
+      success: false,
+      error: 'Please enter a valid mobile number with at least 7 digits (e.g. +33 6 42 19 88 01 or +91 98765 43210).',
+    };
+  }
+
+  const user = await findRegisteredUserByPhone(trimmed);
+
+  if (!user) {
+    return {
+      success: false,
+      error: `No registered SafePass profile found for mobile number "${trimmed}". Login is strictly mobile-verified. Please check your number or register first.`,
+    };
+  }
+
+  createSession(user);
+  return { success: true, user };
+}
+
+/**
  * Searches exclusively for REGISTERED users across:
  * 1. Demo Persona (Alex Mercer / France)
  * 2. Locally registered user profiles (safepass_registered_users & safepass_user_profile)
@@ -231,7 +356,13 @@ export async function findRegisteredUser(identifier: string): Promise<SafePassUs
   const query = identifier.trim().toLowerCase();
   if (!query) return null;
 
-  // 1. Check Demo Persona shortcut
+  // First try phone match if input contains digits
+  if (extractPhoneDigits(query).length >= 6) {
+    const byPhone = await findRegisteredUserByPhone(query);
+    if (byPhone) return byPhone;
+  }
+
+  // Check Demo Persona shortcut
   if (
     query.includes('alex') ||
     query.includes('france') ||
@@ -242,14 +373,13 @@ export async function findRegisteredUser(identifier: string): Promise<SafePassUs
     return DEMO_USER_PERSONA;
   }
 
-  // 2. Check locally registered users directory
+  // Check locally registered users directory
   const localList = getRegisteredUsers();
   for (const user of localList) {
     if (
       user.name.toLowerCase().includes(query) ||
       user.share_token.toLowerCase() === query ||
-      user.id.toLowerCase() === query ||
-      (user.emergency_contact_phone && user.emergency_contact_phone.replace(/\s+/g, '').includes(query.replace(/\s+/g, '')))
+      user.id.toLowerCase() === query
     ) {
       return user;
     }
@@ -261,15 +391,13 @@ export async function findRegisteredUser(identifier: string): Promise<SafePassUs
     current &&
     (current.name.toLowerCase().includes(query) ||
       current.share_token.toLowerCase() === query ||
-      current.id.toLowerCase() === query ||
-      (current.emergency_contact_phone && current.emergency_contact_phone.replace(/\s+/g, '').includes(query.replace(/\s+/g, ''))))
+      current.id.toLowerCase() === query)
   ) {
     return current;
   }
 
-  // 3. Query Supabase Database
+  // Query Supabase Database by token
   try {
-    // 3a. Exact share_token match
     const { data: tokenMatch } = await supabase
       .from('users')
       .select('*')
@@ -279,62 +407,16 @@ export async function findRegisteredUser(identifier: string): Promise<SafePassUs
     if (tokenMatch) {
       return tokenMatch as SafePassUser;
     }
-
-    // 3b. Name match (case-insensitive)
-    const { data: nameMatch } = await supabase
-      .from('users')
-      .select('*')
-      .ilike('name', `%${identifier.trim()}%`)
-      .limit(1);
-
-    if (nameMatch && nameMatch.length > 0) {
-      return nameMatch[0] as SafePassUser;
-    }
-
-    // 3c. Phone match
-    const cleanPhone = identifier.trim().replace(/[^\d+]/g, '');
-    if (cleanPhone.length >= 6) {
-      const { data: phoneMatch } = await supabase
-        .from('users')
-        .select('*')
-        .ilike('emergency_contact_phone', `%${cleanPhone}%`)
-        .limit(1);
-
-      if (phoneMatch && phoneMatch.length > 0) {
-        return phoneMatch[0] as SafePassUser;
-      }
-    }
   } catch {
-    // offline or connection error
+    // offline
   }
 
   return null;
 }
 
 /**
- * Authenticates a registered user.
- * STRICT: Only succeeds if a registered profile exists.
- * Does NOT generate unknown guest profiles.
+ * Legacy identifier login (for backward compatibility).
  */
 export async function loginWithIdentifier(identifier: string): Promise<{ success: boolean; user?: SafePassUser; error?: string }> {
-  const query = identifier.trim();
-  if (!query) {
-    return { success: false, error: 'Please enter your registered traveler name, phone, or SafePass token.' };
-  }
-
-  if (query.length < 2) {
-    return { success: false, error: 'Identifier must be at least 2 characters long.' };
-  }
-
-  const user = await findRegisteredUser(query);
-
-  if (!user) {
-    return {
-      success: false,
-      error: 'No registered SafePass profile found with this information. Please register first to activate your crisis tracking.',
-    };
-  }
-
-  createSession(user);
-  return { success: true, user };
+  return loginWithPhoneNumber(identifier);
 }

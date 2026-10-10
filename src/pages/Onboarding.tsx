@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import type { SafePassUser } from '@/lib/types';
-import { createSession, saveRegisteredUser } from '@/lib/auth';
+import { createSession, saveRegisteredUser, extractPhoneDigits } from '@/lib/auth';
 import { sendOtpToMobilePhone, getMobileSmsDeepLink } from '@/lib/sms';
 import {
   User,
@@ -22,6 +22,7 @@ import {
   MessageSquare,
   ExternalLink,
   ArrowRight,
+  Lock,
 } from 'lucide-react';
 
 const nationalities = [
@@ -33,6 +34,7 @@ const nationalities = [
 interface DemoPersona {
   id: string;
   name: string;
+  phone: string;
   nationality: string;
   flag: string;
   location_label: string;
@@ -49,13 +51,14 @@ const DEMO_PERSONAS: DemoPersona[] = [
   {
     id: 'alex',
     name: 'Alex Mercer',
+    phone: '+33 6 42 19 88 01',
     nationality: 'France',
     flag: '🇫🇷',
     location_label: 'Mahabalipuram Coastal Heritage Zone, Chengalpattu / Kancheepuram',
     lat: 12.6269,
     lng: 80.1932,
     emergency_contact_name: 'Claire Mercer (Sister)',
-    emergency_contact_phone: '+33 6 42 19 88 01',
+    emergency_contact_phone: '+33 6 12 34 56 78',
     zoneTag: 'Mahabalipuram Coastal Zone',
     badgeColor: 'bg-red-100 text-red-700 border-red-200',
     scenarioHighlight: 'Storm Surge Danger Zone • French Consular Protection',
@@ -63,13 +66,14 @@ const DEMO_PERSONAS: DemoPersona[] = [
   {
     id: 'kenji',
     name: 'Kenji Sato',
+    phone: '+81 90 1234 5678',
     nationality: 'Japan',
     flag: '🇯🇵',
     location_label: 'Sholinganallur Tech Corridor, Chennai OMR',
     lat: 12.9010,
     lng: 80.2279,
     emergency_contact_name: 'Yuki Sato (Wife)',
-    emergency_contact_phone: '+81 90 1234 5678',
+    emergency_contact_phone: '+81 80 9876 5432',
     zoneTag: 'Sholinganallur Tech Corridor',
     badgeColor: 'bg-indigo-100 text-indigo-700 border-indigo-200',
     scenarioHighlight: 'OMR Safe Haven Corridor • Japanese Consular Liaison',
@@ -77,13 +81,14 @@ const DEMO_PERSONAS: DemoPersona[] = [
   {
     id: 'emma',
     name: 'Emma Watson',
+    phone: '+44 7911 123456',
     nationality: 'United Kingdom',
     flag: '🇬🇧',
     location_label: 'Kovalam ECR Beachfront, Tamil Nadu',
     lat: 12.7892,
     lng: 80.2520,
     emergency_contact_name: 'Arthur Watson (Father)',
-    emergency_contact_phone: '+44 7911 123456',
+    emergency_contact_phone: '+44 7822 654321',
     zoneTag: 'Kovalam ECR Beachfront',
     badgeColor: 'bg-amber-100 text-amber-700 border-amber-200',
     scenarioHighlight: 'Backwaters Caution Zone • UK High Commission Tracking',
@@ -95,6 +100,7 @@ export default function Onboarding() {
   const [step, setStep] = useState<'form' | 'otp'>('form');
   const [formData, setFormData] = useState({
     name: '',
+    phone: '',
     nationality: '',
     location_label: '',
     emergency_contact_name: '',
@@ -108,12 +114,12 @@ export default function Onboarding() {
   const [selectedPersonaId, setSelectedPersonaId] = useState<string | null>(null);
   const [otpCode, setOtpCode] = useState('');
   const [enteredOtp, setEnteredOtp] = useState('');
-  const [incomingSmsBanner, setIncomingSmsBanner] = useState(true);
 
   const applyDemoPersona = (persona: DemoPersona) => {
     setSelectedPersonaId(persona.id);
     setFormData({
       name: persona.name,
+      phone: persona.phone,
       nationality: persona.nationality,
       location_label: persona.location_label,
       emergency_contact_name: persona.emergency_contact_name,
@@ -151,7 +157,7 @@ export default function Onboarding() {
     );
   };
 
-  // Step 1: Validate registration data and dispatch Mobile SMS OTP
+  // Step 1: Validate registration data and dispatch Mobile SMS OTP to the traveler's personal mobile
   const handleInitiateOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -163,27 +169,23 @@ export default function Onboarding() {
       return;
     }
 
+    const trimmedPhone = formData.phone.trim();
+    const phoneDigits = extractPhoneDigits(trimmedPhone);
+    if (!trimmedPhone || phoneDigits.length < 7) {
+      setError(
+        'Please enter a valid personal mobile phone number with country code (e.g. +33 6 42 19 88 01 or +91 98765 43210). This mobile number is required to receive your verification OTP and to log in.'
+      );
+      return;
+    }
+
     if (!formData.nationality) {
       setError('Please select your country of citizenship for consular protection.');
       return;
     }
 
-    const trimmedContactName = formData.emergency_contact_name.trim();
-    if (!trimmedContactName || trimmedContactName.length < 2) {
-      setError('Please enter your emergency contact full name (minimum 2 characters).');
-      return;
-    }
-
-    const trimmedPhone = formData.emergency_contact_phone.trim();
-    const phoneRegex = /^\+?[\d\s\-().]{7,20}$/;
-    if (!trimmedPhone || !phoneRegex.test(trimmedPhone)) {
-      setError('Please enter a valid emergency contact phone number with country code (e.g. +33 6 42 19 88 01 or +91 98765 43210).');
-      return;
-    }
-
     setSubmitting(true);
 
-    // Generate 4-digit OTP and send to mobile
+    // Generate 4-digit OTP and send to traveler's personal mobile phone
     const generatedCode = Math.floor(1000 + Math.random() * 9000).toString();
     setOtpCode(generatedCode);
     setEnteredOtp('');
@@ -191,17 +193,15 @@ export default function Onboarding() {
     await sendOtpToMobilePhone(trimmedPhone, generatedCode, trimmedName);
 
     setSubmitting(false);
-    setIncomingSmsBanner(true);
     setStep('otp');
   };
 
-  // Resend OTP
+  // Resend OTP to traveler's personal phone
   const handleResendOtp = async () => {
     setError('');
     const newCode = Math.floor(1000 + Math.random() * 9000).toString();
     setOtpCode(newCode);
-    await sendOtpToMobilePhone(formData.emergency_contact_phone, newCode, formData.name);
-    setIncomingSmsBanner(true);
+    await sendOtpToMobilePhone(formData.phone, newCode, formData.name);
   };
 
   // Step 2: Verify OTP and finalize database registration
@@ -228,8 +228,8 @@ export default function Onboarding() {
       location_lat: location?.lat ?? 12.6269,
       location_lng: location?.lng ?? 80.1932,
       location_label: formData.location_label.trim() || 'Mahabalipuram Coastal Zone, Tamil Nadu',
-      emergency_contact_name: formData.emergency_contact_name.trim(),
-      emergency_contact_phone: formData.emergency_contact_phone.trim(),
+      emergency_contact_name: formData.emergency_contact_name.trim() || `${formData.name.trim()} (Primary Traveler)`,
+      emergency_contact_phone: formData.phone.trim(), // Stored in emergency_contact_phone so Supabase remote queries can locate user by mobile number
       status: 'caution' as const,
     };
 
@@ -243,7 +243,12 @@ export default function Onboarding() {
         .single();
 
       if (!dbError && data) {
-        user = data as SafePassUser;
+        user = {
+          ...(data as SafePassUser),
+          phone: formData.phone.trim(),
+          emergency_contact_name: formData.emergency_contact_name.trim() || 'Emergency Contact',
+          emergency_contact_phone: formData.emergency_contact_phone.trim() || formData.phone.trim(),
+        };
       }
     } catch {
       // Offline fallback
@@ -257,11 +262,12 @@ export default function Onboarding() {
         id: fallbackId,
         name: payload.name,
         nationality: payload.nationality,
+        phone: formData.phone.trim(),
         location_lat: payload.location_lat,
         location_lng: payload.location_lng,
         location_label: payload.location_label,
-        emergency_contact_name: payload.emergency_contact_name,
-        emergency_contact_phone: payload.emergency_contact_phone,
+        emergency_contact_name: formData.emergency_contact_name.trim() || 'Emergency Contact',
+        emergency_contact_phone: formData.emergency_contact_phone.trim() || formData.phone.trim(),
         status: payload.status,
         share_token: fallbackToken,
         created_at: new Date().toISOString(),
@@ -290,7 +296,7 @@ export default function Onboarding() {
           </div>
           <h2 className="text-2xl font-extrabold text-slate-900 mb-2">SafePass Profile Activated</h2>
           <p className="text-slate-600 text-sm">
-            Coordinates and consular safety token securely logged. Launching Crisis Dashboard...
+            Mobile number verified & consular safety token securely logged. Launching Crisis Dashboard...
           </p>
           <Loader2 className="w-6 h-6 text-cyan-600 animate-spin mx-auto mt-6" />
         </div>
@@ -388,95 +394,131 @@ export default function Onboarding() {
         <div className="mt-3 text-xs text-slate-500">
           Already registered?{' '}
           <Link to="/login" className="text-cyan-700 font-extrabold hover:underline">
-            Log in to your active session →
+            Log in with your verified mobile number →
           </Link>
         </div>
       </div>
 
       {step === 'form' ? (
         <form onSubmit={handleInitiateOtp} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
-          {/* Name */}
-          <div>
-            <label className="block text-sm font-bold text-slate-800 mb-2">
-              Full Traveler Name *
-            </label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g. Alex Mercer"
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm"
-                required
-              />
+          {/* Primary Traveler Identity Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
+              <User className="w-4 h-4 text-cyan-600" />
+              <h2 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                Traveler Profile & Mobile Verification
+              </h2>
             </div>
-          </div>
 
-          {/* Nationality */}
-          <div>
-            <label className="block text-sm font-bold text-slate-800 mb-2">
-              Country of Citizenship (Consular Liaison) *
-            </label>
-            <div className="relative">
-              <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
-              <select
-                value={formData.nationality}
-                onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 appearance-none bg-white text-sm"
-                required
-              >
-                <option value="">Select your nationality</option>
-                {nationalities.map((n) => (
-                  <option key={n} value={n}>{n}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Location */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-bold text-slate-800">
-                Current Location / Hotel Landmark
+            {/* Traveler Full Name */}
+            <div>
+              <label className="block text-sm font-bold text-slate-800 mb-2">
+                Traveler Full Name *
               </label>
-              <button
-                type="button"
-                onClick={handleGetLocation}
-                disabled={locating}
-                className="flex items-center gap-1.5 text-xs font-semibold text-cyan-600 hover:text-cyan-700 transition-colors"
-              >
-                {locating ? (
-                  <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Detecting...</>
-                ) : (
-                  <><Navigation className="w-3.5 h-3.5" /> Auto-Detect GPS</>
-                )}
-              </button>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="e.g. Alex Mercer"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm"
+                  required
+                />
+              </div>
             </div>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <input
-                type="text"
-                value={formData.location_label}
-                onChange={(e) => setFormData({ ...formData, location_label: e.target.value })}
-                placeholder="e.g. Mahabalipuram Beach Resort, ECR Road, Tamil Nadu"
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm"
-              />
-            </div>
-            {location && (
-              <p className="mt-2 text-xs text-emerald-600 font-semibold flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                GPS locked: {location.lat.toFixed(4)}° N, {location.lng.toFixed(4)}° E (Tamil Nadu Coastal Zone)
+
+            {/* Traveler Mobile Number (Used for Login & OTP) */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-bold text-slate-800">
+                  Traveler Mobile Number * (Receives OTP & Used for Login)
+                </label>
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded-md border border-cyan-200">
+                  <Lock className="w-3 h-3" /> Login ID
+                </span>
+              </div>
+              <div className="relative">
+                <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="+33 6 42 19 88 01 or +91 98765 43210"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm font-mono"
+                  required
+                />
+              </div>
+              <p className="mt-1.5 text-xs text-slate-500">
+                🔒 You will receive a 4-digit verification code before registration completes. For your security, future logins are strictly tied to this mobile number.
               </p>
-            )}
+            </div>
+
+            {/* Nationality */}
+            <div>
+              <label className="block text-sm font-bold text-slate-800 mb-2">
+                Country of Citizenship (Consular Liaison) *
+              </label>
+              <div className="relative">
+                <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+                <select
+                  value={formData.nationality}
+                  onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 appearance-none bg-white text-sm"
+                  required
+                >
+                  <option value="">Select your nationality</option>
+                  {nationalities.map((n) => (
+                    <option key={n} value={n}>{n}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Location */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-bold text-slate-800">
+                  Current Location / Hotel Landmark
+                </label>
+                <button
+                  type="button"
+                  onClick={handleGetLocation}
+                  disabled={locating}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-cyan-600 hover:text-cyan-700 transition-colors"
+                >
+                  {locating ? (
+                    <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Detecting...</>
+                  ) : (
+                    <><Navigation className="w-3.5 h-3.5" /> Auto-Detect GPS</>
+                  )}
+                </button>
+              </div>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <input
+                  type="text"
+                  value={formData.location_label}
+                  onChange={(e) => setFormData({ ...formData, location_label: e.target.value })}
+                  placeholder="e.g. Mahabalipuram Beach Resort, ECR Road, Tamil Nadu"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm"
+                />
+              </div>
+              {location && (
+                <p className="mt-2 text-xs text-emerald-600 font-semibold flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  GPS locked: {location.lat.toFixed(4)}° N, {location.lng.toFixed(4)}° E (Tamil Nadu Coastal Zone)
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Emergency Contact & Mobile Phone */}
+          {/* Emergency Contact (Next of Kin / Family) */}
           <div className="border-t border-slate-200 pt-6">
             <div className="flex items-center gap-2 mb-4">
               <LifeBuoy className="w-4 h-4 text-cyan-600" />
               <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wider">
-                Emergency Mobile & Contact Verification
+                Emergency Contact (Next of Kin / Family Notification)
               </h3>
             </div>
 
@@ -484,7 +526,7 @@ export default function Onboarding() {
               {/* Contact Name */}
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Contact Full Name *
+                  Emergency Contact Full Name
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -492,17 +534,16 @@ export default function Onboarding() {
                     type="text"
                     value={formData.emergency_contact_name}
                     onChange={(e) => setFormData({ ...formData, emergency_contact_name: e.target.value })}
-                    placeholder="e.g. Claire Mercer"
+                    placeholder="e.g. Claire Mercer (Sister)"
                     className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm"
-                    required
                   />
                 </div>
               </div>
 
-              {/* Contact Phone */}
+              {/* Secondary Contact Phone */}
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Mobile Number (Receives OTP SMS) *
+                  Emergency Contact Phone Number
                 </label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -510,9 +551,8 @@ export default function Onboarding() {
                     type="tel"
                     value={formData.emergency_contact_phone}
                     onChange={(e) => setFormData({ ...formData, emergency_contact_phone: e.target.value })}
-                    placeholder="+33 6 42 19 88 01"
+                    placeholder="+33 6 12 34 56 78"
                     className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm"
-                    required
                   />
                 </div>
               </div>
@@ -535,7 +575,7 @@ export default function Onboarding() {
               <><Loader2 className="w-5 h-5 animate-spin" /> Dispatching Mobile OTP...</>
             ) : (
               <>
-                <span>Send Mobile Verification OTP</span>
+                <span>Verify Mobile Number & Continue</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
@@ -549,9 +589,9 @@ export default function Onboarding() {
               <Smartphone className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-slate-900">Verify Mobile Number</h2>
+              <h2 className="text-xl font-extrabold text-slate-900">Verify Traveler Mobile Number</h2>
               <p className="text-xs text-slate-500">
-                4-digit crisis authorization code sent to {formData.emergency_contact_phone}
+                4-digit crisis authorization code sent to personal mobile <span className="font-mono font-bold text-slate-800">{formData.phone}</span>
               </p>
             </div>
           </div>
@@ -573,7 +613,7 @@ export default function Onboarding() {
             </div>
 
             <p className="text-[11px] text-amber-700 mb-2">
-              Message dispatched to <strong>{formData.emergency_contact_phone}</strong>:
+              Message dispatched to traveler device <strong>{formData.phone}</strong>:
             </p>
 
             <div className="flex items-center justify-between bg-white/90 border border-amber-300/80 rounded-xl px-3.5 py-2.5 shadow-2xs">
@@ -585,7 +625,7 @@ export default function Onboarding() {
 
             <div className="mt-2.5 flex items-center gap-3 text-[11px]">
               <a
-                href={getMobileSmsDeepLink(formData.emergency_contact_phone, otpCode)}
+                href={getMobileSmsDeepLink(formData.phone, otpCode)}
                 className="inline-flex items-center gap-1 text-cyan-700 hover:text-cyan-900 font-bold underline"
               >
                 <ExternalLink className="w-3 h-3" /> Open in Phone Messages App
@@ -625,9 +665,9 @@ export default function Onboarding() {
               className="w-full bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-700 hover:to-sky-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-60 flex items-center justify-center gap-2 text-sm sm:text-base"
             >
               {submitting ? (
-                <><Loader2 className="w-5 h-5 animate-spin" /> Confirming & Launching Cockpit...</>
+                <><Loader2 className="w-5 h-5 animate-spin" /> Verifying Mobile & Activating Profile...</>
               ) : (
-                'Confirm Code & Open Crisis Dashboard'
+                'Verify Mobile & Activate SafePass Profile'
               )}
             </button>
           </form>
