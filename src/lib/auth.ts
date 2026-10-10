@@ -16,22 +16,162 @@ const DEFAULT_CRISIS_LOCATION: LocationSnapshot = {
   updatedAt: new Date().toISOString(),
 };
 
-// Demo user persona for realistic zero-network presentations
-export const DEMO_USER_PERSONA: SafePassUser = {
-  id: 'demo-alex-mercer',
-  name: 'Alex Mercer',
-  nationality: 'France',
-  phone: '+33 6 42 19 88 01',
-  location_lat: 12.6269,
-  location_lng: 80.1932,
-  location_label: 'Mahabalipuram Coastal Heritage Zone, Chengalpattu / Kancheepuram',
-  emergency_contact_name: 'Claire Mercer (Sister)',
-  emergency_contact_phone: '+33 6 42 19 88 01',
-  status: 'caution',
-  share_token: 'alex-demo-token-994',
-  created_at: new Date(Date.now() - 3600000 * 5).toISOString(),
-  updated_at: new Date().toISOString(),
-};
+// Fresh 10 realistic international traveler records for Tamil Nadu / Chennai / Kancheepuram crisis zone
+export const FRESH_TEN_RECORDS: SafePassUser[] = [
+  {
+    id: 'd8b51201-9a74-4b53-a18d-0b61e27a9001',
+    name: 'Alex Mercer',
+    nationality: 'France',
+    phone: '+33 6 42 19 88 01',
+    location_lat: 12.6269,
+    location_lng: 80.1932,
+    location_label: 'Mahabalipuram Coastal Heritage Zone, Chengalpattu / Kancheepuram',
+    emergency_contact_name: 'Claire Mercer (Sister)',
+    emergency_contact_phone: '+33 6 42 19 88 01',
+    status: 'caution',
+    share_token: 'd8b51201-9a74-4b53-a18d-0b61e27a9001',
+    created_at: new Date(Date.now() - 3600000 * 5).toISOString(),
+    updated_at: new Date(Date.now() - 900000).toISOString(),
+  },
+  {
+    id: 'd8b51202-9a74-4b53-a18d-0b61e27a9002',
+    name: 'Emma Watson',
+    nationality: 'United Kingdom',
+    phone: '+44 7700 900123',
+    location_lat: 12.7932,
+    location_lng: 80.2520,
+    location_label: 'Taj Fisherman\'s Cove Resort, Kovalam / ECR',
+    emergency_contact_name: 'Arthur Watson (Father)',
+    emergency_contact_phone: '+44 7700 900123',
+    status: 'danger',
+    share_token: 'd8b51202-9a74-4b53-a18d-0b61e27a9002',
+    created_at: new Date(Date.now() - 3600000 * 8).toISOString(),
+    updated_at: new Date(Date.now() - 600000).toISOString(),
+  },
+  {
+    id: 'd8b51203-9a74-4b53-a18d-0b61e27a9003',
+    name: 'Kenji Sato',
+    nationality: 'Japan',
+    phone: '+81 90 1234 5678',
+    location_lat: 12.8988,
+    location_lng: 80.2281,
+    location_label: 'Sholinganallur Tech Corridor, OMR Expressway',
+    emergency_contact_name: 'Yuki Sato (Wife)',
+    emergency_contact_phone: '+81 90 1234 5678',
+    status: 'safe',
+    share_token: 'd8b51203-9a74-4b53-a18d-0b61e27a9003',
+    created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
+    updated_at: new Date(Date.now() - 1800000).toISOString(),
+  },
+  {
+    id: 'd8b51204-9a74-4b53-a18d-0b61e27a9004',
+    name: 'Michael Schmidt',
+    nationality: 'Germany',
+    phone: '+49 151 23456789',
+    location_lat: 12.6512,
+    location_lng: 80.1850,
+    location_label: 'Buckingham Canal Heritage Villa, Chengalpattu',
+    emergency_contact_name: 'Hanna Schmidt (Daughter)',
+    emergency_contact_phone: '+49 151 23456789',
+    status: 'danger',
+    share_token: 'd8b51204-9a74-4b53-a18d-0b61e27a9004',
+    created_at: new Date(Date.now() - 3600000 * 6).toISOString(),
+    updated_at: new Date(Date.now() - 300000).toISOString(),
+  },
+  {
+    id: 'd8b51205-9a74-4b53-a18d-0b61e27a9005',
+    name: 'Sarah Miller',
+    nationality: 'United States',
+    phone: '+1 202 555 0192',
+    location_lat: 12.8185,
+    location_lng: 80.2435,
+    location_label: 'Muttukadu Backwaters Surf & Kayak Center',
+    emergency_contact_name: 'David Miller (Spouse)',
+    emergency_contact_phone: '+1 202 555 0192',
+    status: 'caution',
+    share_token: 'd8b51205-9a74-4b53-a18d-0b61e27a9005',
+    created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
+    updated_at: new Date(Date.now() - 1200000).toISOString(),
+  },
+  {
+    id: 'd8b51206-9a74-4b53-a18d-0b61e27a9006',
+    name: 'Carlos Gomez',
+    nationality: 'Spain',
+    phone: '+34 600 123 456',
+    location_lat: 12.8387,
+    location_lng: 79.7036,
+    location_label: 'Kancheepuram Silk Heritage Hub, Central Town',
+    emergency_contact_name: 'Elena Gomez (Sister)',
+    emergency_contact_phone: '+34 600 123 456',
+    status: 'safe',
+    share_token: 'd8b51206-9a74-4b53-a18d-0b61e27a9006',
+    created_at: new Date(Date.now() - 3600000 * 14).toISOString(),
+    updated_at: new Date(Date.now() - 2400000).toISOString(),
+  },
+  {
+    id: 'd8b51207-9a74-4b53-a18d-0b61e27a9007',
+    name: 'Liam O\'Connor',
+    nationality: 'Canada',
+    phone: '+1 416 555 0147',
+    location_lat: 12.9982,
+    location_lng: 80.2665,
+    location_label: 'Besant Nagar Beach Promenade, South Chennai',
+    emergency_contact_name: 'Grace O\'Connor (Mother)',
+    emergency_contact_phone: '+1 416 555 0147',
+    status: 'safe',
+    share_token: 'd8b51207-9a74-4b53-a18d-0b61e27a9007',
+    created_at: new Date(Date.now() - 3600000 * 10).toISOString(),
+    updated_at: new Date(Date.now() - 1500000).toISOString(),
+  },
+  {
+    id: 'd8b51208-9a74-4b53-a18d-0b61e27a9008',
+    name: 'Chloe Dubois',
+    nationality: 'France',
+    phone: '+33 6 55 91 22 34',
+    location_lat: 12.5180,
+    location_lng: 80.1585,
+    location_label: 'Pudupattinam Coastal Ridge, Kalpakkam Sector',
+    emergency_contact_name: 'Jean-Luc Dubois (Brother)',
+    emergency_contact_phone: '+33 6 55 91 22 34',
+    status: 'caution',
+    share_token: 'd8b51208-9a74-4b53-a18d-0b61e27a9008',
+    created_at: new Date(Date.now() - 3600000 * 7).toISOString(),
+    updated_at: new Date(Date.now() - 800000).toISOString(),
+  },
+  {
+    id: 'd8b51209-9a74-4b53-a18d-0b61e27a9009',
+    name: 'Min-jun Park',
+    nationality: 'South Korea',
+    phone: '+82 10 2345 6789',
+    location_lat: 12.9830,
+    location_lng: 80.2594,
+    location_label: 'Thiruvanmiyur Coastal Beach Sector, ECR',
+    emergency_contact_name: 'Soo-jin Park (Wife)',
+    emergency_contact_phone: '+82 10 2345 6789',
+    status: 'caution',
+    share_token: 'd8b51209-9a74-4b53-a18d-0b61e27a9009',
+    created_at: new Date(Date.now() - 3600000 * 9).toISOString(),
+    updated_at: new Date(Date.now() - 1100000).toISOString(),
+  },
+  {
+    id: 'd8b51210-9a74-4b53-a18d-0b61e27a9010',
+    name: 'Olivia Bennett',
+    nationality: 'Australia',
+    phone: '+61 412 345 678',
+    location_lat: 12.5284,
+    location_lng: 80.1627,
+    location_label: 'Sadras Dutch Fort & Coastal Heritage Point',
+    emergency_contact_name: 'Jack Bennett (Brother)',
+    emergency_contact_phone: '+61 412 345 678',
+    status: 'safe',
+    share_token: 'd8b51210-9a74-4b53-a18d-0b61e27a9010',
+    created_at: new Date(Date.now() - 3600000 * 16).toISOString(),
+    updated_at: new Date(Date.now() - 2000000).toISOString(),
+  },
+];
+
+// Primary demo user persona (Alex Mercer)
+export const DEMO_USER_PERSONA: SafePassUser = FRESH_TEN_RECORDS[0];
 
 /**
  * Checks whether an active persistent session exists on this device.
@@ -133,14 +273,19 @@ export function getRegisteredUsers(): SafePassUser[] {
     const raw = localStorage.getItem('safepass_registered_users');
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(parsed) && parsed.length >= 10) {
         return parsed;
       }
     }
   } catch {
     // fallback
   }
-  return [DEMO_USER_PERSONA];
+  try {
+    localStorage.setItem('safepass_registered_users', JSON.stringify(FRESH_TEN_RECORDS));
+  } catch {
+    // fallback
+  }
+  return FRESH_TEN_RECORDS;
 }
 
 /**
@@ -159,6 +304,33 @@ export function saveRegisteredUser(user: SafePassUser): void {
     localStorage.setItem('safepass_registered_users', JSON.stringify(updated));
   } catch {
     // quota fallback
+  }
+}
+
+/**
+ * Completely resets and seeds the registry and database with 10 fresh international traveler records.
+ */
+export async function resetToFreshTenRecords(): Promise<{ success: boolean; count: number; error?: string }> {
+  try {
+    localStorage.setItem('safepass_registered_users', JSON.stringify(FRESH_TEN_RECORDS));
+    
+    // Purge old database entries and re-insert fresh 10
+    try {
+      await supabase
+        .from('users')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000');
+
+      await supabase
+        .from('users')
+        .insert(FRESH_TEN_RECORDS);
+    } catch {
+      // offline fallback
+    }
+
+    return { success: true, count: FRESH_TEN_RECORDS.length };
+  } catch (err: any) {
+    return { success: false, count: 0, error: err?.message || 'Failed to reset records' };
   }
 }
 
@@ -257,12 +429,14 @@ export async function findRegisteredUserByPhone(inputPhone: string): Promise<Saf
   const cleanDigits = extractPhoneDigits(inputPhone);
   if (cleanDigits.length < 6) return null;
 
-  // 1. Check Demo Persona (Alex Mercer's mobile: +33 6 42 19 88 01)
-  if (
-    doPhonesMatch(inputPhone, DEMO_USER_PERSONA.phone) ||
-    doPhonesMatch(inputPhone, DEMO_USER_PERSONA.emergency_contact_phone)
-  ) {
-    return DEMO_USER_PERSONA;
+  // 1. Check Fresh 10 Registered Travelers first
+  for (const person of FRESH_TEN_RECORDS) {
+    if (
+      doPhonesMatch(inputPhone, person.phone) ||
+      doPhonesMatch(inputPhone, person.emergency_contact_phone)
+    ) {
+      return person;
+    }
   }
 
   // 2. Check locally registered users directory
@@ -363,14 +537,16 @@ export async function findRegisteredUser(identifier: string): Promise<SafePassUs
   }
 
   // Check Demo Persona shortcut
-  if (
-    query.includes('alex') ||
-    query.includes('france') ||
-    query === 'demo' ||
-    query === 'alex-demo-token-994' ||
-    query === DEMO_USER_PERSONA.id.toLowerCase()
-  ) {
-    return DEMO_USER_PERSONA;
+  // Check fresh 10 registered travelers
+  for (const person of FRESH_TEN_RECORDS) {
+    if (
+      person.name.toLowerCase().includes(query) ||
+      person.share_token.toLowerCase() === query ||
+      person.id.toLowerCase() === query ||
+      (person.phone && doPhonesMatch(query, person.phone))
+    ) {
+      return person;
+    }
   }
 
   // Check locally registered users directory

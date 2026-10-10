@@ -20,7 +20,10 @@ import {
   ExternalLink,
   Radio,
   FileSpreadsheet,
+  RotateCcw,
 } from 'lucide-react';
+
+import { FRESH_TEN_RECORDS, resetToFreshTenRecords } from '@/lib/auth';
 
 const statusConfig: Record<SafetyStatus, { label: string; dot: string; bg: string; text: string }> = {
   safe: { label: 'Safe', dot: 'bg-emerald-500', bg: 'bg-emerald-50 text-emerald-800 border-emerald-200', text: 'text-emerald-700' },
@@ -28,93 +31,8 @@ const statusConfig: Record<SafetyStatus, { label: string; dot: string; bg: strin
   danger: { label: 'Danger / SOS', dot: 'bg-rose-500', bg: 'bg-rose-50 text-rose-800 border-rose-200', text: 'text-rose-700' },
 };
 
-// Seeded realistic consular roster for Tamil Nadu / Chennai / Kancheepuram disaster zone
-const DEMO_CONSULAR_ROSTER: SafePassUser[] = [
-  {
-    id: 'demo-alex-mercer',
-    name: 'Alex Mercer',
-    nationality: 'France',
-    location_lat: 12.6269,
-    location_lng: 80.1932,
-    location_label: 'Mahabalipuram Coastal Heritage Zone',
-    emergency_contact_name: 'Claire Mercer',
-    emergency_contact_phone: '+33 6 42 19 88 01',
-    status: 'caution',
-    share_token: 'alex-demo-token-994',
-    created_at: new Date(Date.now() - 3600000 * 5).toISOString(),
-    updated_at: new Date(Date.now() - 900000).toISOString(),
-  },
-  {
-    id: 'demo-emma-watson',
-    name: 'Emma Watson',
-    nationality: 'United Kingdom',
-    location_lat: 12.6185,
-    location_lng: 80.1989,
-    location_label: 'Fishermans Cove Beach Resort, Kovalam / ECR',
-    emergency_contact_name: 'Arthur Watson',
-    emergency_contact_phone: '+44 7700 900123',
-    status: 'danger',
-    share_token: 'emma-uk-token-112',
-    created_at: new Date(Date.now() - 3600000 * 8).toISOString(),
-    updated_at: new Date(Date.now() - 600000).toISOString(),
-  },
-  {
-    id: 'demo-kenji-sato',
-    name: 'Kenji Sato',
-    nationality: 'Japan',
-    location_lat: 12.8399,
-    location_lng: 80.1558,
-    location_label: 'Sholinganallur Tech Corridor, OMR',
-    emergency_contact_name: 'Yuki Sato',
-    emergency_contact_phone: '+81 90 1234 5678',
-    status: 'safe',
-    share_token: 'kenji-jp-token-883',
-    created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
-    updated_at: new Date(Date.now() - 1800000).toISOString(),
-  },
-  {
-    id: 'demo-michael-schmidt',
-    name: 'Michael Schmidt',
-    nationality: 'Germany',
-    location_lat: 12.6512,
-    location_lng: 80.1850,
-    location_label: 'Buckingham Canal Heritage Guesthouse, Chengalpattu',
-    emergency_contact_name: 'Hanna Schmidt',
-    emergency_contact_phone: '+49 151 23456789',
-    status: 'danger',
-    share_token: 'michael-de-token-442',
-    created_at: new Date(Date.now() - 3600000 * 6).toISOString(),
-    updated_at: new Date(Date.now() - 300000).toISOString(),
-  },
-  {
-    id: 'demo-carlos-gomez',
-    name: 'Carlos Gomez',
-    nationality: 'Spain',
-    location_lat: 12.8387,
-    location_lng: 79.7036,
-    location_label: 'Kancheepuram Temple Heritage Inn',
-    emergency_contact_name: 'Elena Gomez',
-    emergency_contact_phone: '+34 600 123 456',
-    status: 'safe',
-    share_token: 'carlos-es-token-319',
-    created_at: new Date(Date.now() - 3600000 * 14).toISOString(),
-    updated_at: new Date(Date.now() - 2400000).toISOString(),
-  },
-  {
-    id: 'demo-sarah-miller',
-    name: 'Sarah Miller',
-    nationality: 'United States',
-    location_lat: 12.7956,
-    location_lng: 80.2185,
-    location_label: 'Kovalam Surf Point / ECR Highway',
-    emergency_contact_name: 'David Miller',
-    emergency_contact_phone: '+1 202 555 0192',
-    status: 'caution',
-    share_token: 'sarah-us-token-771',
-    created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
-    updated_at: new Date(Date.now() - 1200000).toISOString(),
-  },
-];
+// Seeded 10 realistic consular records for Tamil Nadu / Chennai / Kancheepuram disaster zone
+const DEMO_CONSULAR_ROSTER: SafePassUser[] = FRESH_TEN_RECORDS;
 
 export default function Admin() {
   const [users, setUsers] = useState<SafePassUser[]>([]);
@@ -124,40 +42,48 @@ export default function Admin() {
   const [nationalityFilter, setNationalityFilter] = useState<string>('all');
   const [broadcastModal, setBroadcastModal] = useState(false);
   const [broadcastSent, setBroadcastSent] = useState(false);
+  const [resetting, setResetting] = useState(false);
+  const [resetFeedback, setResetFeedback] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      const demoStatus = (localStorage.getItem('safepass_demo_status') as SafetyStatus) || null;
-      const localizedDemoRoster = DEMO_CONSULAR_ROSTER.map((demo) => {
-        if (demo.id === 'demo-alex-mercer' && demoStatus) {
-          return { ...demo, status: demoStatus, updated_at: new Date().toISOString() };
-        }
-        return demo;
-      });
+  const fetchUsers = async () => {
+    setLoading(true);
+    const demoStatus = (localStorage.getItem('safepass_demo_status') as SafetyStatus) || null;
+    const localizedDemoRoster = DEMO_CONSULAR_ROSTER.map((demo) => {
+      if (demo.id === FRESH_TEN_RECORDS[0].id && demoStatus) {
+        return { ...demo, status: demoStatus, updated_at: new Date().toISOString() };
+      }
+      return demo;
+    });
 
-      try {
-        const { data } = await supabase
-          .from('users')
-          .select('*')
-          .order('created_at', { ascending: false });
+    try {
+      const { data } = await supabase
+        .from('users')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-        if (data && data.length > 0) {
-          // Merge database users with realistic consular roster
-          const existingIds = new Set(data.map((u: SafePassUser) => u.id));
-          const merged = [
-            ...(data as SafePassUser[]),
-            ...localizedDemoRoster.filter((demo) => !existingIds.has(demo.id)),
-          ];
-          setUsers(merged);
-        } else {
-          setUsers(localizedDemoRoster);
-        }
-      } catch {
+      if (data && data.length > 0) {
+        setUsers(data as SafePassUser[]);
+      } else {
         setUsers(localizedDemoRoster);
       }
-      setLoading(false);
-    })();
+    } catch {
+      setUsers(localizedDemoRoster);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchUsers();
   }, []);
+
+  const handleResetToFresh10 = async () => {
+    setResetting(true);
+    await resetToFreshTenRecords();
+    await fetchUsers();
+    setResetting(false);
+    setResetFeedback(true);
+    setTimeout(() => setResetFeedback(false), 2500);
+  };
 
   const nationalitiesList = ['all', ...Array.from(new Set(users.map((u) => u.nationality)))];
 
@@ -228,6 +154,21 @@ export default function Admin() {
 
         <div className="flex items-center gap-2 flex-wrap">
           <button
+            onClick={handleResetToFresh10}
+            disabled={resetting}
+            className="bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold px-3.5 py-2.5 rounded-xl text-xs sm:text-sm transition-all border border-amber-500/40 flex items-center gap-1.5"
+            title="Purge existing records and re-seed 10 fresh diverse international traveler records"
+          >
+            {resetting ? (
+              <Loader2 className="w-4 h-4 animate-spin text-amber-300" />
+            ) : resetFeedback ? (
+              <Check className="w-4 h-4 text-emerald-400" />
+            ) : (
+              <RotateCcw className="w-4 h-4 text-amber-300" />
+            )}
+            <span>{resetFeedback ? '✓ Seeded 10 Fresh!' : 'Reset 10 Fresh Records'}</span>
+          </button>
+          <button
             onClick={() => setBroadcastModal(true)}
             className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer"
           >
@@ -291,17 +232,30 @@ export default function Admin() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by tourist name, nationality, or hotel location..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-neutral-700 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-xs sm:text-sm text-white bg-neutral-800 placeholder-neutral-500"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-neutral-700 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-base sm:text-sm text-white bg-neutral-800 placeholder-neutral-400"
+            style={{
+              color: '#ffffff',
+              WebkitTextFillColor: '#ffffff',
+              caretColor: '#22d3ee',
+              backgroundColor: '#262626',
+              fontSize: '16px',
+            }}
           />
         </div>
 
         {/* Nationality Dropdown */}
-        <div className="flex items-center gap-2 bg-neutral-800 px-3 py-2 rounded-xl border border-neutral-700 text-xs sm:text-sm">
+        <div className="flex items-center gap-2 bg-neutral-800 px-3 py-2 rounded-xl border border-neutral-700 text-base sm:text-sm">
           <Globe className="w-4 h-4 text-neutral-400" />
           <select
             value={nationalityFilter}
             onChange={(e) => setNationalityFilter(e.target.value)}
-            className="bg-transparent font-semibold text-white outline-none cursor-pointer"
+            className="bg-transparent font-semibold text-white outline-none cursor-pointer text-base sm:text-sm"
+            style={{
+              color: '#ffffff',
+              WebkitTextFillColor: '#ffffff',
+              backgroundColor: '#262626',
+              fontSize: '14px',
+            }}
           >
             {nationalitiesList.map((nat) => (
               <option key={nat} value={nat} className="bg-neutral-900 text-white">
@@ -436,21 +390,21 @@ export default function Admin() {
 
       {/* Broadcast Consular Advisory Modal */}
       {broadcastModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-200">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-neutral-900 rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-neutral-800 text-white">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
-                <div className="p-2.5 bg-cyan-100 text-cyan-700 rounded-2xl">
+                <div className="p-2.5 bg-cyan-950/80 text-cyan-400 rounded-2xl border border-cyan-800/50">
                   <Radio className="w-6 h-6 animate-pulse" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-900 text-lg">Broadcast Consular Advisory</h3>
-                  <p className="text-xs text-slate-500">Official SMS & Push Bulletin to Citizens</p>
+                  <h3 className="font-extrabold text-white text-lg">Broadcast Consular Advisory</h3>
+                  <p className="text-xs text-neutral-400">Official SMS & Push Bulletin to Citizens</p>
                 </div>
               </div>
               <button
                 onClick={() => setBroadcastModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-neutral-400 hover:text-white p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -458,27 +412,29 @@ export default function Admin() {
 
             <div className="space-y-4 mb-6">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Target Geographic Zone</label>
+                <label className="block text-xs font-bold text-neutral-300 mb-1">Target Geographic Zone</label>
                 <input
                   type="text"
                   readOnly
                   value="Kancheepuram & Coastal Chengalpattu Red Warning Zone"
-                  className="w-full bg-slate-100 text-slate-700 font-semibold px-3.5 py-2.5 rounded-xl text-xs border border-slate-200"
+                  className="w-full bg-neutral-800 text-neutral-200 font-semibold px-3.5 py-2.5 rounded-xl text-xs border border-neutral-700"
+                  style={{ fontSize: '16px', color: '#ffffff', WebkitTextFillColor: '#ffffff' }}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Advisory Message Content</label>
+                <label className="block text-xs font-bold text-neutral-300 mb-1">Advisory Message Content</label>
                 <textarea
                   readOnly
                   rows={4}
                   value="[CONSULAR EMERGENCY ADVISORY - LEVEL 3] Extreme coastal surge detected on ECR corridor. Do NOT attempt transit to Chennai airport. Move immediately to verified high-ground shelter or contact Consular Officer at +91 44 2857 4000."
-                  className="w-full bg-slate-50 text-slate-800 font-medium p-3 rounded-xl text-xs border border-slate-200 resize-none"
+                  className="w-full bg-neutral-800 text-neutral-200 font-medium p-3 rounded-xl text-xs border border-neutral-700 resize-none"
+                  style={{ fontSize: '16px', color: '#ffffff', WebkitTextFillColor: '#ffffff' }}
                 />
               </div>
 
-              <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-amber-800 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-600" />
+              <div className="bg-amber-950/30 p-3 rounded-xl border border-amber-900/50 text-xs text-amber-200 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-400" />
                 <span>This advisory will reach all {counts.total} registered foreign travelers and notify local disaster liaison officers.</span>
               </div>
             </div>
@@ -486,14 +442,14 @@ export default function Admin() {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setBroadcastModal(false)}
-                className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-xs"
+                className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-semibold px-4 py-2.5 rounded-xl text-xs border border-neutral-700"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSendBroadcast}
                 disabled={broadcastSent}
-                className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all"
+                className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all"
               >
                 {broadcastSent ? (
                   <><Check className="w-4 h-4 text-white" /> Dispatched Successfully!</>
