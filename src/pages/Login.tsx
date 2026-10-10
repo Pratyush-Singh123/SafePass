@@ -31,6 +31,7 @@ import {
   getLastLocation,
   saveLastLocation,
   DEMO_USER_PERSONA,
+  FRESH_TEN_RECORDS,
 } from '@/lib/auth';
 import { sendOtpToMobilePhone, getMobileSmsDeepLink } from '@/lib/sms';
 import type { SafePassUser } from '@/lib/types';
@@ -320,14 +321,32 @@ export default function Login() {
             </form>
 
             {/* Quick Demo Pre-fill Shortcut */}
-            <div className="mt-4 pt-4 border-t border-slate-100 space-y-2">
-              <button
-                type="button"
-                onClick={() => setPhoneNumber('+33 6 42 19 88 01')}
-                className="w-full text-center text-[11px] font-bold text-cyan-700 hover:text-cyan-900 underline"
-              >
-                ⚡ Pre-fill Alex's Phone: +33 6 42 19 88 01
-              </button>
+            <div className="mt-4 pt-4 border-t border-slate-100 space-y-2.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-slate-700">Test with Registered Travelers:</span>
+                <span className="text-[10px] text-cyan-700 font-bold bg-cyan-50 px-2 py-0.5 rounded-full border border-cyan-200">
+                  10 Fresh Profiles
+                </span>
+              </div>
+
+              <div className="relative">
+                <select
+                  onChange={(e) => {
+                    const found = FRESH_TEN_RECORDS.find((p) => p.id === e.target.value);
+                    if (found && found.phone) {
+                      setPhoneNumber(found.phone);
+                    }
+                  }}
+                  className="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 font-semibold focus:ring-2 focus:ring-cyan-200 outline-none"
+                >
+                  <option value="">⚡ Select Any Traveler to Pre-Fill Phone...</option>
+                  {FRESH_TEN_RECORDS.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({p.nationality}) • {p.phone}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               <button
                 type="button"
@@ -336,7 +355,7 @@ export default function Login() {
                 className="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold py-2.5 rounded-2xl text-xs transition-all flex items-center justify-center gap-2"
               >
                 <Key className="w-3.5 h-3.5 text-cyan-600" />
-                <span>1-Click Demo Login: +33 6 42 19 88 01 (Alex Mercer)</span>
+                <span>1-Click Demo Login: Alex Mercer (+33 6 42 19 88 01)</span>
               </button>
             </div>
           </>
