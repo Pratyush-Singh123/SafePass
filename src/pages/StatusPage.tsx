@@ -440,19 +440,21 @@ export default function StatusPage() {
             <div
               className={`mb-6 rounded-2xl p-4 sm:p-5 border ${
                 rescue.state === 'searching'
-                  ? 'bg-amber-50 border-amber-200'
-                  : 'bg-slate-100 border-slate-300'
+                  ? 'bg-amber-950/40 border-amber-800/60'
+                  : rescue.state === 'rescued'
+                  ? 'bg-emerald-950/40 border-emerald-800/60'
+                  : 'bg-neutral-800 border-neutral-700'
               }`}
             >
               <div className="flex items-center gap-2 mb-2">
                 <LifeBuoy
-                  className={`w-4 h-4 ${rescue.state === 'searching' ? 'text-amber-700' : 'text-slate-700'}`}
+                  className={`w-4 h-4 ${rescue.state === 'searching' ? 'text-amber-400' : rescue.state === 'rescued' ? 'text-emerald-400' : 'text-neutral-400'}`}
                 />
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Rescue Status</span>
+                <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Rescue Status</span>
               </div>
               <p
                 className={`text-lg font-extrabold ${
-                  rescue.state === 'searching' ? 'text-amber-800' : 'text-slate-900'
+                  rescue.state === 'searching' ? 'text-amber-300' : rescue.state === 'rescued' ? 'text-emerald-300' : 'text-white'
                 }`}
               >
                 {rescue.state === 'searching'
@@ -461,24 +463,24 @@ export default function StatusPage() {
                   ? 'Rescued'
                   : 'Deceased'}
               </p>
-              <div className="mt-2 space-y-0.5 text-xs text-slate-700">
+              <div className="mt-2 space-y-0.5 text-xs text-neutral-300">
                 <p>
-                  Rescue ID: <span className="font-mono font-bold">{rescue.rescueId}</span>
+                  Rescue ID: <span className="font-mono font-bold text-white">{rescue.rescueId}</span>
                 </p>
                 <p>Updated: {formatDate(rescue.at)}</p>
                 {rescue.state === 'rescued' && (
                   <>
                     <p>
-                      Current shelter: <strong>{rescue.shelter || 'Relief shelter'}</strong>
+                      Current shelter: <strong className="text-white">{rescue.shelter || 'Relief shelter'}</strong>
                     </p>
                     <p>
-                      Medical assistance: <strong>{rescue.medical ? 'Needed' : 'Not needed'}</strong>
+                      Medical assistance: <strong className="text-white">{rescue.medical ? 'Needed' : 'Not needed'}</strong>
                     </p>
                   </>
                 )}
                 {rescue.state === 'deceased' && (
                   <p>
-                    Current hospital: <strong>{rescue.hospital || 'Not recorded'}</strong>
+                    Current hospital: <strong className="text-white">{rescue.hospital || 'Not recorded'}</strong>
                   </p>
                 )}
               </div>
@@ -526,37 +528,37 @@ export default function StatusPage() {
           </div>
 
           {/* Device Card (simulated) */}
-          <div className="mb-6 bg-slate-50/80 rounded-2xl p-4 border border-slate-100">
+          <div className="mb-6 bg-neutral-800/80 rounded-2xl p-4 border border-neutral-700/80">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Smartphone className="w-4 h-4 text-slate-700" />
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Traveler Device</span>
+                <Smartphone className="w-4 h-4 text-cyan-400" />
+                <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Traveler Device</span>
               </div>
-              <span className="text-[10px] font-semibold text-slate-400">Simulated</span>
+              <span className="text-[10px] font-semibold text-neutral-400">Simulated</span>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-1">Battery</p>
+                <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-wider mb-1">Battery</p>
                 <div className="flex items-center gap-2">
-                  <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                  <div className="w-full h-2.5 bg-neutral-700 rounded-full overflow-hidden">
                     <div className={`h-full rounded-full ${batteryColor}`} style={{ width: `${battery}%` }} />
                   </div>
-                  <span className="text-xs font-extrabold text-slate-800">{battery}%</span>
+                  <span className="text-xs font-extrabold text-white">{battery}%</span>
                 </div>
               </div>
               <div>
-                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-1">Cellular Signal</p>
+                <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-wider mb-1">Cellular Signal</p>
                 <div className="flex items-end gap-2">
                   <div className="flex items-end gap-0.5 h-4">
                     {[1, 2, 3, 4].map((bar) => (
                       <span
                         key={bar}
-                        className={`w-1.5 rounded-sm ${bar <= signalBars ? 'bg-slate-800' : 'bg-slate-300'}`}
+                        className={`w-1.5 rounded-sm ${bar <= signalBars ? 'bg-cyan-400' : 'bg-neutral-700'}`}
                         style={{ height: `${bar * 25}%` }}
                       />
                     ))}
                   </div>
-                  <span className="text-xs font-extrabold text-slate-800">{signalText}</span>
+                  <span className="text-xs font-extrabold text-white">{signalText}</span>
                 </div>
               </div>
             </div>
@@ -597,18 +599,18 @@ export default function StatusPage() {
           {/* Safety Check-in Timeline */}
           <div className="mt-6">
             <div className="flex items-center gap-2 mb-4">
-              <Clock className="w-4 h-4 text-cyan-600" />
-              <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wider">Safety Check-in Timeline</h3>
+              <Clock className="w-4 h-4 text-cyan-400" />
+              <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Safety Check-in Timeline</h3>
             </div>
-            <ol className="relative ml-2 border-l-2 border-slate-200 space-y-5">
+            <ol className="relative ml-2 border-l-2 border-neutral-700 space-y-5">
               {timeline.map((ev, i) => (
                 <li key={i} className="ml-5 relative">
                   <span
-                    className={`absolute -left-[27px] top-1 w-3.5 h-3.5 rounded-full ring-4 ring-white ${toneDot[ev.tone]}`}
+                    className={`absolute -left-[27px] top-1 w-3.5 h-3.5 rounded-full ring-4 ring-neutral-900 ${toneDot[ev.tone]}`}
                   />
-                  <p className="text-sm font-bold text-slate-900">{ev.title}</p>
-                  <p className="text-xs text-slate-600">{ev.detail}</p>
-                  <p className="text-[11px] text-slate-400 font-mono mt-0.5">{formatDate(ev.time)}</p>
+                  <p className="text-sm font-bold text-white">{ev.title}</p>
+                  <p className="text-xs text-neutral-300">{ev.detail}</p>
+                  <p className="text-[11px] text-neutral-400 font-mono mt-0.5">{formatDate(ev.time)}</p>
                 </li>
               ))}
             </ol>
