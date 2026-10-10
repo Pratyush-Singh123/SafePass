@@ -20,10 +20,9 @@ import {
   ExternalLink,
   Radio,
   FileSpreadsheet,
-  RotateCcw,
 } from 'lucide-react';
 
-import { FRESH_TEN_RECORDS, resetToFreshTenRecords } from '@/lib/auth';
+import { FRESH_TEN_RECORDS } from '@/lib/auth';
 
 const statusConfig: Record<SafetyStatus, { label: string; dot: string; bg: string; text: string }> = {
   safe: { label: 'Safe', dot: 'bg-emerald-500', bg: 'bg-emerald-50 text-emerald-800 border-emerald-200', text: 'text-emerald-700' },
@@ -42,8 +41,6 @@ export default function Admin() {
   const [nationalityFilter, setNationalityFilter] = useState<string>('all');
   const [broadcastModal, setBroadcastModal] = useState(false);
   const [broadcastSent, setBroadcastSent] = useState(false);
-  const [resetting, setResetting] = useState(false);
-  const [resetFeedback, setResetFeedback] = useState(false);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -75,15 +72,6 @@ export default function Admin() {
   useEffect(() => {
     fetchUsers();
   }, []);
-
-  const handleResetToFresh10 = async () => {
-    setResetting(true);
-    await resetToFreshTenRecords();
-    await fetchUsers();
-    setResetting(false);
-    setResetFeedback(true);
-    setTimeout(() => setResetFeedback(false), 2500);
-  };
 
   const nationalitiesList = ['all', ...Array.from(new Set(users.map((u) => u.nationality)))];
 
@@ -153,21 +141,6 @@ export default function Admin() {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <button
-            onClick={handleResetToFresh10}
-            disabled={resetting}
-            className="bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold px-3.5 py-2.5 rounded-xl text-xs sm:text-sm transition-all border border-amber-500/40 flex items-center gap-1.5"
-            title="Purge existing records and re-seed 10 fresh diverse international traveler records"
-          >
-            {resetting ? (
-              <Loader2 className="w-4 h-4 animate-spin text-amber-300" />
-            ) : resetFeedback ? (
-              <Check className="w-4 h-4 text-emerald-400" />
-            ) : (
-              <RotateCcw className="w-4 h-4 text-amber-300" />
-            )}
-            <span>{resetFeedback ? '✓ Seeded 10 Fresh!' : 'Reset 10 Fresh Records'}</span>
-          </button>
           <button
             onClick={() => setBroadcastModal(true)}
             className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer"

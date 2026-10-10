@@ -19,7 +19,6 @@ import {
   Smartphone,
   RotateCcw,
   ExternalLink,
-  Lock,
 } from 'lucide-react';
 import {
   isLoggedIn,
@@ -278,11 +277,8 @@ export default function Login() {
           <>
             <form onSubmit={handleLookup} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-neutral-300 uppercase tracking-wider mb-1.5 flex items-center justify-between">
-                  <span>Registered Mobile Number *</span>
-                  <span className="text-[10px] text-cyan-400 font-bold lowercase flex items-center gap-1">
-                    <Lock className="w-3 h-3" /> strictly mobile only
-                  </span>
+                <label className="block text-xs font-bold text-neutral-300 uppercase tracking-wider mb-1.5">
+                  Registered Mobile Number *
                 </label>
                 <div className="relative">
                   <Smartphone className="w-4 h-4 text-neutral-400 absolute left-4 top-3.5" />
@@ -304,7 +300,7 @@ export default function Login() {
                   />
                 </div>
                 <p className="text-[11px] text-neutral-400 mt-1.5 leading-snug">
-                  🔒 SafePass logins are strictly restricted to verified mobile numbers. Login by traveler name is prohibited to safeguard your identity.
+                  Enter your mobile number with country code (e.g., +33 6 42 19 88 01 or +91 98765 43210).
                 </p>
               </div>
 
@@ -330,10 +326,7 @@ export default function Login() {
             {/* Quick Demo Pre-fill Shortcut */}
             <div className="mt-4 pt-4 border-t border-neutral-800 space-y-2.5">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-neutral-300">Test with Registered Travelers:</span>
-                <span className="text-[10px] text-cyan-400 font-bold bg-neutral-800 px-2 py-0.5 rounded-full border border-cyan-500/30">
-                  10 Fresh Profiles
-                </span>
+                <span className="font-bold text-neutral-300">Quick Select Registered Traveler:</span>
               </div>
 
               <div className="relative">
@@ -368,7 +361,7 @@ export default function Login() {
                 className="w-full bg-neutral-800 hover:bg-neutral-750 text-neutral-200 border border-neutral-700 font-semibold py-2.5 rounded-2xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Key className="w-3.5 h-3.5 text-cyan-400" />
-                <span>1-Click Demo Login: Alex Mercer (+33 6 42 19 88 01)</span>
+                <span>Quick Login as Sample Traveler (Alex Mercer)</span>
               </button>
             </div>
           </>
