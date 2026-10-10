@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import type { SafePassUser } from '@/lib/types';
+import { getLanguageForCountry } from '@/lib/crisisData';
 import {
   User,
   Globe,
@@ -133,6 +134,16 @@ export default function Onboarding() {
 
     localStorage.setItem('safepass_user_id', user.id);
     localStorage.setItem('safepass_share_token', user.share_token);
+    localStorage.setItem('safepass_user_profile', JSON.stringify(user));
+
+    // Reset previous chat history so new traveler gets fresh greeting in their own country language
+    localStorage.removeItem('safepass_chat_history');
+    localStorage.setItem('safepass_demo_status', user.status);
+
+    // Auto-detect and set primary language for the traveler's country
+    const detectedLang = getLanguageForCountry(user.nationality);
+    localStorage.setItem('safepass_selected_language', detectedLang);
+
     setSuccess(true);
     setSubmitting(false);
     setTimeout(() => navigate('/dashboard'), 1200);

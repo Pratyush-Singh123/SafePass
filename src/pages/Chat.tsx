@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import type { ChatMessage, SafePassUser } from '@/lib/types';
-import { generateLocalCrisisAdvice } from '@/lib/crisisData';
+import { generateLocalCrisisAdvice, getLanguageForCountry } from '@/lib/crisisData';
 import {
   Send,
   Loader2,
@@ -286,16 +286,49 @@ const CRISIS_CATEGORIES: CrisisCategory[] = [
 ];
 
 function getWelcomeMessage(profile: SafePassUser | null, lang: string): ChatMessage {
-  const isFrench = lang === 'fr' || profile?.nationality?.toLowerCase().includes('france');
-  return {
-    id: 'welcome',
-    user_id: profile?.id || null,
-    role: 'assistant',
-    content: isFrench
-      ? `Bonjour ${profile?.name?.split(' ')[0] || 'voyageur'}. Je suis votre guide de crise SafePass en liaison avec le Consulat Général de France à Chennai.
+  const firstName = profile?.name ? profile.name.split(' ')[0] : 'Traveler';
+
+  let content = '';
+
+  if (lang === 'hi') {
+    content = `नमस्ते ${firstName}। मैं SafePass हूँ, आपका शांत संकट प्रबंधन साथी।
 
 [CRITICAL WARNING]
-Alerte Rouge Cyclonique de Niveau 3 sur le couloir côtier de Mahabalipuram. Mer démontée et axes bas submergés.
+महाबलीपुरम और चेंगलपट्टू तटीय क्षेत्र में चक्रवात चेतावनी स्तर 3 सक्रिय है। बाढ़ के पानी में चलना बेहद खतरनाक है।
+
+[ACTION CHECKLIST]
+• कंक्रीट की मजबूत इमारत के दूसरे या तीसरे तल पर शरण लें।
+• समुद्र की ओर वाली कांच की खिड़कियों और बालकनियों से दूर रहें।
+• पीने का पानी और फोन चार्जर प्लास्टिक बैग में अपने पास रखें।
+• आपातकालीन स्थिति में तुरंत "SOS" दबाएं।
+
+[SAFE SHELTER]
+महाबलीपुरम हाई-ग्राउंड साइक्लोन शेल्टर (1.8 किमी अंदरूनी भाग, सुरक्षित ऊंचाई 18 मीटर)।
+
+[EMERGENCY CONTACT]
+राष्ट्रीय बचाव सेवा: 112 | राज्य आपदा नियंत्रण: 1070 | एम्बुलेंस: 108.`;
+  } else if (lang === 'ta') {
+    content = `வணக்கம் ${firstName}. நான் SafePass, உங்கள் அமைதியான அவசரகால வழிகாட்டி.
+
+[CRITICAL WARNING]
+மாமல்லபுரம் கடலோரப் பகுதியில் புயல் எச்சரிக்கை நிலை 3 அமலில் உள்ளது. வெள்ள நீரில் செல்வது உயிருக்கு ஆபத்தானது.
+
+[ACTION CHECKLIST]
+• உடனடியாக கான்கிரீட் கட்டடங்களின் 2வது தளத்திற்கு செல்லவும்.
+• கடற்கரை நோக்கிய கண்ணாடி ஜன்னல்கள் மற்றும் பால்கனிகளைத் தவிர்க்கவும்.
+• பாட்டில் குடிநீர் மற்றும் போன் சார்ஜரை பாதுகாப்பாக வைக்கவும்.
+• உதவி தேவைப்பட்டால் "SOS" பொத்தானை அழுத்தவும்.
+
+[SAFE SHELTER]
+மாமல்லபுரம் உயர்நிலைப் புயல் நிவாரண முகாம் (1.8 கி.மீ உள்நிலப் பகுதி).
+
+[EMERGENCY CONTACT]
+அவசர உதவி: 112 | மாநில பேரிடர் கட்டுப்பாட்டு அறை: 1070 | ஆம்புலன்ஸ்: 108.`;
+  } else if (lang === 'fr') {
+    content = `Bonjour ${firstName}. Je suis votre guide de crise SafePass en liaison avec le Consulat Général de France à Chennai.
+
+[CRITICAL WARNING]
+Alerte Rouge Cyclonique de Niveau 3 sur le couloir côtier de Mahabalipuram. Axes bas submergés et mer démontée.
 
 [ACTION CHECKLIST]
 • Restez au sec au premier étage ou supérieur d'une structure en béton armé.
@@ -306,8 +339,59 @@ Alerte Rouge Cyclonique de Niveau 3 sur le couloir côtier de Mahabalipuram. Mer
 Mahabalipuram High-Ground Cyclone Shelter (1,8 km à l'intérieur des terres, surélévation de 18 mètres).
 
 [EMERGENCY CONTACT]
-Liaison Consulat de France : +91 413 226 6500 | Secours Nationaux : 112 | Protection Civile : 1070.`
-      : `Hello ${profile?.name?.split(' ')[0] || 'traveler'}. I am SafePass, your calm crisis companion.
+Liaison Consulat de France : +91 413 226 6500 | Secours Nationaux : 112 | Protection Civile : 1070.`;
+  } else if (lang === 'es') {
+    content = `Hola ${firstName}. Soy SafePass, su acompañante de crisis y desescalada.
+
+[CRITICAL WARNING]
+Alerta Roja de Ciclón Nivel 3 en el corredor costero de Mahabalipuram. El oleaje es violento y las carreteras bajas están anegadas.
+
+[ACTION CHECKLIST]
+• Permanezca en el 2º piso o superior de un edificio de concreto.
+• Aléjese de balcones y ventanales con vista al mar.
+• Mantenga agua embotellada y su batería de emergencia consigo.
+• Presione "SOS" si requiere asistencia de su consulado.
+
+[SAFE SHELTER]
+Refugio de Terreno Elevado de Mahabalipuram (a 1,8 km tierra adentro).
+
+[EMERGENCY CONTACT]
+Rescate Nacional: 112 | Protección Civil Tamil Nadu: 1070 | Emergencias: 108.`;
+  } else if (lang === 'de') {
+    content = `Hallo ${firstName}. Ich bin SafePass, Ihr ruhiger Krisenbegleiter.
+
+[CRITICAL WARNING]
+Zyklon-Warnstufe 3 für den Küstenstreifen Mahabalipuram aktiv. Wasserübertritte machen Straßen unpassierbar.
+
+[ACTION CHECKLIST]
+• Begeben Sie sich in den 2. Stock oder höher eines massiven Gebäudes.
+• Meiden Sie Balkone und seeseitige Fensterfassaden.
+• Halten Sie Trinkwasser und Smartphone im Energiesparmodus bereit.
+
+[SAFE SHELTER]
+Mahabalipuram High-Ground Notunterkunft (1,8 km landeinwärts).
+
+[EMERGENCY CONTACT]
+Nationaler Notruf: 112 | Katastrophenschutz: 1070 | Rettungsdienst: 108.`;
+  } else if (lang === 'ja') {
+    content = `こんにちは、${firstName}さん。SafePass危機対応コンパニオンです。
+
+[CRITICAL WARNING]
+マハバリプラム沿岸部にサイクロン警戒レベル3（赤色警報）発令中。冠水した道路の移動は非常に危険です。
+
+[ACTION CHECKLIST]
+• 鉄筋コンクリート建物の2階以上に待機してください。
+• 海側の窓ガラスやバルコニーには近づかないでください。
+• 密閉ボトル飲料水と充電器を手元に確保してください。
+
+[SAFE SHELTER]
+マハバリプラム高台避難センター（内陸1.8km、標高18m）。
+
+[EMERGENCY CONTACT]
+緊急通報: 112 | 州災害対策本部: 1070 | 救急: 108.`;
+  } else {
+    // English default
+    content = `Hello ${firstName}. I am SafePass, your calm crisis companion.
 
 [CRITICAL WARNING]
 Active Cyclone Warning Level 3 in effect for coastal Mahabalipuram & Chengalpattu. Moving through floodwaters has an 82% higher casualty rate than vertical sheltering.
@@ -316,12 +400,20 @@ Active Cyclone Warning Level 3 in effect for coastal Mahabalipuram & Chengalpatt
 • Move to the 2nd floor or higher of a reinforced concrete building.
 • Avoid basements, balconies, and exterior glass facades facing the ocean.
 • Keep bottled water and power bank beside you in a sealed plastic bag.
+• Tap "SOS" if you require consular extraction or immediate rescue.
 
 [SAFE SHELTER]
-Mahabalipuram High-Ground Cyclone Shelter (1.8 km inland, elevated 18m above surge line).
+Nearest Verified High-Ground Haven: Mahabalipuram High-Ground Cyclone Shelter (1.8 km inland, elevated 18m above surge line).
 
 [EMERGENCY CONTACT]
-National Rescue: 112 | Disaster Operations: 1070 | Ambulance SMUR: 108.`,
+National Rescue: 112 | Disaster Operations: 1070 | Ambulance SMUR: 108.`;
+  }
+
+  return {
+    id: `welcome-${lang}-${profile?.id || 'guest'}`,
+    user_id: profile?.id || null,
+    role: 'assistant',
+    content,
     created_at: new Date().toISOString(),
   };
 }
@@ -573,6 +665,18 @@ export default function Chat() {
   useEffect(() => {
     (async () => {
       let profile: SafePassUser | null = null;
+
+      // 1. Check local registered user profile from Onboarding
+      const savedProfileStr = localStorage.getItem('safepass_user_profile');
+      if (savedProfileStr) {
+        try {
+          profile = JSON.parse(savedProfileStr);
+        } catch {
+          // invalid json fallback
+        }
+      }
+
+      // 2. If Supabase is connected and userId is present, fetch fresh record
       if (userId) {
         try {
           const { data } = await supabase
@@ -580,12 +684,16 @@ export default function Chat() {
             .select('*')
             .eq('id', userId)
             .maybeSingle();
-          if (data) profile = data as SafePassUser;
+          if (data) {
+            profile = data as SafePassUser;
+            localStorage.setItem('safepass_user_profile', JSON.stringify(profile));
+          }
         } catch {
-          // offline
+          // offline fallback
         }
       }
 
+      // 3. Fallback to demo profile ONLY if no user was ever registered
       if (!profile) {
         profile = {
           id: 'demo-alex-mercer',
@@ -604,14 +712,41 @@ export default function Chat() {
       }
       setUserProfile(profile);
 
-      if (profile.nationality.toLowerCase().includes('france') && selectedLanguage === 'en') {
-        setSelectedLanguage('fr');
+      // 4. Auto-detect default language from traveler's country/nationality
+      const countryDefaultLang = getLanguageForCountry(profile.nationality);
+      const userStoredLang = localStorage.getItem('safepass_selected_language');
+      const lastProfileId = localStorage.getItem('safepass_last_profile_id');
+
+      let activeLang = countryDefaultLang;
+      if (userStoredLang && lastProfileId === profile.id) {
+        activeLang = userStoredLang;
+      } else {
+        localStorage.setItem('safepass_selected_language', countryDefaultLang);
+        localStorage.setItem('safepass_last_profile_id', profile.id);
+      }
+      setSelectedLanguage(activeLang);
+
+      // 5. Welcome message personalized with traveler's name & country language
+      const storedHistoryStr = localStorage.getItem('safepass_chat_history');
+      let history: ChatMessage[] = [];
+      if (storedHistoryStr) {
+        try {
+          history = JSON.parse(storedHistoryStr);
+        } catch {
+          // ignore
+        }
       }
 
-      if (messages.length === 0) {
-        const welcome = getWelcomeMessage(profile, profile.nationality.toLowerCase().includes('france') ? 'fr' : 'en');
+      // If no history, or if previous history belonged to a different traveler profile, generate fresh welcome
+      if (history.length === 0 || lastProfileId !== profile.id || history[0]?.user_id !== profile.id) {
+        const welcome = getWelcomeMessage(profile, activeLang);
         setMessages([welcome]);
+        localStorage.setItem('safepass_chat_history', JSON.stringify([welcome]));
+        localStorage.setItem('safepass_last_profile_id', profile.id);
+      } else {
+        setMessages(history);
       }
+
       setHistoryLoading(false);
     })();
   }, [userId]);
@@ -883,7 +1018,11 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
             <Globe2 className="w-3.5 h-3.5 text-slate-400" />
             <select
               value={selectedLanguage}
-              onChange={(e) => setSelectedLanguage(e.target.value)}
+              onChange={(e) => {
+                const newLang = e.target.value;
+                setSelectedLanguage(newLang);
+                localStorage.setItem('safepass_selected_language', newLang);
+              }}
               className="bg-transparent font-bold text-xs outline-none cursor-pointer"
             >
               {LANGUAGES.map((lang) => (

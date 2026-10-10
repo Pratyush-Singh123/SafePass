@@ -139,6 +139,15 @@ export default function Dashboard() {
     }
 
     (async () => {
+      // 1. Check if user profile is already saved in localStorage
+      let localUser: SafePassUser | null = null;
+      const profileStr = localStorage.getItem('safepass_user_profile');
+      if (profileStr) {
+        try {
+          localUser = JSON.parse(profileStr);
+        } catch {}
+      }
+
       try {
         const { data } = await supabase
           .from('users')
@@ -149,12 +158,19 @@ export default function Dashboard() {
         if (data) {
           const u = data as SafePassUser;
           setUser(u);
+          localStorage.setItem('safepass_user_profile', JSON.stringify(u));
           fetchWeather(u.location_lat, u.location_lng, u.location_label || undefined);
-        } else {
-          // Check if stored locally in demo mode
-          loadDemoPersona();
+          setLoading(false);
+          return;
         }
       } catch {
+        // offline fallback
+      }
+
+      if (localUser) {
+        setUser(localUser);
+        fetchWeather(localUser.location_lat, localUser.location_lng, localUser.location_label || undefined);
+      } else {
         loadDemoPersona();
       }
       setLoading(false);

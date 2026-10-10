@@ -180,12 +180,92 @@ export const FALLBACK_CYCLONE_WEATHER: WeatherData = {
   ],
 };
 
+// Detect primary language by country or nationality
+export function getLanguageForCountry(countryOrNat?: string | null): string {
+  if (!countryOrNat) return 'en';
+  const c = countryOrNat.toLowerCase().trim();
+
+  // Tamil (State / Language)
+  if (c.includes('tamil') || c.includes('chennai') || c.includes('madras')) {
+    return 'ta';
+  }
+
+  // India (National Hindi support for domestic tourists)
+  if (
+    c.includes('india') ||
+    c.includes('bharat') ||
+    c.includes('hind') ||
+    c.includes('delhi') ||
+    c.includes('mumbai') ||
+    c.includes('bengal') ||
+    c.includes('punjab')
+  ) {
+    return 'hi';
+  }
+
+  // France & Francophone nations
+  if (
+    c.includes('france') ||
+    c.includes('french') ||
+    c.includes('franç') ||
+    c.includes('paris') ||
+    c.includes('belgi') ||
+    c.includes('monaco') ||
+    c.includes('suisse') ||
+    c.includes('senegal')
+  ) {
+    return 'fr';
+  }
+
+  // Spain & Hispanic nations
+  if (
+    c.includes('spain') ||
+    c.includes('spani') ||
+    c.includes('españ') ||
+    c.includes('mexic') ||
+    c.includes('colomb') ||
+    c.includes('argentin') ||
+    c.includes('chile') ||
+    c.includes('peru') ||
+    c.includes('venezuel') ||
+    c.includes('ecuador')
+  ) {
+    return 'es';
+  }
+
+  // Germany, Austria & German speaking
+  if (
+    c.includes('german') ||
+    c.includes('deutsch') ||
+    c.includes('austria') ||
+    c.includes('österreich') ||
+    c.includes('berlin') ||
+    c.includes('munich')
+  ) {
+    return 'de';
+  }
+
+  // Japan
+  if (
+    c.includes('japan') ||
+    c.includes('nihon') ||
+    c.includes('nippon') ||
+    c.includes('tokyo') ||
+    c.includes('osaka')
+  ) {
+    return 'ja';
+  }
+
+  // Default to English (USA, UK, Canada, Australia, etc.)
+  return 'en';
+}
+
 // Multilingual Crisis AI Guidance Engine (Zero-Fail Local Fallback)
 export function generateLocalCrisisAdvice(userMessage: string, language: string = 'en'): string {
   const q = userMessage.toLowerCase();
 
-  // French
-  if (language === 'fr' || q.includes('route') || q.includes('aeroport') || q.includes('bonjour') || q.includes('danger') || q.includes('francais')) {
+  // French (strictly active when language is 'fr' or message contains explicit French phrases)
+  if (language === 'fr' || q.includes('bonjour') || q.includes('francais') || q.includes('merci') || q.includes('s\'il vous plait') || q.includes('évacuer')) {
     if (q.includes('hotel') || q.includes('expuls') || q.includes('refus') || q.includes('chambre') || q.includes('quitter') || q.includes('partir')) {
       return `DROITS DES RÉSIDENTS EN SITUATION DE CATASTROPHE (NDMA 2005) :
 
