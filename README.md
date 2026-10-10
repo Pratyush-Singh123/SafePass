@@ -26,7 +26,7 @@ During extreme coastal weather events (such as Bay of Bengal cyclones and flash 
 
 1. **🗺️ Geospatial Evacuation Navigator**: Interactive Leaflet maps rendering dynamic storm surge hazard zones, safe corridors, and 20 verified high-ground relief shelters.
 2. **🗣️ "The Calm Voice" Multilingual AI**: Empathetic psychological crisis triage with audio voice synthesis across 7 languages (English, French, German, Spanish, Japanese, Hindi, Tamil) with box-breathing regulation and offline 2G SMS distress fallback.
-3. **🏛️ Consular Command Center (`/admin`)**: Restricted embassy & TNDMA liaison portal tracking foreign citizen safety manifests, Red Zone search-and-rescue triage, and mass consular advisories.
+3. **🏛️ Consular Command Center (`/admin`)**: Restricted embassy & TNDMA liaison portal tracking foreign citizen safety manifests, Red Zone search-and-rescue triage, and mass consular advisories. *(Demo Credentials: Username `admin` | Password `admin@123`)*
 4. **👨‍👩‍👧 Zero-Friction Family Status Link (`/status`)**: Public read-only verification link with live safety status, device telemetry, and 1-tap WhatsApp alert for families abroad.
 
 ---
@@ -62,9 +62,10 @@ npm run preview
 
 ---
 
-## 🌐 Live Production Links
+## 🌐 Live Production Links & Access
 
 * **Live Web App**: [https://safe-pass-sand.vercel.app](https://safe-pass-sand.vercel.app)
+* **Consular Officer Portal (`/admin`)**: [https://safe-pass-sand.vercel.app/admin](https://safe-pass-sand.vercel.app/admin) (Username: `admin` | Password: `admin@123`)
 * **Demo Video**: [https://www.youtube.com/watch?v=REPLACE_WITH_YOUR_YOUTUBE_VIDEO_ID](https://www.youtube.com/watch?v=REPLACE_WITH_YOUR_YOUTUBE_VIDEO_ID)
 * **GitHub Repository**: [https://github.com/Pratyush-Singh123/SafePass](https://github.com/Pratyush-Singh123/SafePass)
 
