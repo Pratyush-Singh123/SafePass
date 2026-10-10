@@ -23,7 +23,6 @@ import {
   AlertTriangle,
   CheckCircle2,
   Navigation,
-  PhoneCall,
   Zap,
   Building2,
   Users,
@@ -32,6 +31,8 @@ import {
   RefreshCw,
   ShieldAlert,
   BatteryCharging,
+  SlidersHorizontal,
+  ChevronRight,
 } from 'lucide-react';
 
 const LANGUAGES = [
@@ -294,20 +295,19 @@ function getWelcomeMessage(profile: SafePassUser | null, lang: string): ChatMess
       ? `Bonjour ${profile?.name?.split(' ')[0] || 'voyageur'}. Je suis votre guide de crise SafePass en liaison avec le Consulat Général de France à Chennai.
 
 [CRITICAL WARNING]
-Alerte Rouge Cyclonique de Niveau 3 sur le couloir côtier de Mahabalipuram / Chengalpattu. La mer est démontée et les passes basses sont submergées.
+Alerte Rouge Cyclonique de Niveau 3 sur le couloir côtier de Mahabalipuram. Mer démontée et axes bas submergés.
 
 [ACTION CHECKLIST]
 • Restez au sec au premier étage ou supérieur d'une structure en béton armé.
 • Ne tentez aucun déplacement à pied ou en voiture sur la route côtière (ECR).
-• Conservez l'eau potable scellée et passez en Mode Économie de Batterie.
-• Si vous êtes menacé, appuyez sur "Relayer au Consulat".
+• Conservez l'eau potable scellée et activez le mode économie d'énergie.
 
 [SAFE SHELTER]
-Refuge sécurisé de haute altitude : Mahabalipuram High-Ground Shelter (1,8 km à l'intérieur des terres, surélévation de 18 mètres).
+Mahabalipuram High-Ground Cyclone Shelter (1,8 km à l'intérieur des terres, surélévation de 18 mètres).
 
 [EMERGENCY CONTACT]
-Liaison Consulat de France (Urgences 24/7) : +91 413 226 6500 | Secours Nationaux : 112 | Protection Civile : 1070.`
-      : `Hello ${profile?.name?.split(' ')[0] || 'traveler'}. I am SafePass, your calm crisis triage companion.
+Liaison Consulat de France : +91 413 226 6500 | Secours Nationaux : 112 | Protection Civile : 1070.`
+      : `Hello ${profile?.name?.split(' ')[0] || 'traveler'}. I am SafePass, your calm crisis companion.
 
 [CRITICAL WARNING]
 Active Cyclone Warning Level 3 in effect for coastal Mahabalipuram & Chengalpattu. Moving through floodwaters has an 82% higher casualty rate than vertical sheltering.
@@ -316,18 +316,17 @@ Active Cyclone Warning Level 3 in effect for coastal Mahabalipuram & Chengalpatt
 • Move to the 2nd floor or higher of a reinforced concrete building.
 • Avoid basements, balconies, and exterior glass facades facing the ocean.
 • Keep bottled water and power bank beside you in a sealed plastic bag.
-• Tap "Relay to Embassy" if you require diplomatic extraction or emergency assistance.
 
 [SAFE SHELTER]
-Nearest Verified High-Ground Haven: Mahabalipuram High-Ground Cyclone Shelter (1.8 km inland, elevated 18m above surge line).
+Mahabalipuram High-Ground Cyclone Shelter (1.8 km inland, elevated 18m above surge line).
 
 [EMERGENCY CONTACT]
-National Rescue: 112 | Tamil Nadu State Disaster Operations: 1070 | Ambulance SMUR: 108.`,
+National Rescue: 112 | Disaster Operations: 1070 | Ambulance SMUR: 108.`,
     created_at: new Date().toISOString(),
   };
 }
 
-// Visual Card Parser & Renderer for Action Callouts
+// Visual Card Parser & Calm Renderer
 function CrisisMessageRenderer({
   content,
   isBatterySaver,
@@ -363,10 +362,23 @@ function CrisisMessageRenderer({
   const shelter = shelterMatch ? shelterMatch[1].trim() : null;
   const contact = contactMatch ? contactMatch[1].trim() : null;
 
+  // Extract phone numbers for instant dial chips
+  const phoneNumbers: string[] = [];
+  if (contact) {
+    const parts = contact.split('|');
+    for (const part of parts) {
+      const numMatch = part.match(/(\+?\d[\d\s\-]{2,}\d|\b\d{3,4}\b)/);
+      if (numMatch) {
+        const clean = numMatch[0].replace(/[\s\-]/g, '');
+        if (!phoneNumbers.includes(clean)) phoneNumbers.push(clean);
+      }
+    }
+  }
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-2.5">
       {intro && (
-        <div className={`font-semibold text-xs sm:text-sm leading-relaxed ${isBatterySaver ? 'text-slate-200' : 'text-slate-800'}`}>
+        <div className={`font-medium text-xs sm:text-sm leading-relaxed ${isBatterySaver ? 'text-slate-200' : 'text-slate-800'}`}>
           {intro}
         </div>
       )}
@@ -374,49 +386,42 @@ function CrisisMessageRenderer({
       {/* Critical Hazard Alert Banner */}
       {warning && (
         <div
-          className={`rounded-2xl p-3.5 sm:p-4 border transition-all ${
+          className={`rounded-xl p-3 border transition-all ${
             isBatterySaver
               ? 'bg-rose-950/40 border-rose-800 text-rose-200'
-              : 'bg-rose-50/95 border-rose-300 text-rose-950 shadow-2xs'
+              : 'bg-rose-50/95 border-rose-200 text-rose-950'
           }`}
         >
-          <div className="flex items-center gap-2 mb-2">
-            <span className="p-1 rounded-md bg-rose-600 text-white">
-              <AlertTriangle className="w-3.5 h-3.5" />
-            </span>
-            <span className="text-[11px] font-black uppercase tracking-wider text-rose-700">
-              Critical Hazard Warning
-            </span>
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="w-4 h-4 text-rose-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <span className="text-[10px] font-black uppercase text-rose-700 tracking-wider block mb-0.5">
+                Critical Warning
+              </span>
+              <p className="text-xs sm:text-sm font-semibold leading-snug">
+                {warning}
+              </p>
+            </div>
           </div>
-          <p className="text-xs sm:text-sm font-semibold leading-relaxed">
-            {warning}
-          </p>
         </div>
       )}
 
       {/* Tactical Action Protocol Checklist */}
       {checklist && checklist.length > 0 && (
         <div
-          className={`rounded-2xl p-3.5 sm:p-4 border transition-all ${
+          className={`rounded-xl p-3 border transition-all ${
             isBatterySaver
               ? 'bg-emerald-950/40 border-emerald-800 text-emerald-200'
-              : 'bg-emerald-50/90 border-emerald-300 text-emerald-950 shadow-2xs'
+              : 'bg-emerald-50/80 border-emerald-200 text-emerald-950'
           }`}
         >
-          <div className="flex items-center gap-2 mb-2.5">
-            <span className="p-1 rounded-md bg-emerald-600 text-white">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-            </span>
-            <span className="text-[11px] font-black uppercase tracking-wider text-emerald-800">
-              Tactical Action Protocol
-            </span>
+          <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-emerald-800 tracking-wider mb-2">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Tactical Action Protocol
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             {checklist.map((item, idx) => (
-              <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm leading-relaxed">
-                <span className="flex-shrink-0 w-4 h-4 rounded-full bg-emerald-200 text-emerald-900 flex items-center justify-center text-[10px] font-black mt-0.5">
-                  ✓
-                </span>
+              <div key={idx} className="flex items-start gap-2 text-xs sm:text-sm leading-snug">
+                <span className="text-emerald-700 font-bold mt-0.5 flex-shrink-0">✓</span>
                 <span className="font-medium">{item}</span>
               </div>
             ))}
@@ -424,94 +429,39 @@ function CrisisMessageRenderer({
         </div>
       )}
 
-      {/* Verified Safe Haven Box */}
-      {shelter && (
-        <div
-          className={`rounded-2xl p-3.5 sm:p-4 border transition-all ${
-            isBatterySaver
-              ? 'bg-sky-950/40 border-sky-800 text-sky-200'
-              : 'bg-sky-50/90 border-sky-300 text-sky-950 shadow-2xs'
-          }`}
-        >
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <div className="flex items-center gap-2">
-              <span className="p-1 rounded-md bg-sky-600 text-white">
-                <Building2 className="w-3.5 h-3.5" />
-              </span>
-              <span className="text-[11px] font-black uppercase tracking-wider text-sky-800">
-                Verified Safe Haven
-              </span>
-            </div>
-            <Link
-              to="/dashboard"
-              className="text-[11px] font-bold text-sky-700 hover:text-sky-900 bg-white px-2 py-0.5 rounded-lg border border-sky-200 shadow-2xs flex items-center gap-1"
-            >
-              <Navigation className="w-3 h-3 text-sky-600" /> Map
-            </Link>
-          </div>
-          <p className="text-xs sm:text-sm font-medium leading-relaxed mb-2.5">
-            {shelter}
-          </p>
-          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-sky-200/60 text-[11px]">
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center gap-1.5 font-bold text-sky-800 bg-sky-100 hover:bg-sky-200 px-2.5 py-1 rounded-lg transition-colors"
-            >
-              <Navigation className="w-3 h-3 text-sky-700" /> View Evacuation Routes
-            </Link>
-          </div>
-        </div>
-      )}
+      {/* Compact Action Chips (Shelter, Calling & Consular SOS) */}
+      <div className={`pt-2 border-t flex flex-wrap items-center gap-2 ${isBatterySaver ? 'border-slate-800' : 'border-slate-200/70'}`}>
+        {shelter && (
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-800 bg-sky-50 hover:bg-sky-100 border border-sky-200 px-2.5 py-1.5 rounded-xl transition-all shadow-2xs"
+            title={shelter}
+          >
+            <Building2 className="w-3.5 h-3.5 text-sky-600" />
+            <span className="truncate max-w-[190px]">Shelter: {shelter.split('(')[0].trim()}</span>
+            <Navigation className="w-3 h-3 text-sky-500" />
+          </Link>
+        )}
 
-      {/* Emergency Hotlines & One-Tap Direct Dial */}
-      {contact && (
-        <div
-          className={`rounded-2xl p-3.5 sm:p-4 border transition-all ${
-            isBatterySaver
-              ? 'bg-amber-950/40 border-amber-800 text-amber-200'
-              : 'bg-amber-50/90 border-amber-300 text-amber-950 shadow-2xs'
-          }`}
+        {phoneNumbers.slice(0, 2).map((num, i) => (
+          <a
+            key={i}
+            href={`tel:${num}`}
+            className="inline-flex items-center gap-1 text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2.5 py-1.5 rounded-xl transition-all shadow-2xs"
+          >
+            <Phone className="w-3 h-3 text-amber-600" />
+            <span>Call {num}</span>
+          </a>
+        ))}
+
+        <button
+          onClick={onRelayEmbassy}
+          className="inline-flex items-center gap-1 text-xs font-bold text-rose-800 bg-rose-50 hover:bg-rose-100 border border-rose-200 px-2.5 py-1.5 rounded-xl transition-all shadow-2xs ml-auto"
         >
-          <div className="flex items-center gap-2 mb-2">
-            <span className="p-1 rounded-md bg-amber-600 text-white">
-              <PhoneCall className="w-3.5 h-3.5" />
-            </span>
-            <span className="text-[11px] font-black uppercase tracking-wider text-amber-800">
-              Direct Emergency Dispatch Hotlines
-            </span>
-          </div>
-          <p className="text-xs font-semibold mb-2.5 text-amber-900 leading-relaxed">
-            {contact}
-          </p>
-          <div className="flex flex-wrap items-center gap-2">
-            {contact.split('|').map((part, pidx) => {
-              const trimmed = part.trim();
-              const numMatch = trimmed.match(/(\+?\d[\d\s\-]{2,}\d|\b\d{3,4}\b)/);
-              const dialNumber = numMatch ? numMatch[0].replace(/[\s\-]/g, '') : null;
-              if (dialNumber) {
-                return (
-                  <a
-                    key={pidx}
-                    href={`tel:${dialNumber}`}
-                    className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-900 bg-white hover:bg-amber-100 border border-amber-300 px-2.5 py-1 rounded-lg transition-all shadow-2xs"
-                  >
-                    <Phone className="w-3 h-3 text-amber-600" />
-                    <span>Dial {dialNumber}</span>
-                  </a>
-                );
-              }
-              return null;
-            })}
-            <button
-              onClick={onRelayEmbassy}
-              className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-800 bg-rose-100 hover:bg-rose-200 border border-rose-300 px-2.5 py-1 rounded-lg transition-all shadow-2xs ml-auto"
-            >
-              <ShieldAlert className="w-3 h-3 text-rose-600" />
-              <span>Relay to Embassy</span>
-            </button>
-          </div>
-        </div>
-      )}
+          <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
+          <span>Relay Embassy</span>
+        </button>
+      </div>
     </div>
   );
 }
@@ -545,7 +495,10 @@ export default function Chat() {
     return localStorage.getItem('safepass_battery_saver') === 'true';
   });
 
-  // Modals & Enhanced Features
+  // Central Tools Drawer / Modal (Replaces 7 cluttered header buttons)
+  const [toolsModalOpen, setToolsModalOpen] = useState(false);
+
+  // Feature Modals
   const [breathingModalOpen, setBreathingModalOpen] = useState(false);
   const [triageModalOpen, setTriageModalOpen] = useState(false);
   const [smsModalOpen, setSmsModalOpen] = useState(false);
@@ -578,7 +531,6 @@ export default function Chat() {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://gwtvgorxyylkwpkxwwuj.supabase.co';
   const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
 
-  // Toggle Battery Saver
   const toggleBatterySaver = () => {
     const nextVal = !batterySaver;
     setBatterySaver(nextVal);
@@ -591,7 +543,7 @@ export default function Chat() {
       try {
         localStorage.setItem('safepass_chat_history', JSON.stringify(messages));
       } catch {
-        // quota exceeded fallback
+        // storage quota exceeded
       }
     }
   }, [messages]);
@@ -652,12 +604,10 @@ export default function Chat() {
       }
       setUserProfile(profile);
 
-      // Default to French if tourist is French and no language explicitly picked
       if (profile.nationality.toLowerCase().includes('france') && selectedLanguage === 'en') {
         setSelectedLanguage('fr');
       }
 
-      // Initialize welcome message only if history was empty
       if (messages.length === 0) {
         const welcome = getWelcomeMessage(profile, profile.nationality.toLowerCase().includes('france') ? 'fr' : 'en');
         setMessages([welcome]);
@@ -697,7 +647,6 @@ export default function Chat() {
 
     let reply = '';
 
-    // Step 1: Attempt Edge Function call if configured
     try {
       const conversationMessages = [
         ...messages.filter((m) => m.id !== 'welcome').map((m) => ({
@@ -730,9 +679,8 @@ export default function Chat() {
       // offline fallback
     }
 
-    // Step 2: Zero-Fail Local Crisis Engine Fallback
     if (!reply) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 450));
       reply = generateLocalCrisisAdvice(textToSend, selectedLanguage);
     }
 
@@ -756,7 +704,6 @@ export default function Chat() {
     }
   };
 
-  // Submit Rapid SBAR Triage
   const handleCompleteTriage = () => {
     setTriageModalOpen(false);
     const report = `EMERGENCY TRIAGE STATUS:
@@ -769,7 +716,6 @@ Based on this assessment, should I evacuate to the nearest high-ground shelter o
     sendMessage(report);
   };
 
-  // Relay Situation to Embassy Command (Bridge to Direction 3 /admin)
   const handleRelayToEmbassy = async () => {
     const ticket = `EMB-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     setEscalatedTicket(ticket);
@@ -803,7 +749,7 @@ Priority Emergency Flag assigned. The French Diplomatic Liaison Mission in Chenn
 
 [ACTION CHECKLIST]
 • Remain on the 2nd floor or higher of your building.
-• Conserve smartphone battery (activate Ultra Battery Saver).
+• Conserve smartphone battery (activate Ultra Battery Saver in Crisis Tools).
 • Have your flashlight or whistle ready to signal rescue personnel.
 • Do not attempt horizontal evacuation on foot through flood currents.
 
@@ -819,12 +765,12 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
     setEscalationModalOpen(true);
   };
 
-  // Reset conversation to fresh state
   const handleConfirmClearChat = () => {
     localStorage.removeItem('safepass_chat_history');
     const freshWelcome = getWelcomeMessage(userProfile, selectedLanguage);
     setMessages([freshWelcome]);
     setClearConfirmOpen(false);
+    setToolsModalOpen(false);
   };
 
   const getCompressedSmsText = () => {
@@ -865,7 +811,6 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
     );
   }
 
-  // Active Category Prompts
   const activeCategoryObj = CRISIS_CATEGORIES.find((c) => c.id === selectedCategory) || CRISIS_CATEGORIES[0];
   const activePrompts =
     activeCategoryObj.prompts[selectedLanguage] || activeCategoryObj.prompts.en || [];
@@ -876,30 +821,33 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
         batterySaver ? 'bg-black text-slate-100' : 'animate-fade-in'
       }`}
     >
-      {/* Battery Saver Warning Strip */}
+      {/* Battery Saver Minimal Status Strip */}
       {batterySaver && (
-        <div className="bg-emerald-950/80 border border-emerald-800 text-emerald-300 px-3 py-1.5 rounded-xl mb-2 text-xs flex items-center justify-between font-mono">
+        <div className="bg-emerald-950/90 border border-emerald-800 text-emerald-300 px-3 py-1.5 rounded-xl mb-2 text-xs flex items-center justify-between font-mono">
           <span className="flex items-center gap-1.5 font-bold">
-            <Zap className="w-3.5 h-3.5 text-emerald-400" /> ULTRA BATTERY SAVER MODE ACTIVE
+            <Zap className="w-3.5 h-3.5 text-emerald-400" /> BATTERY SAVER ACTIVE
           </span>
-          <span className="text-[11px] text-emerald-400/80">Animations suspended • OLED high-contrast</span>
+          <button
+            onClick={toggleBatterySaver}
+            className="text-[11px] underline hover:text-emerald-200"
+          >
+            Turn Off
+          </button>
         </div>
       )}
 
-      {/* Top Header Card */}
+      {/* Streamlined Calm Header (Only 3 high-clarity controls) */}
       <div
-        className={`flex flex-wrap items-center justify-between gap-3 mb-2.5 p-3 rounded-2xl border transition-all ${
+        className={`flex items-center justify-between gap-3 mb-2.5 p-3 rounded-2xl border transition-all ${
           batterySaver
-            ? 'bg-slate-950 border-slate-800 text-slate-100 shadow-none'
+            ? 'bg-slate-950 border-slate-800 text-slate-100'
             : 'bg-white border-slate-200 text-slate-900 shadow-sm'
         }`}
       >
         <div className="flex items-center gap-2.5">
           <div
             className={`p-2 rounded-xl text-white shadow-sm ${
-              batterySaver
-                ? 'bg-emerald-900 text-emerald-200'
-                : 'bg-gradient-to-tr from-cyan-600 to-sky-500'
+              batterySaver ? 'bg-emerald-900 text-emerald-200' : 'bg-gradient-to-tr from-cyan-600 to-sky-500'
             }`}
           >
             <Shield className="w-5 h-5" />
@@ -915,71 +863,17 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
                 }`}
               >
                 <span className={`w-1.5 h-1.5 rounded-full bg-emerald-500 ${batterySaver ? '' : 'animate-pulse'}`} />
-                Triage Online
+                SafePass AI
               </span>
             </div>
             <p className="text-[11px] text-slate-400">
-              Multilingual crisis companion & consular triage
+              Calm crisis guidance • Mahabalipuram Zone
             </p>
           </div>
         </div>
 
-        {/* Feature Triggers */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {/* Battery Saver Toggle */}
-          <button
-            onClick={toggleBatterySaver}
-            className={`flex items-center gap-1 text-xs font-bold px-2.5 py-1.5 rounded-xl border transition-all ${
-              batterySaver
-                ? 'bg-emerald-500 text-black border-emerald-400 shadow-sm'
-                : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
-            }`}
-            title="Toggle Ultra Low-Power Battery Saver"
-          >
-            <BatteryCharging className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{batterySaver ? 'Battery Saver ON' : 'Battery Saver'}</span>
-          </button>
-
-          {/* Relay to Embassy SOS */}
-          <button
-            onClick={handleRelayToEmbassy}
-            className="flex items-center gap-1 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 px-2.5 py-1.5 rounded-xl transition-all shadow-2xs"
-            title="Relay Situation to Consular Roster (/admin)"
-          >
-            <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
-            <span>Relay Embassy</span>
-          </button>
-
-          {/* 30s Breathing Trigger */}
-          <button
-            onClick={() => setBreathingModalOpen(true)}
-            className="flex items-center gap-1 text-xs font-bold text-teal-800 bg-teal-50 hover:bg-teal-100 border border-teal-200 px-2.5 py-1.5 rounded-xl transition-all shadow-2xs"
-            title="30-Second Panic Breathing Exercise"
-          >
-            <HeartPulse className={`w-3.5 h-3.5 text-teal-600 ${batterySaver ? '' : 'animate-pulse'}`} />
-            <span className="hidden sm:inline">30s Breath</span>
-          </button>
-
-          {/* SBAR Triage Trigger */}
-          <button
-            onClick={() => setTriageModalOpen(true)}
-            className="flex items-center gap-1 text-xs font-bold text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-2.5 py-1.5 rounded-xl transition-all shadow-2xs"
-            title="Emergency Triage Checklist"
-          >
-            <Activity className="w-3.5 h-3.5 text-indigo-600" />
-            <span>Triage</span>
-          </button>
-
-          {/* 2G SMS Trigger */}
-          <button
-            onClick={() => setSmsModalOpen(true)}
-            className="flex items-center gap-1 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2 py-1.5 rounded-xl transition-all shadow-2xs"
-            title="Offline 2G SMS Fallback"
-          >
-            <Radio className="w-3.5 h-3.5 text-amber-600" />
-            <span>2G SMS</span>
-          </button>
-
+        {/* 3 Streamlined Header Controls */}
+        <div className="flex items-center gap-2">
           {/* Language Selector */}
           <div
             className={`flex items-center gap-1 border rounded-xl px-2 py-1.5 text-xs ${
@@ -1000,28 +894,40 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
             </select>
           </div>
 
-          <Link
-            to="/dashboard"
-            className={`flex items-center gap-1 text-xs font-semibold px-2 py-1.5 rounded-xl border transition-all ${
+          {/* Centralized Crisis Tools Drawer Trigger */}
+          <button
+            onClick={() => setToolsModalOpen(true)}
+            className={`flex items-center gap-1.5 text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded-xl border transition-all ${
               batterySaver
-                ? 'bg-slate-900 border-slate-700 text-slate-300 hover:text-white'
-                : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-cyan-700'
+                ? 'bg-slate-900 hover:bg-slate-800 border-slate-700 text-slate-200'
+                : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 shadow-2xs'
             }`}
+            title="Open Emergency Toolkit"
           >
-            <ArrowLeft className="w-3.5 h-3.5" /> Map
-          </Link>
+            <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-600" />
+            <span className="hidden sm:inline">Crisis Tools</span>
+            <span className="sm:hidden">Tools</span>
+          </button>
+
+          {/* Primary SOS / Consular Escalation Button */}
+          <button
+            onClick={handleRelayToEmbassy}
+            className="flex items-center gap-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 px-3 py-1.5 rounded-xl transition-all shadow-sm"
+            title="Relay Situation to Consular Roster (/admin)"
+          >
+            <ShieldAlert className="w-3.5 h-3.5" />
+            <span>SOS</span>
+          </button>
         </div>
       </div>
 
       {/* Main Chat Box */}
       <div
         className={`flex-1 rounded-3xl border flex flex-col overflow-hidden transition-all ${
-          batterySaver
-            ? 'bg-slate-950 border-slate-800 shadow-none'
-            : 'bg-white border-slate-200 shadow-sm'
+          batterySaver ? 'bg-slate-950 border-slate-800 shadow-none' : 'bg-white border-slate-200 shadow-sm'
         }`}
       >
-        {/* Messages viewport */}
+        {/* Messages Viewport */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 sm:p-5 space-y-4">
           {messages.map((msg) => {
             const isUser = msg.role === 'user';
@@ -1064,24 +970,23 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
                       />
                     )}
 
-                    {/* Action footer for AI answers */}
+                    {/* Subtle action footer */}
                     {!isUser && (
                       <div
-                        className={`mt-3 pt-2.5 border-t flex items-center justify-between text-xs ${
-                          batterySaver ? 'border-slate-800 text-slate-400' : 'border-slate-200/80 text-slate-500'
+                        className={`mt-2.5 pt-2 border-t flex items-center justify-between text-xs ${
+                          batterySaver ? 'border-slate-800 text-slate-400' : 'border-slate-200/60 text-slate-400'
                         }`}
                       >
-                        <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1">
-                          <Shield className="w-3 h-3 text-cyan-500" /> SafePass Crisis Protocol
+                        <span className="text-[10px] font-semibold flex items-center gap-1">
+                          <Shield className="w-3 h-3 text-cyan-500" /> Verified Protocol
                         </span>
                         <button
                           onClick={() => copyGuidance(msg.id, msg.content)}
-                          className={`flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-lg border shadow-2xs transition-colors ${
+                          className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-lg border transition-colors ${
                             batterySaver
                               ? 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white'
-                              : 'bg-white text-slate-600 hover:text-cyan-700 border-slate-200'
+                              : 'bg-white text-slate-500 hover:text-cyan-700 border-slate-200'
                           }`}
-                          title="Copy Guidance to Clipboard"
                         >
                           {isCopied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
                           <span>{isCopied ? 'Copied' : 'Copy'}</span>
@@ -1121,77 +1026,42 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
           )}
         </div>
 
-        {/* 5 Category Selector Bar */}
+        {/* Streamlined Single-Row Inquiry Bar (Category Dropdown + Quick Prompt Chips) */}
         <div
-          className={`px-3 py-2 border-t flex items-center gap-1.5 overflow-x-auto whitespace-nowrap ${
-            batterySaver ? 'bg-slate-900/90 border-slate-800' : 'bg-slate-100/90 border-slate-200'
-          }`}
-        >
-          <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1 mr-1">
-            <HelpCircle className="w-3.5 h-3.5 text-cyan-500" /> Category:
-          </span>
-          {CRISIS_CATEGORIES.map((cat) => {
-            const Icon = cat.icon;
-            const isSelected = selectedCategory === cat.id;
-            const catLabel = cat.label[selectedLanguage] || cat.label.en;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold transition-all border ${
-                  isSelected
-                    ? batterySaver
-                      ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
-                      : 'bg-cyan-600 text-white border-cyan-600 shadow-2xs'
-                    : batterySaver
-                    ? 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
-                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                <span>{catLabel}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Dynamic Suggested Crisis Questions Bar */}
-        <div
-          className={`px-3 sm:px-4 py-2 border-t overflow-x-auto ${
+          className={`px-3 py-2 border-t flex items-center gap-2 overflow-x-auto whitespace-nowrap ${
             batterySaver ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
           }`}
         >
-          <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
-            <div className="flex items-center gap-1.5 font-bold">
-              <span>Quick Inquiries ({activeCategoryObj.label[selectedLanguage] || activeCategoryObj.label.en}):</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setClearConfirmOpen(true)}
-                className="text-[11px] font-semibold text-slate-400 hover:text-rose-500 flex items-center gap-1"
-                title="Restart chat session"
-              >
-                <RefreshCw className="w-3 h-3" /> Clear Chat
-              </button>
-              <button
-                onClick={handleExportTranscript}
-                className="text-[11px] font-semibold text-cyan-600 hover:underline flex items-center gap-1"
-              >
-                {exportedLog ? <Check className="w-3 h-3 text-emerald-500" /> : <Download className="w-3 h-3" />}
-                {exportedLog ? 'Transcript Downloaded' : 'Export Log'}
-              </button>
-            </div>
+          {/* Category Dropdown Pill */}
+          <div
+            className={`flex-shrink-0 flex items-center gap-1 border rounded-xl px-2 py-1 text-xs ${
+              batterySaver ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200 shadow-2xs'
+            }`}
+          >
+            <span className="text-cyan-600">⚡</span>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="bg-transparent font-bold text-xs outline-none cursor-pointer pr-1"
+            >
+              {CRISIS_CATEGORIES.map((cat) => (
+                <option key={cat.id} value={cat.id} className="bg-slate-900 text-white">
+                  {cat.label[selectedLanguage] || cat.label.en}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <div className="flex gap-2 pb-1 overflow-x-auto whitespace-nowrap">
+          {/* Quick Prompts for Selected Category */}
+          <div className="flex items-center gap-1.5 overflow-x-auto whitespace-nowrap flex-1 scrollbar-none">
             {activePrompts.map((promptText, i) => (
               <button
                 key={i}
                 onClick={() => sendMessage(promptText)}
                 disabled={loading}
-                className={`inline-flex items-center text-xs px-3 py-1.5 rounded-xl border transition-all font-medium disabled:opacity-50 ${
+                className={`inline-flex items-center text-xs px-2.5 py-1 rounded-xl border transition-all font-medium disabled:opacity-50 flex-shrink-0 ${
                   batterySaver
-                    ? 'bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800 hover:border-slate-700'
+                    ? 'bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800'
                     : 'bg-white hover:bg-cyan-50 hover:text-cyan-800 hover:border-cyan-300 text-slate-700 border-slate-200 shadow-2xs'
                 }`}
               >
@@ -1203,9 +1073,7 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
 
         {/* Input Form */}
         <div
-          className={`border-t p-3 sm:p-4 ${
-            batterySaver ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'
-          }`}
+          className={`border-t p-3 sm:p-4 ${batterySaver ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'}`}
         >
           <div className="flex items-end gap-2">
             <textarea
@@ -1238,14 +1106,166 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
 
           <div className="flex items-center justify-between text-[11px] text-slate-400 mt-2">
             <span className="flex items-center gap-1">
-              <Phone className="w-3 h-3 text-rose-500" /> For life-threatening emergencies, dial 112 directly.
+              <Phone className="w-3 h-3 text-rose-500" /> Life-threatening emergency? Dial 112 directly.
             </span>
-            <span className="hidden sm:inline font-mono">Consular Triage Engine Active</span>
+            <button
+              onClick={() => setToolsModalOpen(true)}
+              className="text-[11px] text-cyan-600 hover:underline font-medium"
+            >
+              Open Crisis Toolkit 🛠️
+            </button>
           </div>
         </div>
       </div>
 
-      {/* MODAL 1: 30-Second Guided Box Breathing / Panic Regulation */}
+      {/* CENTRAL CRISIS TOOLKIT MODAL (Organizes all 6 secondary tools without cluttering screen) */}
+      {toolsModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 border border-slate-200 shadow-2xl text-slate-900 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2.5 bg-cyan-100 text-cyan-800 rounded-2xl">
+                  <SlidersHorizontal className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-slate-900 text-base">Emergency Crisis Toolkit</h3>
+                  <p className="text-[11px] text-slate-500">Offline redundancies & psychological stabilization</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setToolsModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+              {/* Tool 1: 30s Calm Breath */}
+              <button
+                onClick={() => {
+                  setToolsModalOpen(false);
+                  setBreathingModalOpen(true);
+                }}
+                className="text-left p-3.5 rounded-2xl border border-teal-200 bg-teal-50/70 hover:bg-teal-100/70 transition-all group"
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <HeartPulse className="w-5 h-5 text-teal-600 animate-pulse" />
+                  <ChevronRight className="w-4 h-4 text-teal-400 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+                <h4 className="font-bold text-xs text-teal-950">30s Calm Breathing</h4>
+                <p className="text-[11px] text-teal-700 mt-0.5 leading-snug">
+                  Guided box-breathing to reduce panic and lower adrenaline.
+                </p>
+              </button>
+
+              {/* Tool 2: SBAR Rapid Triage */}
+              <button
+                onClick={() => {
+                  setToolsModalOpen(false);
+                  setTriageModalOpen(true);
+                }}
+                className="text-left p-3.5 rounded-2xl border border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100/70 transition-all group"
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <Activity className="w-5 h-5 text-indigo-600" />
+                  <ChevronRight className="w-4 h-4 text-indigo-400 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+                <h4 className="font-bold text-xs text-indigo-950">Rapid SBAR Triage</h4>
+                <p className="text-[11px] text-indigo-700 mt-0.5 leading-snug">
+                  10s assessment of flood water, battery, and dependents.
+                </p>
+              </button>
+
+              {/* Tool 3: 2G SMS String */}
+              <button
+                onClick={() => {
+                  setToolsModalOpen(false);
+                  setSmsModalOpen(true);
+                }}
+                className="text-left p-3.5 rounded-2xl border border-amber-200 bg-amber-50/70 hover:bg-amber-100/70 transition-all group"
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <Radio className="w-5 h-5 text-amber-600" />
+                  <ChevronRight className="w-4 h-4 text-amber-400 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+                <h4 className="font-bold text-xs text-amber-950">2G SMS Fallback</h4>
+                <p className="text-[11px] text-amber-700 mt-0.5 leading-snug">
+                  Compressed 140-char GPS distress text for network blackouts.
+                </p>
+              </button>
+
+              {/* Tool 4: Battery Saver Toggle */}
+              <button
+                onClick={toggleBatterySaver}
+                className={`text-left p-3.5 rounded-2xl border transition-all ${
+                  batterySaver
+                    ? 'border-emerald-500 bg-emerald-100 text-emerald-950'
+                    : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <BatteryCharging className={`w-5 h-5 ${batterySaver ? 'text-emerald-700' : 'text-slate-600'}`} />
+                  <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${batterySaver ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700'}`}>
+                    {batterySaver ? 'ACTIVE' : 'OFF'}
+                  </span>
+                </div>
+                <h4 className="font-bold text-xs">Battery Saver Mode</h4>
+                <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                  {batterySaver ? 'OLED black mode active. Tap to turn off.' : 'Switch to OLED monochrome black to save power.'}
+                </p>
+              </button>
+
+              {/* Tool 5: Export Log */}
+              <button
+                onClick={handleExportTranscript}
+                className="text-left p-3.5 rounded-2xl border border-sky-200 bg-sky-50/70 hover:bg-sky-100/70 transition-all group"
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <Download className="w-5 h-5 text-sky-600" />
+                  <span className="text-[10px] font-bold text-sky-700">{exportedLog ? 'Downloaded!' : '.TXT'}</span>
+                </div>
+                <h4 className="font-bold text-xs text-sky-950">Export Incident Log</h4>
+                <p className="text-[11px] text-sky-700 mt-0.5 leading-snug">
+                  Download chat transcript for consular liaison & insurance.
+                </p>
+              </button>
+
+              {/* Tool 6: Evacuation Map */}
+              <Link
+                to="/dashboard"
+                className="text-left p-3.5 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-slate-100/70 transition-all group"
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <Navigation className="w-5 h-5 text-cyan-600" />
+                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+                <h4 className="font-bold text-xs text-slate-900">Evacuation Map</h4>
+                <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                  View verified shelters and flooded zones on live map.
+                </p>
+              </Link>
+            </div>
+
+            <div className="flex items-center justify-between pt-3 border-t border-slate-200 text-xs">
+              <button
+                onClick={() => setClearConfirmOpen(true)}
+                className="text-rose-600 hover:text-rose-800 font-bold flex items-center gap-1.5"
+              >
+                <RefreshCw className="w-3.5 h-3.5" /> Restart / Clear Chat
+              </button>
+              <button
+                onClick={() => setToolsModalOpen(false)}
+                className="bg-slate-900 text-white font-bold px-4 py-2 rounded-xl text-xs"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 1: 30-Second Guided Box Breathing */}
       {breathingModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-slate-900 text-white rounded-3xl max-w-md w-full p-6 sm:p-8 border border-slate-800 shadow-2xl text-center relative">
@@ -1265,7 +1285,6 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
               Adrenaline clouds decision-making in a disaster. Let your pulse settle.
             </p>
 
-            {/* Breathing Circle Visualizer */}
             <div className="relative w-48 h-48 mx-auto flex items-center justify-center mb-8">
               <div
                 className={`absolute inset-0 rounded-full transition-all duration-1000 ${
