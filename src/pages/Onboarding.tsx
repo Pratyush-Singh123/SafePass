@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import type { SafePassUser } from '@/lib/types';
-import { getLanguageForCountry } from '@/lib/crisisData';
+import { createSession } from '@/lib/auth';
 import {
   User,
   Globe,
@@ -132,17 +132,10 @@ export default function Onboarding() {
       };
     }
 
-    localStorage.setItem('safepass_user_id', user.id);
-    localStorage.setItem('safepass_share_token', user.share_token);
-    localStorage.setItem('safepass_user_profile', JSON.stringify(user));
+    createSession(user);
 
     // Reset previous chat history so new traveler gets fresh greeting in their own country language
     localStorage.removeItem('safepass_chat_history');
-    localStorage.setItem('safepass_demo_status', user.status);
-
-    // Auto-detect and set primary language for the traveler's country
-    const detectedLang = getLanguageForCountry(user.nationality);
-    localStorage.setItem('safepass_selected_language', detectedLang);
 
     setSuccess(true);
     setSubmitting(false);
@@ -187,6 +180,13 @@ export default function Onboarding() {
           >
             <Zap className="w-3.5 h-3.5" /> ⚡ Pre-fill Hackathon Demo (Alex Mercer — French Tourist in Mahabalipuram)
           </button>
+        </div>
+
+        <div className="mt-3 text-xs text-slate-500">
+          Already registered?{' '}
+          <Link to="/login" className="text-cyan-700 font-extrabold hover:underline">
+            Log in to your active session →
+          </Link>
         </div>
       </div>
 
