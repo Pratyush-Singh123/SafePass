@@ -127,6 +127,14 @@ export default function Admin() {
 
   useEffect(() => {
     (async () => {
+      const demoStatus = (localStorage.getItem('safepass_demo_status') as SafetyStatus) || null;
+      const localizedDemoRoster = DEMO_CONSULAR_ROSTER.map((demo) => {
+        if (demo.id === 'demo-alex-mercer' && demoStatus) {
+          return { ...demo, status: demoStatus, updated_at: new Date().toISOString() };
+        }
+        return demo;
+      });
+
       try {
         const { data } = await supabase
           .from('users')
@@ -138,14 +146,14 @@ export default function Admin() {
           const existingIds = new Set(data.map((u: SafePassUser) => u.id));
           const merged = [
             ...(data as SafePassUser[]),
-            ...DEMO_CONSULAR_ROSTER.filter((demo) => !existingIds.has(demo.id)),
+            ...localizedDemoRoster.filter((demo) => !existingIds.has(demo.id)),
           ];
           setUsers(merged);
         } else {
-          setUsers(DEMO_CONSULAR_ROSTER);
+          setUsers(localizedDemoRoster);
         }
       } catch {
-        setUsers(DEMO_CONSULAR_ROSTER);
+        setUsers(localizedDemoRoster);
       }
       setLoading(false);
     })();
