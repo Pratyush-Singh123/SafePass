@@ -1,7 +1,7 @@
 // SafePass Emergency Offline Service Worker
 // Enables 100% offline access when cellular backhaul and internet grids fail
 
-const CACHE_NAME = 'safepass-offline-v2';
+const CACHE_NAME = 'safepass-offline-v5';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -38,7 +38,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch: Stale-While-Revalidate & Offline Navigation Fallback
+// Fetch: Network-First with Offline Fallback
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -53,7 +53,6 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then((networkResponse) => {
-          // Update cache with fresh HTML
           if (networkResponse && networkResponse.status === 200) {
             const clone = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
@@ -61,7 +60,6 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(async () => {
-          // Offline fallback: Serve cached /index.html so React Router mounts locally
           const cachedHtml = await caches.match('/index.html');
           if (cachedHtml) return cachedHtml;
           return caches.match('/');
@@ -71,42 +69,27 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Handle Static Assets (JS, CSS, images, icons, fonts, leaflet assets)
+  // Network-First with Cache Fallback ensures deployments are loaded immediately
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Return cached asset immediately, revalidate in background if online
-        fetch(request)
-          .then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
-              caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse));
-            }
-          })
-          .catch(() => {
-            // Completely offline, ignore background fetch error
-          });
-        return cachedResponse;
-      }
-
-      // Not in cache: fetch from network and store for next time
-      return fetch(request)
-        .then((networkResponse) => {
-          if (
-            networkResponse &&
-            networkResponse.status === 200 &&
-            (url.origin === location.origin || url.hostname.includes('openstreetmap') || url.hostname.includes('cdnjs'))
-          ) {
-            const clone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-          }
-          return networkResponse;
-        })
-        .catch(() => {
-          // Offline fallback for assets
-          if (request.destination === 'image') {
-            return caches.match('/vite.svg');
-          }
-          return new Response('Offline: Asset not in cache', { status: 503, statusText: 'Offline' });
-        });
-    })
+    fetch(request)
+      .then((networkResponse) => {
+        if (
+          networkResponse &&
+          networkResponse.status === 200 &&
+          (url.origin === location.origin || url.hostname.includes('openstreetmap') || url.hostname.includes('cdnjs'))
+        ) {
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+        }
+        return networkResponse;
+      })
+      .catch(async () => {
+        const cached = await caches.match(request);
+        if (cached) return cached;
+        if (request.destination === 'image') {
+          return caches.match('/vite.svg');
+        }
+        return new Response('Offline: Asset not in cache', { status: 503, statusText: 'Offline' });
+      })
   );
 });
