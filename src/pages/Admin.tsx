@@ -17,8 +17,14 @@ import {
   X,
   Radio,
   FileSpreadsheet,
+<<<<<<< HEAD
   Lock,
+=======
+  RotateCcw,
+>>>>>>> 627130406af3d1f5878fa4a4d30801e244c470b1
 } from 'lucide-react';
+
+import { FRESH_TEN_RECORDS, resetToFreshTenRecords } from '@/lib/auth';
 
 const statusConfig: Record<SafetyStatus, { label: string; dot: string; bg: string; text: string }> = {
   safe: { label: 'Safe', dot: 'bg-emerald-500', bg: 'bg-emerald-50 text-emerald-800 border-emerald-200', text: 'text-emerald-700' },
@@ -26,6 +32,7 @@ const statusConfig: Record<SafetyStatus, { label: string; dot: string; bg: strin
   danger: { label: 'Danger / SOS', dot: 'bg-rose-500', bg: 'bg-rose-50 text-rose-800 border-rose-200', text: 'text-rose-700' },
 };
 
+<<<<<<< HEAD
 // Rescue progress is saved in the browser (localStorage) so it works with no database.
 // The family StatusPage reads the same key.
 type RescueState = 'searching' | 'rescued' | 'deceased';
@@ -137,6 +144,10 @@ const DEMO_CONSULAR_ROSTER: SafePassUser[] = [
     updated_at: new Date(Date.now() - 1200000).toISOString(),
   },
 ];
+=======
+// Seeded 10 realistic consular records for Tamil Nadu / Chennai / Kancheepuram disaster zone
+const DEMO_CONSULAR_ROSTER: SafePassUser[] = FRESH_TEN_RECORDS;
+>>>>>>> 627130406af3d1f5878fa4a4d30801e244c470b1
 
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [users, setUsers] = useState<SafePassUser[]>([]);
@@ -147,7 +158,10 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [redZoneOnly, setRedZoneOnly] = useState(false);
   const [broadcastModal, setBroadcastModal] = useState(false);
   const [broadcastSent, setBroadcastSent] = useState(false);
+  const [resetting, setResetting] = useState(false);
+  const [resetFeedback, setResetFeedback] = useState(false);
 
+<<<<<<< HEAD
   const [records, setRecords] = useState<Record<string, RescueRecord>>(loadRecords);
   const [pending, setPending] = useState<{ user: SafePassUser; kind: 'rescued' | 'deceased' } | null>(null);
   const [shelterInput, setShelterInput] = useState('');
@@ -163,31 +177,40 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         }
         return demo;
       });
+=======
+  const fetchUsers = async () => {
+    setLoading(true);
+    const demoStatus = (localStorage.getItem('safepass_demo_status') as SafetyStatus) || null;
+    const localizedDemoRoster = DEMO_CONSULAR_ROSTER.map((demo) => {
+      if (demo.id === FRESH_TEN_RECORDS[0].id && demoStatus) {
+        return { ...demo, status: demoStatus, updated_at: new Date().toISOString() };
+      }
+      return demo;
+    });
+>>>>>>> 627130406af3d1f5878fa4a4d30801e244c470b1
 
-      try {
-        const { data } = await supabase
-          .from('users')
-          .select('*')
-          .order('created_at', { ascending: false });
+    try {
+      const { data } = await supabase
+        .from('users')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-        if (data && data.length > 0) {
-          // Merge database users with realistic consular roster
-          const existingIds = new Set(data.map((u: SafePassUser) => u.id));
-          const merged = [
-            ...(data as SafePassUser[]),
-            ...localizedDemoRoster.filter((demo) => !existingIds.has(demo.id)),
-          ];
-          setUsers(merged);
-        } else {
-          setUsers(localizedDemoRoster);
-        }
-      } catch {
+      if (data && data.length > 0) {
+        setUsers(data as SafePassUser[]);
+      } else {
         setUsers(localizedDemoRoster);
       }
-      setLoading(false);
-    })();
+    } catch {
+      setUsers(localizedDemoRoster);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchUsers();
   }, []);
 
+<<<<<<< HEAD
   const isClosed = (u: SafePassUser) => {
     const s = records[u.id]?.state;
     return s === 'rescued' || s === 'deceased';
@@ -202,6 +225,15 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       return { label: 'Deceased', dot: 'bg-white', bg: 'bg-slate-700 text-white border-slate-700' };
     }
     return statusConfig[u.status];
+=======
+  const handleResetToFresh10 = async () => {
+    setResetting(true);
+    await resetToFreshTenRecords();
+    await fetchUsers();
+    setResetting(false);
+    setResetFeedback(true);
+    setTimeout(() => setResetFeedback(false), 2500);
+>>>>>>> 627130406af3d1f5878fa4a4d30801e244c470b1
   };
 
   const nationalitiesList = ['all', ...Array.from(new Set(users.map((u) => u.nationality)))];
@@ -389,21 +421,21 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   return (
     <div className="animate-fade-in space-y-6 pb-12">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 text-white p-5 sm:p-6 rounded-3xl shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-neutral-900 text-white p-5 sm:p-6 rounded-3xl shadow-xl border border-neutral-800">
         <div className="flex items-center gap-3.5">
           <div className="bg-cyan-500/20 text-cyan-400 p-3 rounded-2xl border border-cyan-500/30">
             <Building2 className="w-7 h-7" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
                 Consular Crisis Command Center
               </h1>
               <span className="bg-cyan-500/20 text-cyan-300 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-cyan-400/30">
                 Liaison View
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
+            <p className="text-xs sm:text-sm text-neutral-300 mt-0.5">
               Diplomatic Mission & State Disaster Management Authority (TNDMA) Roster
             </p>
           </div>
@@ -411,14 +443,29 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
         <div className="flex items-center gap-2 flex-wrap">
           <button
+            onClick={handleResetToFresh10}
+            disabled={resetting}
+            className="bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold px-3.5 py-2.5 rounded-xl text-xs sm:text-sm transition-all border border-amber-500/40 flex items-center gap-1.5"
+            title="Purge existing records and re-seed 10 fresh diverse international traveler records"
+          >
+            {resetting ? (
+              <Loader2 className="w-4 h-4 animate-spin text-amber-300" />
+            ) : resetFeedback ? (
+              <Check className="w-4 h-4 text-emerald-400" />
+            ) : (
+              <RotateCcw className="w-4 h-4 text-amber-300" />
+            )}
+            <span>{resetFeedback ? '✓ Seeded 10 Fresh!' : 'Reset 10 Fresh Records'}</span>
+          </button>
+          <button
             onClick={() => setBroadcastModal(true)}
-            className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-2"
+            className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer"
           >
             <Radio className="w-4 h-4 animate-pulse" /> Dispatch Consular Advisory
           </button>
           <Link
             to="/dashboard"
-            className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all border border-slate-700"
+            className="bg-neutral-800 hover:bg-neutral-700 text-white font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all border border-neutral-700"
           >
             Tourist View
           </Link>
@@ -474,26 +521,26 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       <div className="flex flex-col lg:flex-row gap-3">
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by tourist name, nationality, or hotel location..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-xs sm:text-sm text-slate-900 bg-white"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-neutral-700 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-xs sm:text-sm text-white bg-neutral-800 placeholder-neutral-500"
           />
         </div>
 
         {/* Nationality Dropdown */}
-        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm">
-          <Globe className="w-4 h-4 text-slate-500" />
+        <div className="flex items-center gap-2 bg-neutral-800 px-3 py-2 rounded-xl border border-neutral-700 text-xs sm:text-sm">
+          <Globe className="w-4 h-4 text-neutral-400" />
           <select
             value={nationalityFilter}
             onChange={(e) => setNationalityFilter(e.target.value)}
-            className="bg-transparent font-semibold text-slate-700 outline-none cursor-pointer"
+            className="bg-transparent font-semibold text-white outline-none cursor-pointer"
           >
             {nationalitiesList.map((nat) => (
-              <option key={nat} value={nat}>
+              <option key={nat} value={nat} className="bg-neutral-900 text-white">
                 {nat === 'all' ? 'All Nationalities' : nat}
               </option>
             ))}

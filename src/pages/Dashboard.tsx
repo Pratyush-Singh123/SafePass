@@ -55,7 +55,7 @@ L.Icon.Default.mergeOptions({
 // Custom icons for shelters and user
 const shelterIcon = L.divIcon({
   className: 'custom-shelter-marker',
-  html: `<div style="background-color: #10b981; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2.5px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); color: white; font-size: 16px;">🏠</div>`,
+  html: `<div style="background-color: #10b981; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2.5px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.5); color: white; font-size: 16px;">🏠</div>`,
   iconSize: [32, 32],
   iconAnchor: [16, 16],
   popupAnchor: [0, -18],
@@ -63,7 +63,7 @@ const shelterIcon = L.divIcon({
 
 const consularIcon = L.divIcon({
   className: 'custom-consular-marker',
-  html: `<div style="background-color: #6366f1; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2.5px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); color: white; font-size: 16px;">🏛️</div>`,
+  html: `<div style="background-color: #6366f1; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2.5px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.5); color: white; font-size: 16px;">🏛️</div>`,
   iconSize: [32, 32],
   iconAnchor: [16, 16],
   popupAnchor: [0, -18],
@@ -71,7 +71,7 @@ const consularIcon = L.divIcon({
 
 const medicalIcon = L.divIcon({
   className: 'custom-medical-marker',
-  html: `<div style="background-color: #ef4444; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2.5px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); color: white; font-size: 16px;">🏥</div>`,
+  html: `<div style="background-color: #ef4444; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2.5px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.5); color: white; font-size: 16px;">🏥</div>`,
   iconSize: [32, 32],
   iconAnchor: [16, 16],
   popupAnchor: [0, -18],
@@ -86,9 +86,9 @@ const userIcon = L.divIcon({
 });
 
 const statusConfig: Record<SafetyStatus, { label: string; color: string; bg: string; ring: string; icon: typeof CheckCircle2 }> = {
-  safe: { label: 'Safe', color: 'text-green-600', bg: 'bg-green-500', ring: 'ring-4 ring-green-100', icon: CheckCircle2 },
-  caution: { label: 'Caution', color: 'text-amber-600', bg: 'bg-amber-500', ring: 'ring-4 ring-amber-100', icon: AlertTriangle },
-  danger: { label: 'Danger / SOS', color: 'text-red-600', bg: 'bg-red-500', ring: 'ring-4 ring-red-200 animate-pulse', icon: ShieldAlert },
+  safe: { label: 'Safe', color: 'text-green-400', bg: 'bg-green-600', ring: 'ring-4 ring-green-900/60', icon: CheckCircle2 },
+  caution: { label: 'Caution', color: 'text-amber-400', bg: 'bg-amber-600', ring: 'ring-4 ring-amber-900/60', icon: AlertTriangle },
+  danger: { label: 'Danger / SOS', color: 'text-red-400', bg: 'bg-red-600', ring: 'ring-4 ring-red-900/80 animate-pulse', icon: ShieldAlert },
 };
 
 function getWeatherIcon(iconCode: string) {
@@ -409,19 +409,19 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-cyan-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="max-w-md mx-auto text-center py-16 animate-fade-in bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-cyan-100 rounded-full mb-4">
-          <Compass className="w-8 h-8 text-cyan-600" />
+      <div className="max-w-md mx-auto text-center py-16 animate-fade-in bg-neutral-900 text-white p-8 rounded-2xl border border-neutral-800 shadow-xl">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-cyan-950 text-cyan-400 rounded-full mb-4 border border-cyan-800/60">
+          <Compass className="w-8 h-8 text-cyan-400" />
         </div>
-        <h2 className="text-xl font-bold text-slate-900 mb-2">No Profile Detected</h2>
-        <p className="text-slate-600 text-sm mb-6">
+        <h2 className="text-xl font-bold text-white mb-2">No Profile Detected</h2>
+        <p className="text-neutral-300 text-sm mb-6">
           You can complete the 20-second tourist onboarding, or instantly load our demo scenario (Alex Mercer in Mahabalipuram).
         </p>
         <div className="flex flex-col gap-3">
@@ -433,7 +433,7 @@ export default function Dashboard() {
           </button>
           <Link
             to="/"
-            className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-6 py-3 rounded-xl transition-all text-sm"
+            className="w-full bg-neutral-800 hover:bg-neutral-700 text-white font-medium px-6 py-3 rounded-xl transition-all text-sm border border-neutral-700"
           >
             Create New Profile from Scratch
           </Link>
@@ -477,7 +477,7 @@ export default function Dashboard() {
   const corridorWalkMins = calculateWalkingTimeMinutes(corridorDistanceKm);
 
   return (
-    <div className="space-y-6 animate-fade-in pb-12">
+    <div className="space-y-6 animate-fade-in pb-12 text-white">
       {/* Top Banner: Severe Crisis Alert Notice */}
       <div className="bg-gradient-to-r from-red-600 to-rose-700 text-white rounded-2xl p-4 sm:p-5 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start sm:items-center gap-3">
@@ -489,7 +489,7 @@ export default function Dashboard() {
               <span className="bg-white text-red-700 font-extrabold text-xs px-2 py-0.5 rounded-full uppercase tracking-wider">
                 Official Alert
               </span>
-              <p className="font-bold text-sm sm:text-base">Cyclone Alert Level 3 — Coastal Warning Active</p>
+              <p className="font-bold text-sm sm:text-base text-white">Cyclone Alert Level 3 — Coastal Warning Active</p>
             </div>
             <p className="text-xs sm:text-sm text-red-100 mt-0.5">
               Regional Met Centre issued Red Warning for Kancheepuram / Chennai coast. Avoid low-lying corridors.
@@ -507,45 +507,45 @@ export default function Dashboard() {
             to="/chat"
             className="bg-red-800/80 hover:bg-red-900 text-white font-medium px-4 py-2 rounded-xl text-xs sm:text-sm transition-all border border-red-400/40 flex items-center gap-1.5"
           >
-            <MessageCircle className="w-4 h-4" /> Ask Calm Voice
+            <MessageCircle className="w-4 h-4 text-white" /> Ask Calm Voice
           </Link>
         </div>
       </div>
 
-      {/* Header bar */}
+      {/* Header bar: Welcome Alex Mercer & Action Buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">
+            <h1 className="text-2xl font-bold text-white tracking-tight">
               Welcome, {user.name}
             </h1>
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-neutral-800 text-neutral-200 border border-neutral-700">
               {user.nationality}
             </span>
           </div>
-          <p className="text-slate-500 text-sm mt-0.5">
+          <p className="text-neutral-400 text-sm mt-0.5">
             Real-time crisis triage & consular safety monitor
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={copyShareLink}
-            className="flex items-center gap-1.5 bg-white border border-slate-300 hover:border-cyan-500 text-slate-700 hover:text-cyan-700 font-medium px-3.5 py-2 rounded-xl transition-all text-xs sm:text-sm shadow-sm"
+            className="flex items-center gap-1.5 bg-neutral-900 border border-neutral-700 hover:border-cyan-500 text-white hover:text-cyan-400 font-medium px-3.5 py-2 rounded-xl transition-all text-xs sm:text-sm shadow-sm"
           >
-            {copiedLink ? <Check className="w-4 h-4 text-green-600" /> : <Share2 className="w-4 h-4" />}
-            {copiedLink ? 'Link Copied!' : 'Share Status Page'}
+            {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4 text-neutral-300" />}
+            <span>{copiedLink ? 'Link Copied!' : 'Share Status Page'}</span>
           </button>
           <Link
             to="/status"
-            className="flex items-center gap-1.5 bg-white border border-slate-300 hover:border-cyan-500 text-slate-700 hover:text-cyan-700 font-medium px-3.5 py-2 rounded-xl transition-all text-xs sm:text-sm shadow-sm"
+            className="flex items-center gap-1.5 bg-neutral-900 border border-neutral-700 hover:border-cyan-500 text-white hover:text-cyan-400 font-medium px-3.5 py-2 rounded-xl transition-all text-xs sm:text-sm shadow-sm"
           >
-            <Eye className="w-4 h-4" /> Family View
+            <Eye className="w-4 h-4 text-neutral-300" /> <span>Family View</span>
           </Link>
           <Link
             to="/admin"
-            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-900 text-white font-medium px-3.5 py-2 rounded-xl transition-all text-xs sm:text-sm shadow-sm"
+            className="flex items-center gap-1.5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-white font-medium px-3.5 py-2 rounded-xl transition-all text-xs sm:text-sm shadow-sm"
           >
-            <Building2 className="w-4 h-4" /> Embassy Admin
+            <Building2 className="w-4 h-4 text-neutral-300" /> <span>Embassy Admin</span>
           </Link>
         </div>
       </div>
@@ -555,36 +555,36 @@ export default function Dashboard() {
         {/* Left Column: Interactive Map + Highlighted Shelter Card */}
         <div className="lg:col-span-2 space-y-6">
           {/* Leaflet Interactive Map Card */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-            <div className="p-3.5 sm:p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 bg-slate-50/70">
+          <div className="bg-neutral-900 rounded-2xl shadow-sm border border-neutral-800 overflow-hidden flex flex-col text-white">
+            <div className="p-3.5 sm:p-4 border-b border-neutral-800 flex flex-wrap items-center justify-between gap-3 bg-neutral-900/90">
               <div className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-cyan-600 shrink-0" />
+                <MapPin className="w-5 h-5 text-cyan-400 shrink-0" />
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="font-bold text-slate-900 text-sm sm:text-base">Crisis Geospatial Navigator</h2>
+                    <h2 className="font-bold text-white text-sm sm:text-base">Crisis Geospatial Navigator</h2>
                     {/* Requirement 4: Offline Geospatial Cache Active Status Badge */}
-                    <div className="hidden sm:inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-full text-[11px] font-semibold shadow-xs">
-                      <Database className="w-3 h-3 text-emerald-600" />
+                    <div className="hidden sm:inline-flex items-center gap-1.5 bg-emerald-950/80 text-emerald-300 border border-emerald-600/60 px-2.5 py-0.5 rounded-full text-[11px] font-semibold shadow-xs">
+                      <Database className="w-3 h-3 text-emerald-400" />
                       <span>Offline Geospatial Cache Active</span>
                     </div>
                   </div>
-                  <p className="text-xs text-slate-500">Live Shelters & Hazard Surge Zones</p>
+                  <p className="text-xs text-neutral-400">Live Shelters & Hazard Surge Zones</p>
                 </div>
               </div>
 
               {/* Layer Filters & Action Controls */}
               <div className="flex items-center gap-2 flex-wrap">
                 {/* Mobile version of Offline Cache badge */}
-                <div className="sm:hidden inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-full text-[10px] font-semibold">
-                  <Database className="w-3 h-3 text-emerald-600" />
+                <div className="sm:hidden inline-flex items-center gap-1.5 bg-emerald-950/80 text-emerald-300 border border-emerald-600/60 px-2 py-0.5 rounded-full text-[10px] font-semibold">
+                  <Database className="w-3 h-3 text-emerald-400" />
                   <span>Offline Cache Active</span>
                 </div>
 
-                <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 text-xs font-semibold">
+                <div className="flex items-center gap-1 bg-neutral-800 p-1 rounded-xl border border-neutral-700 text-xs font-semibold">
                   <button
                     onClick={() => setMapLayer('all')}
                     className={`px-2.5 py-1 rounded-lg transition-all ${
-                      mapLayer === 'all' ? 'bg-cyan-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+                      mapLayer === 'all' ? 'bg-cyan-600 text-white shadow-sm' : 'text-neutral-300 hover:bg-neutral-700 hover:text-white'
                     }`}
                   >
                     All
@@ -592,7 +592,7 @@ export default function Dashboard() {
                   <button
                     onClick={() => setMapLayer('shelters')}
                     className={`px-2.5 py-1 rounded-lg transition-all ${
-                      mapLayer === 'shelters' ? 'bg-green-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+                      mapLayer === 'shelters' ? 'bg-emerald-600 text-white shadow-sm' : 'text-neutral-300 hover:bg-neutral-700 hover:text-white'
                     }`}
                   >
                     Shelters ({VERIFIED_SHELTERS.length})
@@ -600,7 +600,7 @@ export default function Dashboard() {
                   <button
                     onClick={() => setMapLayer('hazards')}
                     className={`px-2.5 py-1 rounded-lg transition-all ${
-                      mapLayer === 'hazards' ? 'bg-red-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+                      mapLayer === 'hazards' ? 'bg-red-600 text-white shadow-sm' : 'text-neutral-300 hover:bg-neutral-700 hover:text-white'
                     }`}
                   >
                     Hazards ({ACTIVE_HAZARD_ZONES.length})
@@ -609,9 +609,9 @@ export default function Dashboard() {
 
                 <button
                   onClick={relocate}
-                  className="flex items-center gap-1 text-xs font-semibold text-cyan-700 bg-cyan-50 hover:bg-cyan-100 px-3 py-1.5 rounded-lg transition-colors border border-cyan-200"
+                  className="flex items-center gap-1 text-xs font-semibold text-cyan-300 bg-cyan-950/60 hover:bg-cyan-900 px-3 py-1.5 rounded-lg transition-colors border border-cyan-800/80"
                 >
-                  <Navigation className="w-3.5 h-3.5" /> GPS Recalibrate
+                  <Navigation className="w-3.5 h-3.5 text-cyan-400" /> GPS Recalibrate
                 </button>
               </div>
             </div>
@@ -623,8 +623,8 @@ export default function Dashboard() {
                 <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[500] bg-slate-900/90 backdrop-blur-md text-white px-3.5 py-1.5 rounded-full shadow-lg border border-emerald-500/60 flex items-center gap-2 text-xs max-w-[90%] sm:max-w-max pointer-events-auto">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                   <span className="font-semibold text-emerald-300 shrink-0">Safe Corridor Active:</span>
-                  <span className="truncate max-w-[130px] sm:max-w-[210px] font-medium">{selectedShelter.name}</span>
-                  <span className="text-slate-300 font-mono text-[11px] hidden sm:inline">
+                  <span className="truncate max-w-[130px] sm:max-w-[210px] font-medium text-white">{selectedShelter.name}</span>
+                  <span className="text-neutral-300 font-mono text-[11px] hidden sm:inline">
                     ({corridorDistanceKm.toFixed(2)} km • ~{corridorWalkMins} min walk)
                   </span>
                   <button
@@ -632,7 +632,7 @@ export default function Dashboard() {
                       e.stopPropagation();
                       setSelectedShelter(null);
                     }}
-                    className="ml-1 text-slate-400 hover:text-white p-0.5 rounded transition-colors"
+                    className="ml-1 text-neutral-400 hover:text-white p-0.5 rounded transition-colors"
                     title="Clear corridor"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -657,7 +657,7 @@ export default function Dashboard() {
                           <PhoneCall className="w-3.5 h-3.5 text-white animate-pulse" />
                         </div>
                         <div className="text-left">
-                          <p className="leading-tight font-extrabold">Dial 112 (National Rescue)</p>
+                          <p className="leading-tight font-extrabold text-white">Dial 112 (National Rescue)</p>
                           <p className="text-[10px] text-red-100 font-normal">Police • Fire • Coast Guard</p>
                         </div>
                       </a>
@@ -671,7 +671,7 @@ export default function Dashboard() {
                           <Radio className="w-3.5 h-3.5 text-white" />
                         </div>
                         <div className="text-left">
-                          <p className="leading-tight font-extrabold">Dial 1070 (Tamil Nadu Disaster Helpline)</p>
+                          <p className="leading-tight font-extrabold text-white">Dial 1070 (Tamil Nadu Disaster Helpline)</p>
                           <p className="text-[10px] text-amber-100 font-normal">TNDMA 24/7 State Emergency Control</p>
                         </div>
                       </a>
@@ -685,7 +685,7 @@ export default function Dashboard() {
                           <HeartPulse className="w-3.5 h-3.5 text-white" />
                         </div>
                         <div className="text-left">
-                          <p className="leading-tight font-extrabold">Dial 108 (Medical)</p>
+                          <p className="leading-tight font-extrabold text-white">Dial 108 (Medical)</p>
                           <p className="text-[10px] text-emerald-100 font-normal">Ambulance & Trauma Response</p>
                         </div>
                       </a>
@@ -695,12 +695,12 @@ export default function Dashboard() {
                   {/* Speed-Dial Main Trigger */}
                   <button
                     onClick={() => setSpeedDialOpen(!speedDialOpen)}
-                    className="flex items-center gap-2 px-3.5 py-2.5 bg-slate-900/90 hover:bg-slate-900 text-white rounded-xl shadow-2xl backdrop-blur-md border border-white/20 text-xs font-bold transition-all hover:scale-105"
+                    className="flex items-center gap-2 px-3.5 py-2.5 bg-slate-900/95 hover:bg-slate-900 text-white rounded-xl shadow-2xl backdrop-blur-md border border-white/20 text-xs font-bold transition-all hover:scale-105"
                     title="Toggle Emergency Speed-Dial"
                   >
                     <PhoneCall className="w-4 h-4 text-red-400 animate-pulse" />
-                    <span>Emergency Speed-Dial</span>
-                    {speedDialOpen ? <ChevronDown className="w-3.5 h-3.5 text-slate-400" /> : <ChevronUp className="w-3.5 h-3.5 text-slate-400" />}
+                    <span className="text-white">Emergency Speed-Dial</span>
+                    {speedDialOpen ? <ChevronDown className="w-3.5 h-3.5 text-neutral-400" /> : <ChevronUp className="w-3.5 h-3.5 text-neutral-400" />}
                   </button>
                 </div>
               )}
@@ -720,12 +720,12 @@ export default function Dashboard() {
                 {/* User Position Marker */}
                 <Marker position={[userLat, userLng]} icon={userIcon}>
                   <Popup>
-                    <div className="p-1">
-                      <p className="font-bold text-sm text-slate-900">{user.name} (You)</p>
-                      <p className="text-xs text-slate-600 mt-0.5">{user.location_label || 'Current Position'}</p>
-                      <div className="mt-2 pt-2 border-t border-slate-100 flex items-center gap-1.5">
+                    <div className="p-1 text-white">
+                      <p className="font-bold text-sm text-white">{user.name} (You)</p>
+                      <p className="text-xs text-neutral-300 mt-0.5">{user.location_label || 'Current Position'}</p>
+                      <div className="mt-2 pt-2 border-t border-neutral-700 flex items-center gap-1.5">
                         <span className={`w-2 h-2 rounded-full ${statusInfo.bg}`} />
-                        <span className="text-xs font-bold capitalize text-slate-700">Status: {user.status}</span>
+                        <span className="text-xs font-bold capitalize text-white">Status: {user.status}</span>
                       </div>
                     </div>
                   </Popup>
@@ -743,22 +743,22 @@ export default function Dashboard() {
                         pathOptions={{
                           color: isDanger ? '#ef4444' : '#f59e0b',
                           fillColor: isDanger ? '#ef4444' : '#f59e0b',
-                          fillOpacity: isDanger ? 0.28 : 0.2,
+                          fillOpacity: isDanger ? 0.35 : 0.25,
                           weight: 2,
                         }}
                       >
                         <Popup>
-                          <div className="max-w-xs p-1">
+                          <div className="max-w-xs p-1 text-white">
                             <div className="flex items-center gap-1.5">
                               <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase ${
-                                isDanger ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
+                                isDanger ? 'bg-red-950 text-red-300 border border-red-700/60' : 'bg-amber-950 text-amber-300 border border-amber-700/60'
                               }`}>
                                 {zone.severity}
                               </span>
-                              <span className="text-xs text-slate-500 font-semibold">{zone.risk_type}</span>
+                              <span className="text-xs text-neutral-400 font-semibold">{zone.risk_type}</span>
                             </div>
-                            <p className="font-bold text-sm text-slate-900 mt-1">{zone.name}</p>
-                            <p className="text-xs text-slate-600 mt-1">{zone.recommendation}</p>
+                            <p className="font-bold text-sm text-white mt-1">{zone.name}</p>
+                            <p className="text-xs text-neutral-200 mt-1">{zone.recommendation}</p>
                           </div>
                         </Popup>
                       </Circle>
@@ -774,7 +774,7 @@ export default function Dashboard() {
                       pathOptions={{
                         color: '#047857',
                         weight: 6,
-                        opacity: 0.55,
+                        opacity: 0.6,
                       }}
                     />
                     {/* High-visibility green dashed evacuation route */}
@@ -812,35 +812,35 @@ export default function Dashboard() {
                         }}
                       >
                         <Popup>
-                          <div className="max-w-xs p-1">
+                          <div className="max-w-xs p-1 text-white">
                             <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                              <span className="text-xs font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700/60">
                                 {sh.type.replace('_', ' ')}
                               </span>
-                              <span className="text-xs text-slate-500">Verified Shelter</span>
+                              <span className="text-xs text-neutral-400">Verified Shelter</span>
                             </div>
-                            <p className="font-bold text-sm text-slate-900 mt-1">{sh.name}</p>
-                            <p className="text-xs text-slate-600 mt-0.5">{sh.address}</p>
+                            <p className="font-bold text-sm text-white mt-1">{sh.name}</p>
+                            <p className="text-xs text-neutral-300 mt-0.5">{sh.address}</p>
 
-                            <div className="mt-2 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                              <div className="flex items-center justify-between text-xs mb-1 font-semibold text-slate-700">
+                            <div className="mt-2 bg-neutral-800/90 p-2 rounded-lg border border-neutral-700">
+                              <div className="flex items-center justify-between text-xs mb-1 font-semibold text-white">
                                 <span>Occupancy</span>
-                                <span>{sh.current_occupancy} / {sh.capacity} ({occupancyPercent}%)</span>
+                                <span className="text-neutral-200">{sh.current_occupancy} / {sh.capacity} ({occupancyPercent}%)</span>
                               </div>
-                              <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                              <div className="w-full bg-neutral-700 h-1.5 rounded-full overflow-hidden">
                                 <div
                                   className={`h-full ${occupancyPercent > 80 ? 'bg-amber-500' : 'bg-emerald-500'}`}
                                   style={{ width: `${occupancyPercent}%` }}
                                 />
                               </div>
-                              <div className="flex items-center gap-2 mt-2 text-[11px] text-slate-600">
+                              <div className="flex items-center gap-2 mt-2 text-[11px] text-neutral-200">
                                 {sh.has_drinking_water && <span>💧 Potable Water</span>}
                                 {sh.has_food && <span>🍲 Hot Rations</span>}
                                 {sh.has_medical && <span>🩺 First Aid</span>}
                               </div>
                             </div>
 
-                            <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+                            <div className="mt-2 pt-2 border-t border-neutral-700 flex items-center justify-between gap-2">
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -848,8 +848,8 @@ export default function Dashboard() {
                                 }}
                                 className={`text-xs font-bold px-2.5 py-1.5 rounded-md transition-colors flex items-center gap-1 ${
                                   isSelected
-                                    ? 'bg-emerald-700 text-white shadow-xs'
-                                    : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                                    ? 'bg-emerald-600 text-white shadow-xs'
+                                    : 'bg-emerald-950/70 text-emerald-300 hover:bg-emerald-900 border border-emerald-700/60'
                                 }`}
                               >
                                 <Navigation className="w-3 h-3" />
@@ -857,9 +857,9 @@ export default function Dashboard() {
                               </button>
                               <a
                                 href={`tel:${sh.contact}`}
-                                className="text-xs font-bold bg-slate-800 text-white px-2.5 py-1.5 rounded-md hover:bg-slate-900 transition-colors flex items-center gap-1"
+                                className="text-xs font-bold bg-neutral-800 text-white px-2.5 py-1.5 rounded-md hover:bg-neutral-700 border border-neutral-700 transition-colors flex items-center gap-1"
                               >
-                                <PhoneCall className="w-3 h-3" /> Call
+                                <PhoneCall className="w-3 h-3 text-cyan-400" /> Call
                               </a>
                             </div>
                           </div>
@@ -871,44 +871,44 @@ export default function Dashboard() {
             </div>
 
             {/* Map Footer Bar with Offline Cache details & Hazard legends */}
-            <div className="p-3 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between text-xs text-slate-600 gap-2">
+            <div className="p-3 bg-neutral-900 border-t border-neutral-800 flex flex-wrap items-center justify-between text-xs text-neutral-300 gap-2">
               <div className="flex items-center gap-3 flex-wrap">
-                <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-1.5 text-neutral-200">
                   <span className="w-3 h-3 rounded-full bg-red-500 inline-block" /> Danger Zone (Surge/Flood)
                 </span>
-                <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-1.5 text-neutral-200">
                   <span className="w-3 h-3 rounded-full bg-amber-500 inline-block" /> Caution Zone
                 </span>
-                <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-1.5 text-neutral-200">
                   <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block" /> Safe High-Ground Shelter
                 </span>
               </div>
-              <div className="flex items-center gap-3 text-slate-400 font-mono text-[11px]">
-                <span className="flex items-center gap-1 text-emerald-700 font-medium">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+              <div className="flex items-center gap-3 text-neutral-400 font-mono text-[11px]">
+                <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                   Offline Geo-Vector Active
                 </span>
-                <span>Location: {user.location_label || `${userLat.toFixed(4)}, ${userLng.toFixed(4)}`}</span>
+                <span className="text-neutral-400">Location: {user.location_label || `${userLat.toFixed(4)}, ${userLng.toFixed(4)}`}</span>
               </div>
             </div>
           </div>
 
-          {/* Requirement 2: Highlighted Shelter Card with Distance (km) & Estimated Walking Time to Nearest High-Ground Shelter */}
+          {/* Requirement 2: Highlighted Shelter Card with Distance (km) & Walking ETA */}
           {nearestHighGround && (
-            <div className="bg-gradient-to-br from-emerald-50/90 via-white to-slate-50 rounded-2xl shadow-sm border-2 border-emerald-500/80 p-5 relative overflow-hidden transition-all">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="bg-gradient-to-br from-emerald-950/40 via-neutral-900 to-neutral-950 rounded-2xl shadow-lg border-2 border-emerald-500/80 p-5 relative overflow-hidden transition-all text-white">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
 
               {/* Card Header with High-Ground Badge */}
               <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <div className="flex items-center gap-2">
                   <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-600 text-white font-extrabold text-xs tracking-wide uppercase shadow-sm">
-                    <Shield className="w-3.5 h-3.5" /> Nearest High-Ground Shelter
+                    <Shield className="w-3.5 h-3.5 text-white" /> Nearest High-Ground Shelter
                   </span>
-                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-700/60">
                     Above Surge Inundation
                   </span>
                 </div>
-                <span className="text-xs font-semibold text-slate-600">
+                <span className="text-xs font-semibold text-neutral-300">
                   Capacity: {nearestHighGround.current_occupancy} / {nearestHighGround.capacity} (
                   {Math.round((nearestHighGround.current_occupancy / nearestHighGround.capacity) * 100)}% filled)
                 </span>
@@ -917,24 +917,24 @@ export default function Dashboard() {
               {/* Main Info & Metrics */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                  <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
                     <span>{nearestHighGround.name}</span>
                   </h3>
-                  <p className="text-xs text-slate-600 mt-1 flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <p className="text-xs text-neutral-300 mt-1 flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                     <span>{nearestHighGround.address}</span>
                   </p>
                 </div>
 
                 {/* Highlighted Metric Badges: Distance & Estimated Walking Time */}
                 <div className="grid grid-cols-2 gap-3 shrink-0">
-                  <div className="bg-white rounded-xl p-3 border border-emerald-200 shadow-xs flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700 shrink-0">
-                      <Navigation className="w-5 h-5" />
+                  <div className="bg-neutral-800/90 rounded-xl p-3 border border-emerald-500/40 shadow-xs flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-emerald-900/60 flex items-center justify-center text-emerald-300 shrink-0">
+                      <Navigation className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
-                      <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Distance</p>
-                      <p className="text-base font-extrabold text-slate-900">
+                      <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Distance</p>
+                      <p className="text-base font-extrabold text-white">
                         {nearestDistanceKm < 1
                           ? `${Math.round(nearestDistanceKm * 1000)} m`
                           : `${nearestDistanceKm.toFixed(2)} km`}
@@ -942,13 +942,13 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-xl p-3 border border-emerald-200 shadow-xs flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700 shrink-0">
-                      <Clock className="w-5 h-5" />
+                  <div className="bg-neutral-800/90 rounded-xl p-3 border border-emerald-500/40 shadow-xs flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-emerald-900/60 flex items-center justify-center text-emerald-300 shrink-0">
+                      <Clock className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
-                      <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Walking ETA</p>
-                      <p className="text-base font-extrabold text-emerald-700">
+                      <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Walking ETA</p>
+                      <p className="text-base font-extrabold text-emerald-300">
                         ~{nearestWalkingMinutes} min{nearestWalkingMinutes > 1 ? 's' : ''}
                       </p>
                     </div>
@@ -957,21 +957,21 @@ export default function Dashboard() {
               </div>
 
               {/* Amenities & Fast Actions */}
-              <div className="mt-4 pt-3 border-t border-emerald-100/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-xs text-slate-600 flex-wrap">
-                  <span className="font-semibold text-slate-700">Verified Supplies:</span>
+              <div className="mt-4 pt-3 border-t border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-xs text-neutral-300 flex-wrap">
+                  <span className="font-semibold text-white">Verified Supplies:</span>
                   {nearestHighGround.has_drinking_water && (
-                    <span className="inline-flex items-center gap-1 bg-white px-2 py-0.5 rounded-md border border-slate-200 text-[11px] font-medium text-slate-700">
+                    <span className="inline-flex items-center gap-1 bg-neutral-800 px-2 py-0.5 rounded-md border border-neutral-700 text-[11px] font-medium text-white">
                       💧 Potable Water
                     </span>
                   )}
                   {nearestHighGround.has_food && (
-                    <span className="inline-flex items-center gap-1 bg-white px-2 py-0.5 rounded-md border border-slate-200 text-[11px] font-medium text-slate-700">
+                    <span className="inline-flex items-center gap-1 bg-neutral-800 px-2 py-0.5 rounded-md border border-neutral-700 text-[11px] font-medium text-white">
                       🍲 Hot Rations
                     </span>
                   )}
                   {nearestHighGround.has_medical && (
-                    <span className="inline-flex items-center gap-1 bg-white px-2 py-0.5 rounded-md border border-slate-200 text-[11px] font-medium text-slate-700">
+                    <span className="inline-flex items-center gap-1 bg-neutral-800 px-2 py-0.5 rounded-md border border-neutral-700 text-[11px] font-medium text-white">
                       🩺 Paramedic Post
                     </span>
                   )}
@@ -987,8 +987,8 @@ export default function Dashboard() {
                     }}
                     className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm ${
                       selectedShelter?.id === nearestHighGround.id
-                        ? 'bg-emerald-700 text-white ring-2 ring-emerald-300'
-                        : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                        ? 'bg-emerald-600 text-white ring-2 ring-emerald-400'
+                        : 'bg-emerald-600 hover:bg-emerald-500 text-white'
                     }`}
                   >
                     <Navigation className="w-3.5 h-3.5" />
@@ -996,9 +996,9 @@ export default function Dashboard() {
                   </button>
                   <a
                     href={`tel:${nearestHighGround.contact}`}
-                    className="px-3.5 py-2 rounded-xl text-xs font-bold bg-white border border-slate-300 hover:border-slate-400 text-slate-800 transition-all flex items-center gap-1.5 shadow-xs"
+                    className="px-3.5 py-2 rounded-xl text-xs font-bold bg-neutral-800 border border-neutral-700 hover:bg-neutral-700 text-white transition-all flex items-center gap-1.5 shadow-xs"
                   >
-                    <PhoneCall className="w-3.5 h-3.5 text-emerald-600" />
+                    <PhoneCall className="w-3.5 h-3.5 text-emerald-400" />
                     <span>Call Shelter</span>
                   </a>
                 </div>
@@ -1010,24 +1010,24 @@ export default function Dashboard() {
         {/* Right Sidebar: Status Switcher & Real Weather */}
         <div className="space-y-6">
           {/* Status Switcher Card */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+          <div className="bg-neutral-900 rounded-2xl shadow-sm border border-neutral-800 p-6 text-white">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-bold text-slate-900 text-base">Your Crisis Status</h2>
-              <span className="text-xs font-medium text-slate-400">Syncs to Embassy & Family</span>
+              <h2 className="font-bold text-white text-base">Your Crisis Status</h2>
+              <span className="text-xs font-medium text-neutral-400">Syncs to Embassy & Family</span>
             </div>
 
-            <div className="flex flex-col items-center mb-5 p-4 rounded-xl bg-slate-50 border border-slate-100">
+            <div className="flex flex-col items-center mb-5 p-4 rounded-xl bg-neutral-800/80 border border-neutral-700/80">
               <div className={`w-16 h-16 rounded-full ${statusInfo.bg} flex items-center justify-center ${statusInfo.ring} shadow-md`}>
                 <StatusIcon className="w-8 h-8 text-white" />
               </div>
               <p className={`mt-3 text-xl font-extrabold ${statusInfo.color}`}>{statusInfo.label}</p>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-neutral-400 mt-0.5">
                 Last broadcast: {new Date(user.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
 
             <div className="space-y-2">
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Change Safety Status</p>
+              <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-2">Change Safety Status</p>
               {(Object.keys(statusConfig) as SafetyStatus[]).map((s) => {
                 const cfg = statusConfig[s];
                 const Icon = cfg.icon;
@@ -1040,14 +1040,14 @@ export default function Dashboard() {
                     className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-sm font-semibold ${
                       active
                         ? `${cfg.bg} text-white border-transparent shadow-md`
-                        : 'border-slate-200 text-slate-700 hover:border-slate-300 bg-white hover:bg-slate-50'
+                        : 'border-neutral-700 text-white hover:border-neutral-600 bg-neutral-800 hover:bg-neutral-700/80'
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <Icon className="w-4 h-4" />
-                      <span>{cfg.label}</span>
+                      <Icon className="w-4 h-4 text-white" />
+                      <span className="text-white">{cfg.label}</span>
                     </div>
-                    {active && <Check className="w-4 h-4" />}
+                    {active && <Check className="w-4 h-4 text-white" />}
                   </button>
                 );
               })}
@@ -1057,61 +1057,61 @@ export default function Dashboard() {
               onClick={triggerSOS}
               className="w-full mt-4 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-sm"
             >
-              <ShieldAlert className="w-5 h-5 animate-pulse" />
-              Broadcast Emergency SOS Now
+              <ShieldAlert className="w-5 h-5 animate-pulse text-white" />
+              <span>Broadcast Emergency SOS Now</span>
             </button>
           </div>
 
           {/* Severe Weather Card */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+          <div className="bg-neutral-900 rounded-2xl shadow-sm border border-neutral-800 p-6 text-white">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-bold text-slate-900 text-base">Weather & Disaster Warnings</h2>
-              {weatherLoading && <Loader2 className="w-4 h-4 text-cyan-600 animate-spin" />}
+              <h2 className="font-bold text-white text-base">Weather & Disaster Warnings</h2>
+              {weatherLoading && <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />}
             </div>
 
             {weather && (
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="text-3xl font-extrabold text-slate-900">{weather.temp}°C</p>
-                    <p className="text-sm font-semibold text-slate-600 capitalize">{weather.description}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">{weather.city}</p>
+                    <p className="text-3xl font-extrabold text-white">{weather.temp}°C</p>
+                    <p className="text-sm font-semibold text-neutral-300 capitalize">{weather.description}</p>
+                    <p className="text-xs text-neutral-400 mt-0.5">{weather.city}</p>
                   </div>
                   {(() => {
                     const WeatherIconComponent = getWeatherIcon(weather.icon);
-                    return <WeatherIconComponent className="w-14 h-14 text-cyan-500 animate-pulse" />;
+                    return <WeatherIconComponent className="w-14 h-14 text-cyan-400 animate-pulse" />;
                   })()}
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 text-center mb-4">
-                  <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-100">
-                    <Thermometer className="w-4 h-4 text-slate-400 mx-auto mb-1" />
-                    <p className="text-[11px] text-slate-400 font-medium">Feels</p>
-                    <p className="text-sm font-bold text-slate-700">{weather.feels_like}°C</p>
+                  <div className="bg-neutral-800/80 rounded-xl p-2.5 border border-neutral-700/80">
+                    <Thermometer className="w-4 h-4 text-neutral-400 mx-auto mb-1" />
+                    <p className="text-[11px] text-neutral-400 font-medium">Feels</p>
+                    <p className="text-sm font-bold text-white">{weather.feels_like}°C</p>
                   </div>
-                  <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-100">
-                    <Droplets className="w-4 h-4 text-slate-400 mx-auto mb-1" />
-                    <p className="text-[11px] text-slate-400 font-medium">Humidity</p>
-                    <p className="text-sm font-bold text-slate-700">{weather.humidity}%</p>
+                  <div className="bg-neutral-800/80 rounded-xl p-2.5 border border-neutral-700/80">
+                    <Droplets className="w-4 h-4 text-neutral-400 mx-auto mb-1" />
+                    <p className="text-[11px] text-neutral-400 font-medium">Humidity</p>
+                    <p className="text-sm font-bold text-white">{weather.humidity}%</p>
                   </div>
-                  <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-100">
-                    <Wind className="w-4 h-4 text-slate-400 mx-auto mb-1" />
-                    <p className="text-[11px] text-slate-400 font-medium">Wind</p>
-                    <p className="text-sm font-bold text-red-600">{weather.wind_speed} km/h</p>
+                  <div className="bg-neutral-800/80 rounded-xl p-2.5 border border-neutral-700/80">
+                    <Wind className="w-4 h-4 text-neutral-400 mx-auto mb-1" />
+                    <p className="text-[11px] text-neutral-400 font-medium">Wind</p>
+                    <p className="text-sm font-bold text-red-400">{weather.wind_speed} km/h</p>
                   </div>
                 </div>
 
                 {/* Weather Alert Boxes */}
                 {weather.alerts && weather.alerts.length > 0 && (
                   <div className="space-y-2.5">
-                    <p className="text-xs font-bold text-red-600 uppercase tracking-wider flex items-center gap-1.5">
+                    <p className="text-xs font-bold text-red-400 uppercase tracking-wider flex items-center gap-1.5">
                       <AlertTriangle className="w-3.5 h-3.5" />
                       Active Disaster Bulletins ({weather.alerts.length})
                     </p>
                     {weather.alerts.map((al, idx) => (
-                      <div key={idx} className="bg-red-50 border border-red-200 rounded-xl p-3 text-left">
-                        <p className="text-xs font-bold text-red-800">{al.event}</p>
-                        <p className="text-xs text-red-700 mt-1 leading-relaxed">{al.description}</p>
+                      <div key={idx} className="bg-red-950/40 border border-red-800/60 rounded-xl p-3 text-left">
+                        <p className="text-xs font-bold text-red-300">{al.event}</p>
+                        <p className="text-xs text-red-200 mt-1 leading-relaxed">{al.description}</p>
                       </div>
                     ))}
                   </div>
@@ -1124,47 +1124,47 @@ export default function Dashboard() {
 
       {/* SOS Modal Dialog */}
       {sosModalOpen && (
-        <div className="fixed inset-0 z-[9999] bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-red-200 relative z-[10000]">
+        <div className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-neutral-900 rounded-2xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-red-500/60 relative z-[10000] text-white">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
-                <div className="p-2.5 bg-red-100 text-red-600 rounded-full animate-bounce">
+                <div className="p-2.5 bg-red-950 text-red-400 border border-red-800/60 rounded-full animate-bounce">
                   <ShieldAlert className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-900 text-lg">Emergency SOS Broadcast Active</h3>
-                  <p className="text-xs text-red-600 font-semibold">Priority Distress Signal Transmitted</p>
+                  <h3 className="font-extrabold text-white text-lg">Emergency SOS Broadcast Active</h3>
+                  <p className="text-xs text-red-400 font-semibold">Priority Distress Signal Transmitted</p>
                 </div>
               </div>
               <button
                 onClick={() => setSosModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg"
+                className="text-neutral-400 hover:text-white p-1.5 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2.5 mb-5 text-xs text-slate-700">
+            <div className="bg-neutral-800/90 p-4 rounded-xl border border-neutral-700 space-y-2.5 mb-5 text-xs text-neutral-300">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-slate-500">Citizen:</span>
-                <span className="font-bold text-slate-900">{user.name} ({user.nationality})</span>
+                <span className="font-semibold text-neutral-400">Citizen:</span>
+                <span className="font-bold text-white">{user.name} ({user.nationality})</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-slate-500">Relayed Coordinates:</span>
-                <span className="font-mono font-bold text-red-600">{userLat.toFixed(4)}° N, {userLng.toFixed(4)}° E</span>
+                <span className="font-semibold text-neutral-400">Relayed Coordinates:</span>
+                <span className="font-mono font-bold text-red-400">{userLat.toFixed(4)}° N, {userLng.toFixed(4)}° E</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-slate-500">Family SMS Dispatch:</span>
-                <span className="text-emerald-700 font-bold">✓ Sent to {user.emergency_contact_phone}</span>
+                <span className="font-semibold text-neutral-400">Family SMS Dispatch:</span>
+                <span className="text-emerald-400 font-bold">✓ Sent to {user.emergency_contact_phone}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-slate-500">Consular Notification:</span>
-                <span className="text-emerald-700 font-bold">✓ Logged on Consular Roster</span>
+                <span className="font-semibold text-neutral-400">Consular Notification:</span>
+                <span className="text-emerald-400 font-bold">✓ Logged on Consular Roster</span>
               </div>
             </div>
 
             <div className="space-y-2 mb-6">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Instant Emergency Hotlines</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-neutral-400">Instant Emergency Hotlines</p>
               <div className="grid grid-cols-3 gap-2">
                 <a
                   href="tel:112"
@@ -1175,7 +1175,7 @@ export default function Dashboard() {
                 </a>
                 <a
                   href="tel:1070"
-                  className="bg-slate-800 hover:bg-slate-900 text-white font-bold p-2.5 rounded-xl flex flex-col sm:flex-row items-center justify-center gap-1.5 text-xs shadow-sm text-center"
+                  className="bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-white font-bold p-2.5 rounded-xl flex flex-col sm:flex-row items-center justify-center gap-1.5 text-xs shadow-sm text-center"
                 >
                   <Radio className="w-3.5 h-3.5 shrink-0" />
                   <span>1070 (Disaster)</span>
@@ -1199,7 +1199,7 @@ export default function Dashboard() {
               </Link>
               <button
                 onClick={() => setSosModalOpen(false)}
-                className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm"
+                className="bg-neutral-800 hover:bg-neutral-700 text-white font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm border border-neutral-700 transition-colors"
               >
                 Close Window
               </button>
