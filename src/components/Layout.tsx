@@ -113,12 +113,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="bg-gradient-to-tr from-cyan-600 to-sky-500 p-2 rounded-xl group-hover:scale-105 transition-transform shadow-sm">
                 <ShieldCheck className="w-5 h-5 text-white" />
               </div>
-              <div>
-                <span className="text-lg font-extrabold tracking-tight">SafePass</span>
-                <span className="hidden sm:inline-block ml-2 text-[10px] font-bold uppercase tracking-wider bg-cyan-900/60 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-700/50">
-                  TravelTech
-                </span>
-              </div>
+              <span className="text-lg font-extrabold tracking-tight">SafePass</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-1.5">
