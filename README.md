@@ -18,9 +18,17 @@
 
 ---
 
-## 📌 Overview
+## 📌 Problem Statement
 
-During extreme coastal weather events (such as Bay of Bengal cyclones and flash floods across Chennai and Kancheepuram districts), foreign travelers face dangerous language barriers, unverified rumors, and communication blackouts.
+> **TravelTech**: *Real-Time Crisis Communication for Tourists During Extreme Weather Events*
+
+* **Context**: When localized extreme weather events occur—such as sudden flash floods or severe cyclones—foreign tourists are highly vulnerable due to their lack of local geographic knowledge and language barriers.
+* **Problem**: Local weather warnings, emergency broadcasts, and safe-zone declarations are fragmented and rarely translated or localized for tourists. Travelers struggle to verify which areas are actively flooded or unsafe and cannot easily access translated instructions from local authorities, forcing them to rely on chaotic, unverified social media rumors.
+* **Impact**: This communication gap leads to widespread panic, stranded travelers wandering into high-risk weather zones, and unnecessary strain on local rescue services during critical windows.
+
+---
+
+## 💡 Solution: SafePass
 
 **SafePass** is an offline-first, mobile-responsive crisis companion that bridges tourists, local disaster responders, and diplomatic embassies:
 
