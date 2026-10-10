@@ -285,26 +285,26 @@ export default function Admin() {
       <div className="flex flex-col lg:flex-row gap-3">
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by tourist name, nationality, or hotel location..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-xs sm:text-sm text-slate-900 bg-white"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-neutral-700 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-xs sm:text-sm text-white bg-neutral-800 placeholder-neutral-500"
           />
         </div>
 
         {/* Nationality Dropdown */}
-        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm">
-          <Globe className="w-4 h-4 text-slate-500" />
+        <div className="flex items-center gap-2 bg-neutral-800 px-3 py-2 rounded-xl border border-neutral-700 text-xs sm:text-sm">
+          <Globe className="w-4 h-4 text-neutral-400" />
           <select
             value={nationalityFilter}
             onChange={(e) => setNationalityFilter(e.target.value)}
-            className="bg-transparent font-semibold text-slate-700 outline-none cursor-pointer"
+            className="bg-transparent font-semibold text-white outline-none cursor-pointer"
           >
             {nationalitiesList.map((nat) => (
-              <option key={nat} value={nat}>
+              <option key={nat} value={nat} className="bg-neutral-900 text-white">
                 {nat === 'all' ? 'All Nationalities' : nat}
               </option>
             ))}
