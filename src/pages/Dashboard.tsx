@@ -440,20 +440,26 @@ export default function Dashboard() {
         </div>
         <h2 className="text-xl font-bold text-white mb-2">No Profile Detected</h2>
         <p className="text-neutral-300 text-sm mb-6">
-          You can complete the 20-second tourist onboarding, or instantly load our demo scenario (Alex Mercer in Mahabalipuram).
+          Log in with your verified mobile number, register a new profile, or view sample emergency data.
         </p>
         <div className="flex flex-col gap-3">
           <button
             onClick={loadDemoPersona}
-            className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-md text-sm"
+            className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-md text-sm cursor-pointer"
           >
-            ⚡ Load Tourist Demo Persona (Alex Mercer)
+            View Sample Tourist (Alex Mercer)
           </button>
           <Link
-            to="/"
-            className="w-full bg-neutral-800 hover:bg-neutral-700 text-white font-medium px-6 py-3 rounded-xl transition-all text-sm border border-neutral-700"
+            to="/onboarding"
+            className="w-full bg-neutral-800 hover:bg-neutral-750 text-white font-medium px-6 py-3 rounded-xl transition-all text-sm border border-neutral-700"
           >
-            Create New Profile from Scratch
+            Register New Profile
+          </Link>
+          <Link
+            to="/login"
+            className="w-full bg-neutral-900 hover:bg-neutral-800 text-cyan-400 font-medium px-6 py-2.5 rounded-xl transition-all text-xs border border-neutral-800"
+          >
+            Log In with Mobile Number →
           </Link>
         </div>
       </div>

@@ -325,7 +325,7 @@ export default function Onboarding() {
               </span>
               <div>
                 <h3 className="text-xs font-extrabold uppercase tracking-wider text-white">
-                  Judges & Demo Persona Switcher (1-Click)
+                  Traveler Persona Presets (1-Click)
                 </h3>
                 <p className="text-[11px] text-neutral-400">
                   Instantly populates traveler identity, coordinates, and emergency contact

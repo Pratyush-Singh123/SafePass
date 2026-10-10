@@ -21,8 +21,7 @@
 
 [![SafePass Demo Video Preview](https://img.shields.io/badge/▶%20CLICK%20TO%20WATCH-SAFEPASS%203--MINUTE%20WALKTHROUGH-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=REPLACE_WITH_YOUR_YOUTUBE_VIDEO_ID)
 
-> 📹 **Video Link**: **[https://youtu.be/REPLACE_WITH_YOUR_YOUTUBE_VIDEO_ID](https://www.youtube.com/watch?v=REPLACE_WITH_YOUR_YOUTUBE_VIDEO_ID)** *(Replace with your unlisted YouTube / Google Drive link upon final recording)*  
-> 📖 **Video Script & Timing Guide**: See [SAFEPASS_PLAYBOOK.md](./SAFEPASS_PLAYBOOK.md) for the turnkey 3-minute recording script matching the hackathon evaluation sheet.
+> 📹 **Video Link**: **[https://youtu.be/REPLACE_WITH_YOUR_YOUTUBE_VIDEO_ID](https://www.youtube.com/watch?v=REPLACE_WITH_YOUR_YOUTUBE_VIDEO_ID)** *(Replace with your unlisted YouTube / Google Drive link upon final recording)*
 
 ```
 +-----------------------------------------------------------------------------------+
@@ -133,18 +132,6 @@ SafePass features a built-in **3-Persona Switcher** on the [Onboarding Page](htt
 
 ---
 
-## 📊 Evaluation Criteria Alignment
-
-| Criteria | Weight | How SafePass Meets & Exceeds |
-| :--- | :---: | :--- |
-| **Innovation** | **20%** | Moves beyond passive weather radar apps to an active, empathetic crisis companion with panic-reduction voice AI, legal hotel-stay protections, and diplomatic consular bridging. |
-| **Technical Implementation** | **35%** | Full-stack TypeScript architecture, Leaflet geospatial calculation, dual-layer cloud/offline database, audio synthesizer, and consular command center. |
-| **Feasibility & Scalability** | **20%** | Zero required hardware; leverages existing browser APIs (Geolocation, SpeechSynthesis, Service Worker PWA). Highly scalable for any coastal district globally. |
-| **Video Presentation** | **15%** | Dedicated 3-minute video covering problem gap, persona switching, crisis map, voice AI, and consular rescue tracking. Complete script in `SAFEPASS_PLAYBOOK.md`. |
-| **Deployment / Hosting** | **10%** | Live, rock-solid production deployment on Vercel (`https://safe-pass-sand.vercel.app`), tested for instant evaluation by judges with zero setup required. |
-
----
-
 ## 🚀 Local Development Setup
 
 ### Prerequisites
@@ -187,19 +174,5 @@ npm run preview
 
 ---
 
-## 👥 Hackathon Team & Roles
-
-* **Track**: TravelTech
-* **Event**: 24-Hour Web Development Hackathon 2026
-* **Institution**: IIITDM Kancheepuram
-
-| Member | Role / Direction | Key Deliverables |
-| :--- | :--- | :--- |
-| **Member 1** | Geospatial Navigator | Safe Evacuation Routing, Nearest Shelter ETA, Hazard Polylines |
-| **Member 2** | The Calm Voice AI | Multilingual Guidance, Box Breathing, Audio Waveform Visualizer |
-| **Member 3** | Consular Command | Admin Portal, CSV Manifest Export, WhatsApp Family Status Link |
-| **Member 4** | Lead / Demo & Docs | Multi-Persona Switcher, README, 3-Min Video Playbook, Form Submission |
-
----
-
 *Built with ❤️ for traveler safety during extreme weather events.*
+
