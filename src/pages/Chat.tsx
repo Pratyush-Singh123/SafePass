@@ -270,19 +270,19 @@ I am here to guide you step-by-step through current cyclone conditions. Tell me 
   return (
     <div className="max-w-3xl mx-auto animate-fade-in flex flex-col h-[calc(100vh-160px)]">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-3 text-white">
         <div className="flex items-center gap-3">
           <div className="bg-gradient-to-tr from-cyan-600 to-sky-500 p-2.5 rounded-2xl shadow-sm text-white">
             <Shield className="w-6 h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-extrabold text-slate-900">The Calm Voice</h1>
-              <span className="flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Crisis AI Ready
+              <h1 className="text-xl font-extrabold text-white">The Calm Voice</h1>
+              <span className="flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700/60">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Crisis AI Ready
               </span>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-neutral-300">
               Multilingual panic triage & localized guidance
             </p>
           </div>
@@ -291,15 +291,15 @@ I am here to guide you step-by-step through current cyclone conditions. Tell me 
         {/* Controls: Language Selector & Back to Dashboard */}
         <div className="flex items-center gap-2">
           {/* Language Picker */}
-          <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 shadow-sm text-xs">
-            <Globe2 className="w-3.5 h-3.5 text-slate-500" />
+          <div className="flex items-center gap-1.5 bg-neutral-900 border border-neutral-700 rounded-xl px-2.5 py-1.5 shadow-sm text-xs text-white">
+            <Globe2 className="w-3.5 h-3.5 text-neutral-400" />
             <select
               value={selectedLanguage}
               onChange={(e) => setSelectedLanguage(e.target.value)}
-              className="bg-transparent font-semibold text-slate-700 outline-none cursor-pointer"
+              className="bg-transparent font-semibold text-white outline-none cursor-pointer"
             >
               {LANGUAGES.map((lang) => (
-                <option key={lang.code} value={lang.code}>
+                <option key={lang.code} value={lang.code} className="bg-neutral-800 text-white">
                   {lang.flag} {lang.label}
                 </option>
               ))}
@@ -308,7 +308,7 @@ I am here to guide you step-by-step through current cyclone conditions. Tell me 
 
           <Link
             to="/dashboard"
-            className="flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-cyan-700 bg-white border border-slate-200 px-3 py-2 rounded-xl transition-all shadow-sm"
+            className="flex items-center gap-1 text-xs font-semibold text-white hover:text-cyan-400 bg-neutral-900 border border-neutral-700 hover:border-cyan-500 px-3 py-2 rounded-xl transition-all shadow-sm"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Dashboard
           </Link>

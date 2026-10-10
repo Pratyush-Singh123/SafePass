@@ -141,29 +141,29 @@ export default function Onboarding() {
   if (success) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center animate-fade-in bg-white p-8 rounded-2xl border border-slate-200 shadow-sm max-w-md w-full">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-emerald-100 rounded-full mb-6">
-            <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+        <div className="text-center animate-fade-in bg-neutral-900 text-white p-8 rounded-2xl border border-neutral-800 shadow-xl max-w-md w-full">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-emerald-950 text-emerald-400 border border-emerald-700/60 rounded-full mb-6">
+            <CheckCircle2 className="w-10 h-10 text-emerald-400" />
           </div>
-          <h2 className="text-2xl font-extrabold text-slate-900 mb-2">SafePass Profile Activated</h2>
-          <p className="text-slate-600 text-sm">
+          <h2 className="text-2xl font-extrabold text-white mb-2">SafePass Profile Activated</h2>
+          <p className="text-neutral-300 text-sm">
             Coordinates and consular safety token securely logged. Launching Crisis Dashboard...
           </p>
-          <Loader2 className="w-6 h-6 text-cyan-600 animate-spin mx-auto mt-6" />
+          <Loader2 className="w-6 h-6 text-cyan-400 animate-spin mx-auto mt-6" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto animate-fade-in pb-12">
+    <div className="max-w-2xl mx-auto animate-fade-in pb-12 text-white">
       {/* Header banner */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-100 text-cyan-800 text-xs font-bold mb-3">
-          <Shield className="w-3.5 h-3.5" /> 20-Second Tourist Crisis Registration
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-700/60 text-xs font-bold mb-3 shadow-xs">
+          <Shield className="w-3.5 h-3.5 text-cyan-400" /> 20-Second Tourist Crisis Registration
         </div>
-        <h1 className="text-3xl font-extrabold text-slate-900 mb-2">Welcome to SafePass</h1>
-        <p className="text-slate-600 text-sm max-w-lg mx-auto">
+        <h1 className="text-3xl font-extrabold text-white mb-2 tracking-tight">Welcome to SafePass</h1>
+        <p className="text-neutral-300 text-sm max-w-lg mx-auto leading-relaxed">
           Instant real-time safety monitoring, multilingual crisis guidance, and consular check-in for foreign travelers during localized weather disasters.
         </p>
 
@@ -172,27 +172,27 @@ export default function Onboarding() {
           <button
             type="button"
             onClick={fillDemoScenario}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md hover:shadow-lg"
           >
             <Zap className="w-3.5 h-3.5" /> ⚡ Pre-fill Hackathon Demo (Alex Mercer — French Tourist in Mahabalipuram)
           </button>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
+      <form onSubmit={handleSubmit} className="bg-neutral-900 text-white rounded-2xl shadow-xl border border-neutral-800 p-6 sm:p-8 space-y-6">
         {/* Name */}
         <div>
-          <label className="block text-sm font-bold text-slate-800 mb-2">
+          <label className="block text-sm font-bold text-white mb-2">
             Full Traveler Name *
           </label>
           <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g. Alex Mercer"
-              className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm"
+              className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm"
               required
             />
           </div>
@@ -200,20 +200,20 @@ export default function Onboarding() {
 
         {/* Nationality */}
         <div>
-          <label className="block text-sm font-bold text-slate-800 mb-2">
+          <label className="block text-sm font-bold text-white mb-2">
             Country of Citizenship (Consular Liaison) *
           </label>
           <div className="relative">
-            <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+            <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 pointer-events-none" />
             <select
               value={formData.nationality}
               onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
-              className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 appearance-none bg-white text-sm"
+              className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all appearance-none text-sm"
               required
             >
-              <option value="">Select your nationality</option>
+              <option value="" className="bg-neutral-800 text-neutral-400">Select your nationality</option>
               {nationalities.map((n) => (
-                <option key={n} value={n}>{n}</option>
+                <option key={n} value={n} className="bg-neutral-800 text-white">{n}</option>
               ))}
             </select>
           </div>
@@ -222,34 +222,34 @@ export default function Onboarding() {
         {/* Location */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-bold text-slate-800">
+            <label className="block text-sm font-bold text-white">
               Current Location / Hotel Landmark
             </label>
             <button
               type="button"
               onClick={handleGetLocation}
               disabled={locating}
-              className="flex items-center gap-1.5 text-xs font-semibold text-cyan-600 hover:text-cyan-700 transition-colors"
+              className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
             >
               {locating ? (
-                <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Detecting...</>
+                <><Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-400" /> Detecting...</>
               ) : (
-                <><Navigation className="w-3.5 h-3.5" /> Auto-Detect GPS</>
+                <><Navigation className="w-3.5 h-3.5 text-cyan-400" /> Auto-Detect GPS</>
               )}
             </button>
           </div>
           <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
             <input
               type="text"
               value={formData.location_label}
               onChange={(e) => setFormData({ ...formData, location_label: e.target.value })}
               placeholder="e.g. Mahabalipuram Beach Resort, ECR Road, Tamil Nadu"
-              className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm"
+              className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm"
             />
           </div>
           {location && (
-            <p className="mt-2 text-xs text-emerald-600 font-semibold flex items-center gap-1">
+            <p className="mt-2 text-xs text-emerald-400 font-semibold flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5" />
               GPS locked: {location.lat.toFixed(4)}° N, {location.lng.toFixed(4)}° E (Tamil Nadu Coastal Zone)
             </p>
@@ -257,10 +257,10 @@ export default function Onboarding() {
         </div>
 
         {/* Emergency Contact */}
-        <div className="border-t border-slate-200 pt-6">
+        <div className="border-t border-neutral-800 pt-6">
           <div className="flex items-center gap-2 mb-4">
-            <LifeBuoy className="w-4 h-4 text-cyan-600" />
-            <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+            <LifeBuoy className="w-4 h-4 text-cyan-400" />
+            <h3 className="text-xs font-bold text-neutral-300 uppercase tracking-wider">
               Emergency Contact (Family Back Home)
             </h3>
           </div>
@@ -268,17 +268,17 @@ export default function Onboarding() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Contact Name */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
                 Contact Full Name *
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                 <input
                   type="text"
                   value={formData.emergency_contact_name}
                   onChange={(e) => setFormData({ ...formData, emergency_contact_name: e.target.value })}
                   placeholder="e.g. Claire Mercer"
-                  className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm"
+                  className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm"
                   required
                 />
               </div>
@@ -286,17 +286,17 @@ export default function Onboarding() {
 
             {/* Contact Phone */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
                 Contact International Phone *
               </label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                 <input
                   type="tel"
                   value={formData.emergency_contact_phone}
                   onChange={(e) => setFormData({ ...formData, emergency_contact_phone: e.target.value })}
                   placeholder="+33 6 42 19 88 01"
-                  className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm"
+                  className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm"
                   required
                 />
               </div>
@@ -305,8 +305,8 @@ export default function Onboarding() {
         </div>
 
         {error && (
-          <div className="flex items-center gap-2 text-red-600 text-xs sm:text-sm bg-red-50 rounded-xl p-3 border border-red-100">
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+          <div className="flex items-center gap-2 text-red-300 text-xs sm:text-sm bg-red-950/60 rounded-xl p-3 border border-red-800/60">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-400" />
             {error}
           </div>
         )}
@@ -314,7 +314,7 @@ export default function Onboarding() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-700 hover:to-sky-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-60 flex items-center justify-center gap-2 text-sm sm:text-base"
+          className="w-full bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-60 flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer"
         >
           {submitting ? (
             <><Loader2 className="w-5 h-5 animate-spin" /> Registering with Consular Network...</>

@@ -22,8 +22,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col font-sans antialiased text-slate-900">
-      <header className="bg-slate-900 text-white sticky top-0 z-50 shadow-md border-b border-slate-800">
+    // CHANGED: Pure black background (bg-black) and pure white text (text-white) for maximum contrast
+    <div className="min-h-screen bg-black flex flex-col font-sans antialiased text-white">
+      {/* CHANGED: Header is now black with a subtle neutral border */}
+      <header className="bg-black text-white sticky top-0 z-50 shadow-md border-b border-neutral-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2.5 group">
@@ -49,7 +51,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                       isActive
                         ? 'bg-cyan-600 text-white shadow-sm'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
+                        : 'text-neutral-400 hover:text-white hover:bg-neutral-800/80'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -70,7 +72,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Mobile nav */}
-        <nav className="md:hidden flex items-center gap-1.5 overflow-x-auto px-4 py-2 bg-slate-950 border-t border-slate-800/80 scrollbar-none">
+        <nav className="md:hidden flex items-center gap-1.5 overflow-x-auto px-4 py-2 bg-black border-t border-neutral-800 scrollbar-none">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.to;
@@ -81,7 +83,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   isActive
                     ? 'bg-cyan-600 text-white shadow-sm'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                    : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -96,12 +98,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      <footer className="bg-slate-900 text-slate-400 text-xs py-4 border-t border-slate-800">
+      {/* CHANGED: Footer updated to match the black background */}
+      <footer className="bg-black text-neutral-400 text-xs py-4 border-t border-neutral-800">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
           <p>
-            <strong className="text-slate-200">SafePass</strong> — Autonomous Tourist Crisis Triage & Consular Diplomatic Bridge
+            <strong className="text-neutral-200">SafePass</strong> — Autonomous Tourist Crisis Triage & Consular Diplomatic Bridge
           </p>
-          <p className="text-slate-500">
+          <p className="text-neutral-500">
             IIITDM Kancheepuram Hackathon 2026 • TravelTech Track
           </p>
         </div>

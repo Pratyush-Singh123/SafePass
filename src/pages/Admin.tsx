@@ -198,21 +198,21 @@ export default function Admin() {
   return (
     <div className="animate-fade-in space-y-6 pb-12">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 text-white p-5 sm:p-6 rounded-3xl shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-neutral-900 text-white p-5 sm:p-6 rounded-3xl shadow-xl border border-neutral-800">
         <div className="flex items-center gap-3.5">
           <div className="bg-cyan-500/20 text-cyan-400 p-3 rounded-2xl border border-cyan-500/30">
             <Building2 className="w-7 h-7" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
                 Consular Crisis Command Center
               </h1>
               <span className="bg-cyan-500/20 text-cyan-300 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-cyan-400/30">
                 Liaison View
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
+            <p className="text-xs sm:text-sm text-neutral-300 mt-0.5">
               Diplomatic Mission & State Disaster Management Authority (TNDMA) Roster
             </p>
           </div>
@@ -221,13 +221,13 @@ export default function Admin() {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setBroadcastModal(true)}
-            className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-2"
+            className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer"
           >
             <Radio className="w-4 h-4 animate-pulse" /> Dispatch Consular Advisory
           </button>
           <Link
             to="/dashboard"
-            className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all border border-slate-700"
+            className="bg-neutral-800 hover:bg-neutral-700 text-white font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all border border-neutral-700"
           >
             Tourist View
           </Link>
