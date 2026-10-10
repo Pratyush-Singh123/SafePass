@@ -180,143 +180,946 @@ export const FALLBACK_CYCLONE_WEATHER: WeatherData = {
   ],
 };
 
+// Detect primary language by country or nationality
+export function getLanguageForCountry(countryOrNat?: string | null): string {
+  if (!countryOrNat) return 'en';
+  const c = countryOrNat.toLowerCase().trim();
+
+  // Tamil (State / Language)
+  if (c.includes('tamil') || c.includes('chennai') || c.includes('madras')) {
+    return 'ta';
+  }
+
+  // India (National Hindi support for domestic tourists)
+  if (
+    c.includes('india') ||
+    c.includes('bharat') ||
+    c.includes('hind') ||
+    c.includes('delhi') ||
+    c.includes('mumbai') ||
+    c.includes('bengal') ||
+    c.includes('punjab')
+  ) {
+    return 'hi';
+  }
+
+  // France & Francophone nations
+  if (
+    c.includes('france') ||
+    c.includes('french') ||
+    c.includes('franç') ||
+    c.includes('paris') ||
+    c.includes('belgi') ||
+    c.includes('monaco') ||
+    c.includes('suisse') ||
+    c.includes('senegal')
+  ) {
+    return 'fr';
+  }
+
+  // Spain & Hispanic nations
+  if (
+    c.includes('spain') ||
+    c.includes('spani') ||
+    c.includes('españ') ||
+    c.includes('mexic') ||
+    c.includes('colomb') ||
+    c.includes('argentin') ||
+    c.includes('chile') ||
+    c.includes('peru') ||
+    c.includes('venezuel') ||
+    c.includes('ecuador')
+  ) {
+    return 'es';
+  }
+
+  // Germany, Austria & German speaking
+  if (
+    c.includes('german') ||
+    c.includes('deutsch') ||
+    c.includes('austria') ||
+    c.includes('österreich') ||
+    c.includes('berlin') ||
+    c.includes('munich')
+  ) {
+    return 'de';
+  }
+
+  // Japan
+  if (
+    c.includes('japan') ||
+    c.includes('nihon') ||
+    c.includes('nippon') ||
+    c.includes('tokyo') ||
+    c.includes('osaka')
+  ) {
+    return 'ja';
+  }
+
+  // Default to English (USA, UK, Canada, Australia, etc.)
+  return 'en';
+}
+
 // Multilingual Crisis AI Guidance Engine (Zero-Fail Local Fallback)
 export function generateLocalCrisisAdvice(userMessage: string, language: string = 'en'): string {
   const q = userMessage.toLowerCase();
 
-  // French
-  if (language === 'fr' || q.includes('route') || q.includes('aeroport') || q.includes('bonjour') || q.includes('danger') || q.includes('francais')) {
-    if (q.includes('aeroport') || q.includes('airport') || q.includes('route')) {
-      return `Restez calme et en sécurité.
+  // French (strictly active when language is 'fr' or message contains explicit French phrases)
+  if (language === 'fr' || q.includes('bonjour') || q.includes('francais') || q.includes('merci') || q.includes('s\'il vous plait') || q.includes('évacuer')) {
+    if (q.includes('hotel') || q.includes('expuls') || q.includes('refus') || q.includes('chambre') || q.includes('quitter') || q.includes('partir')) {
+      return `DROITS DES RÉSIDENTS EN SITUATION DE CATASTROPHE (NDMA 2005) :
 
-1. Situation routière : La route côtière (ECR) est actuellement inondée et fermée à la circulation au nord de Mahabalipuram. N'essayez PAS de vous rendre à l'aéroport de Chennai en voiture ou en taxi pour l'instant.
+[CRITICAL WARNING]
+Selon l'article 30 du Disaster Management Act indien (NDMA 2005), il est strictement interdit aux hôtels et pensions d'expulser des résidents pendant une Alerte Rouge cyclonique.
 
-2. Consigne de sécurité immédiate : Restez au sec au premier étage ou supérieur de votre hôtel. Ne traversez aucune zone inondée à pied.
+[ACTION CHECKLIST]
+• Montrez cette notification à la réception de votre hôtel.
+• Les autorités du district de Kancheepuram ont ordonné aux hôteliers d'offrir un abri vertical aux étages.
+• En cas de refus ou menace : composez le 1077 pour intervention directe du Magistrat de District.
+• Votre situation est enregistrée auprès du Consulat de France.
 
-3. Point de rassemblement sécurisé : Le refuge d'urgence officiel le plus proche est le "Mahabalipuram High-Ground Shelter" situé à 1,8 km à l'intérieur des terres (Contact : +91 44 2744 2233).
+[SAFE SHELTER]
+Cellule d'urgence du District Collectorate : 1077 (Les officiers de gestion des catastrophes contacteront l'hôtel directement).
 
-4. Liaison consulaire : Votre statut est transmis au Consulat Général de France à Chennai. Pour une urgence vitale, composez le 112.`;
+[EMERGENCY CONTACT]
+Magistrat de District : 1077 | Brigade Touristique : +91 44 2846 1450 | Consulat de France : +91 413 226 6500.`;
     }
+
+    if (q.includes('passeport') || q.includes('passport') || q.includes('consulat') || q.includes('ambassade') || q.includes('papier') || q.includes('visa')) {
+      return `CONSULAT DE FRANCE — PERTE DE DOCUMENTS :
+
+[CRITICAL WARNING]
+Ne prenez aucun risque physique pour récupérer des papiers ou bagages dans des zones inondées. La vie humaine prévaut sur tout document administratif.
+
+[ACTION CHECKLIST]
+• Les protocoles internationaux humanitaires garantissent le passage sécurisé en zone de catastrophe sans passeport physique.
+• SafePass a synchronisé votre profil sur le registre de crise du Consulat Général de France (/admin).
+• Le Consulat à Pondichéry/Chennai et le FRRO délivreront un Laissez-Passer d'urgence dès que la météo le permettra.
+
+[SAFE SHELTER]
+Point Consulaire Sécurisé International (Corridor OMR, Sholinganallur — Desk de liaison pour ressortissants français et européens).
+
+[EMERGENCY CONTACT]
+Liaison Consulat de France (Urgences 24/7) : +91 413 226 6500 | Police Touristique : +91 44 2846 1450.`;
+    }
+
+    if (q.includes('enfant') || q.includes('famille') || q.includes('bebe') || q.includes('separ') || q.includes('fils') || q.includes('fille')) {
+      return `SÉCURITÉ FAMILLE ET ENFANTS :
+
+[CRITICAL WARNING]
+Ne séparez jamais votre groupe dans l'eau. Un courant d'eau de seulement 15 cm de hauteur peut emporter un jeune enfant.
+
+[ACTION CHECKLIST]
+• Inscrivez vos coordonnées téléphoniques sur le bras de vos enfants au feutre indélébile.
+• Restez aux étages supérieurs au sec.
+• En cas de membre égaré : prévenez immédiatement la Police Touristique (+91 44 2846 1450) qui tient un registre centralisé des personnes séparées.
+• Utilisez le bouton "Relayer au Consulat" pour prioriser votre famille.
+
+[SAFE SHELTER]
+Centre de secours Anna (Bypass de Mahabalipuram — Rations pédiatriques et lait maternisé disponibles).
+
+[EMERGENCY CONTACT]
+Helpline Enfance : 1098 | Urgences Nationales : 112 | Police Touristique : +91 44 2846 1450.`;
+    }
+
+    if (q.includes('bless') || q.includes('medic') || q.includes('serpent') || q.includes('hopital') || q.includes('docteur') || q.includes('sang') || q.includes('fievre')) {
+      return `GUIDE MÉDICAL D'URGENCE :
+
+[CRITICAL WARNING]
+Les eaux d'inondation contiennent des bactéries sévères et des reptiles déplacés par la houle (vipères, serpents marins). Ne laissez aucune plaie entrer en contact avec l'eau.
+
+[ACTION CHECKLIST]
+• Nettoyez immédiatement toute coupure à l'eau potable en bouteille et antiseptique.
+• En cas de morsure : immobilisez le membre sous le niveau du cœur, ne posez pas de garrot serré.
+• Gardez la personne au chaud et calme pour éviter l'état de choc.
+
+[SAFE SHELTER]
+Unité d'Urgences & Traumatologie Apollo (ECR Perungudi, 8.2 km, sérums antivenimeux et chirurgiens d'urgence).
+
+[EMERGENCY CONTACT]
+Ambulance SMUR : 108 | Urgences Nationales : 112 | Apollo Trauma : +91 44 2829 0200.`;
+    }
+
+    if (q.includes('eau') || q.includes('manger') || q.includes('nourriture') || q.includes('faim') || q.includes('batterie') || q.includes('boire') || q.includes('electric')) {
+      return `EAU POTABLE ET RESSOURCES DE SURVIE :
+
+[CRITICAL WARNING]
+L'eau du réseau est contaminée par le refoulement des eaux usées. Ne buvez jamais l'eau du robinet et ne vous lavez pas avec l'eau d'inondation.
+
+[ACTION CHECKLIST]
+• Buvez exclusivement de l'eau en bouteille capsulée ou bouillie pendant 3 minutes.
+• Activez immédiatement le Mode Économie de Batterie (luminosité à 15 %, Bluetooth désactivé).
+• Consommez en priorité les denrées sèches (biscuits, fruits secs, conserves).
+
+[SAFE SHELTER]
+Centre de Secours Anna (Poonjeri Bypass) distribue de l'eau scellée et des repas secs chauds.
+
+[EMERGENCY CONTACT]
+Ravitaillement de Secours : 1077 | Centre des Opérations d'Urgence : 1070.`;
+    }
+
+    if (q.includes('aeroport') || q.includes('airport') || q.includes('route') || q.includes('taxi') || q.includes('vol') || q.includes('voiture')) {
+      return `BULLETIN DE TRANSIT RÉGIONAL :
+
+[CRITICAL WARNING]
+La route côtière (ECR) est coupée par 80 cm d'eau au niveau du pont de Kovalam. Les vols à l'aéroport de Chennai (MAA) subissent de fortes perturbations.
+
+[ACTION CHECKLIST]
+• Restez au sec au premier étage ou supérieur de votre hôtel.
+• Ne prenez aucun taxi ou véhicule de location dans les zones inondées.
+• Ne traversez aucune rue inondée à pied (fort courant marin).
+• Mettez votre téléphone en mode économie d'énergie.
+
+[SAFE SHELTER]
+Refuge sécurisé : Mahabalipuram High-Ground Shelter (situé à 1,8 km à l'intérieur des terres, élevé au-dessus de la ligne de houle).
+
+[EMERGENCY CONTACT]
+Assistance Routière d'Urgence : 1033 | Urgences Nationales : 112 | Liaison Consulat de France : +91 413 226 6500.`;
+    }
+
     return `Je suis SafePass, votre guide de crise en français.
 
-Respirez profondément, vous n'êtes pas seul(e). Voici vos priorités immédiates :
-• Restez à l'abri sur les hauteurs (évitez les rez-de-chaussée).
-• Ne vous approchez pas du littoral ni des câbles électriques au sol.
-• Conservez la batterie de votre téléphone en mode économie.
-• L'ambassade et les secours locaux (112) sont alertés de la situation dans votre secteur.
+[CRITICAL WARNING]
+Alerte Rouge Cyclonique de Niveau 3 sur la côte de Mahabalipuram / Chengalpattu. Évitez absolument le front de mer et les rez-de-chaussée.
 
-Dites-moi exactement où vous vous trouvez (nom d'hôtel ou repère) et si vous avez des proches avec vous.`;
-  }
+[ACTION CHECKLIST]
+• Réfugiez-vous sur les hauteurs (2e étage minimum).
+• Conservez l'eau potable dans des bouteilles étanches.
+• Évitez de toucher les câbles au sol.
+• Informez la réception de votre présence.
 
-  // German
-  if (language === 'de') {
-    return `Bleiben Sie ruhig und geschützt. Ich bin Ihr SafePass-Krisenbegleiter.
+[SAFE SHELTER]
+Refuge de terrain élevé : Mahabalipuram High-Ground Shelter (Contact : +91 44 2744 2233).
 
-1. Sofortige Sicherheitsregel: Verlassen Sie Ihr Gebäude nicht. Die Küstenstraße (ECR) ist wegen Überschwemmungen unpassierbar.
-2. Sicherer Zufluchtsort: Die nächstgelegene Notunterkunft ist das "Mahabalipuram High-Ground Shelter" (+91 44 2744 2233).
-3. Notruf: Bei unmittelbarer Gefahr wählen Sie bitte 112. Ihr Status wird gleichzeitig an das Konsulat übermittelt.
-
-Wie ist Ihre genaue Situation? Brauchen Sie medizinische Hilfe?`;
+[EMERGENCY CONTACT]
+Urgences Nationales : 112 | Liaison Consulat de France : +91 413 226 6500.`;
   }
 
   // Spanish
   if (language === 'es') {
+    if (q.includes('hotel') || q.includes('desalojar') || q.includes('derechos') || q.includes('quedarse') || q.includes('check out') || q.includes('expul')) {
+      return `DERECHOS DE RESIDENTES EN SITUACIÓN DE DESASTRE (NDMA 2005):
+
+[CRITICAL WARNING]
+Según el artículo 30 de la Ley de Gestión de Desastres de la India (NDMA 2005), los hoteles y alojamientos tienen estrictamente prohibido desalojar turistas durante una Alerta Roja por ciclón.
+
+[ACTION CHECKLIST]
+• Muestre este aviso al personal de recepción de su hotel.
+• La administración del distrito de Kancheepuram ha ordenado refugio vertical obligatorio en plantas superiores.
+• Si el hotel se niega o presiona: llame al 1077 para intervención directa del Magistrado Distrital.
+• Su perfil ha sido notificado a su consulado diplomático.
+
+[SAFE SHELTER]
+Mesa de Desastres del Distrito: 1077 (Las autoridades contactarán a la gerencia del hotel directamente).
+
+[EMERGENCY CONTACT]
+Magistrado de Distrito: 1077 | Policía Turística: +91 44 2846 1450 | Emergencias Nacionales: 112.`;
+    }
+
+    if (q.includes('pasaporte') || q.includes('consulado') || q.includes('embajada') || q.includes('documento') || q.includes('visa')) {
+      return `ASISTENCIA CONSULAR Y PÉRDIDA DE DOCUMENTOS:
+
+[CRITICAL WARNING]
+No arriesgue su vida física para recuperar maletas o pasaportes en zonas inundadas. La integridad humana prevalece sobre los trámites administrativos.
+
+[ACTION CHECKLIST]
+• Los tratados humanitarios internacionales permiten el tránsito de emergencia en catástrofes sin pasaporte físico.
+• SafePass ha registrado su situación en el panel de control consular (/admin).
+• Su embajada y el FRRO emitirán un salvoconducto de viaje de emergencia en cuanto amaine el temporal.
+
+[SAFE SHELTER]
+Punto Consular Seguro Internacional (Corredor OMR, Sholinganallur).
+
+[EMERGENCY CONTACT]
+Policía Turística: +91 44 2846 1450 | Emergencias Nacionales: 112 | Centro de Operaciones: 1070.`;
+    }
+
+    if (q.includes('familia') || q.includes('niño') || q.includes('bebe') || q.includes('separad') || q.includes('hijo') || q.includes('hija')) {
+      return `SEGURIDAD PARA FAMILIAS Y NIÑOS:
+
+[CRITICAL WARNING]
+Nunca separe a su grupo en el agua. Una corriente de tan solo 15 cm puede arrastrar a un niño pequeño.
+
+[ACTION CHECKLIST]
+• Escriba su número telefónico en el brazo de sus hijos con tinta indeleble.
+• Permanezcan en pisos altos y secos de su edificio.
+• Si alguien se extravía: notifique de inmediato a la Policía Turística (+91 44 2846 1450), que cuenta con un registro unificado de búsqueda.
+• Pulse el botón "SOS" para prioridad de extracción consular familiar.
+
+[SAFE SHELTER]
+Centro de Ayuda Comunitaria Anna (Bypass de Mahabalipuram — leche de fórmula y raciones pediátricas disponibles).
+
+[EMERGENCY CONTACT]
+Línea Infantil: 1098 | Emergencias Nacionales: 112 | Policía Turística: +91 44 2846 1450.`;
+    }
+
+    if (q.includes('medic') || q.includes('herida') || q.includes('serpiente') || q.includes('hospital') || q.includes('auxilio') || q.includes('doctor') || q.includes('sangre')) {
+      return `GUÍA MÉDICA Y PRIMEROS AUXILIOS:
+
+[CRITICAL WARNING]
+Las aguas de inundación albergan bacterias graves y reptiles desplazados por la marejada. Mantenga cualquier herida limpia y alejada del agua estancada.
+
+[ACTION CHECKLIST]
+• Lave de inmediato cortes con agua embotellada y antiséptico.
+• En caso de mordedura: inmovilice la extremidad por debajo del nivel del corazón; no corte ni use torniquetes apretados.
+• Mantenga a la persona abrigada y tranquila para evitar el shock circulatorio.
+
+[SAFE SHELTER]
+Unidad de Urgencias y Trauma Apollo (ECR Perungudi, 8.2 km, cuenta con antídotos antiofídicos y especialistas de guardia).
+
+[EMERGENCY CONTACT]
+Ambulancias: 108 | Emergencias Nacionales: 112 | Hospital Apollo: +91 44 2829 0200.`;
+    }
+
+    if (q.includes('agua') || q.includes('comida') || q.includes('bateria') || q.includes('electricidad') || q.includes('beber') || q.includes('energia')) {
+      return `RECURSOS DE SUPERVIVENCIA Y AGUA POTABLE:
+
+[CRITICAL WARNING]
+El agua corriente de red está contaminada por el desbordamiento de alcantarillas. Nunca beba agua del grifo sin hervir ni se lave con agua de la inundación.
+
+[ACTION CHECKLIST]
+• Beba exclusivamente agua embotellada precintada o hervida durante al menos 3 minutos.
+• Active el Modo de Ultra Ahorro de Batería en su teléfono (brillo al 15%, desactive Bluetooth y GPS constante).
+• Consuma primero alimentos secos y no perecederos (galletas, frutos secos, enlatados).
+
+[SAFE SHELTER]
+Centro de Ayuda Anna (Poonjeri Bypass) distribuye agua potable embotellada y raciones secas calientes.
+
+[EMERGENCY CONTACT]
+Distribución de Auxilio: 1077 | Centro de Operaciones del Estado: 1070.`;
+    }
+
+    if (q.includes('carretera') || q.includes('aeropuerto') || q.includes('taxi') || q.includes('vuelo') || q.includes('coche') || q.includes('ecr')) {
+      return `BOLETÍN DE TRÁNSITO REGIONAL Y EVACUACIÓN:
+
+[CRITICAL WARNING]
+La carretera costera East Coast Road (ECR) está cortada con 80 cm a 1 metro de agua cerca del puente de Kovalam. Los vuelos en el Aeropuerto de Chennai (MAA) sufren cancelaciones y retrasos por vientos huracanados.
+
+[ACTION CHECKLIST]
+• PERMANEZCA A RESGUARDO: No contrate taxis ni intente circular en coches por zonas bajas.
+• No intente cruzar a pie calles inundadas con corriente marina.
+• Manténgase en la segunda planta o superior hasta que las autoridades emitan el cese de alerta.
+
+[SAFE SHELTER]
+Refugio de Terreno Elevado de Mahabalipuram (a 1.8 km tierra adentro, 18 metros sobre el nivel del mar).
+
+[EMERGENCY CONTACT]
+Asistencia en Carretera: 1033 | Emergencias Nacionales: 112 | Centro de Desastres: 1070.`;
+    }
+
     return `Mantenga la calma. Estoy aquí para guiarle paso a paso con SafePass.
 
-1. Estado actual: Alerta Roja por Ciclón en la zona costera de Kancheepuram / Chennai.
-2. Instrucción de seguridad: Permanezca en un piso alto dentro de una estructura de concreto. No intente conducir por la carretera costera (ECR) ya que está cortada.
-3. Refugio verificado: El refugio de terreno elevado más cercano está en Mahabalipuram (+91 44 2744 2233).
-4. Emergencias: Llame al 112 para rescate directo.
+[CRITICAL WARNING]
+Alerta Roja por Ciclón y marejada en el corredor costero de Mahabalipuram. Manténgase alejado de la playa y de plantas bajas.
 
-¿Se encuentra en un lugar techado en este momento?`;
+[ACTION CHECKLIST]
+• Permanezca en un piso superior dentro de una estructura de concreto.
+• No intente cruzar aguas en movimiento a pie ni en coche.
+• Guarde agua potable embotellada y cargue baterías de emergencia.
+• Si requiere asistencia consular inmediata, presione el botón "SOS".
+
+[SAFE SHELTER]
+Refugio de Terreno Elevado de Mahabalipuram (+91 44 2744 2233, raciones y primeros auxilios disponibles).
+
+[EMERGENCY CONTACT]
+Emergencias: 112 | Control de Desastres de Tamil Nadu: 1070 | Ambulancias: 108.`;
+  }
+
+  // German
+  if (language === 'de') {
+    if (q.includes('hotel') || q.includes('rauswurf') || q.includes('verlassen') || q.includes('rechte')) {
+      return `RECHTE VON HOTELGÄSTEN BEI KATASTROPHEN (NDMA 2005):
+
+[CRITICAL WARNING]
+Nach § 30 des indischen Katastrophenschutzgesetzes (NDMA 2005) ist es Hotels strikt untersagt, Gäste während einer Zyklon-Warnung der Stufe Rot vor die Tür zu setzen.
+
+[ACTION CHECKLIST]
+• Zeigen Sie diesen Hinweis dem Hotelmanagement vor.
+• Die Behörden haben vertikalen Schutz in oberen Stockwerken angeordnet.
+• Bei Weigerung wählen Sie 1077 für das sofortige Einschreiten der Behörden.
+
+[SAFE SHELTER]
+Katastrophenschutzzentrale Kancheepuram: 1077.
+
+[EMERGENCY CONTACT]
+Bezirksleitung: 1077 | Touristenpolizei: +91 44 2846 1450 | Notruf: 112.`;
+    }
+
+    if (q.includes('pass') || q.includes('reisepass') || q.includes('konsulat') || q.includes('botschaft')) {
+      return `KONSULARISCHE HILFE & REISEPAPIERE:
+
+[CRITICAL WARNING]
+Riskieren Sie nicht Ihre Gesundheit, um Gepäck oder Papiere aus überfluteten Räumen zu retten. Menschenleben gehen vor.
+
+[ACTION CHECKLIST]
+• Internationale Protokolle sichern Schutz bei Katastrophen auch ohne physischen Pass zu.
+• Ihre Registrierung ist im Konsulats-Dashboard hinterlegt.
+• Nach Beruhigung der Wetterlage stellt die Auslandsvertretung einen Not-Reiseausweis aus.
+
+[SAFE SHELTER]
+Internationaler Konsulats-Sicherheitspunkt (OMR Tech Corridor, Sholinganallur).
+
+[EMERGENCY CONTACT]
+Touristenpolizei: +91 44 2846 1450 | Notruf: 112 | Katastrophenschutz: 1070.`;
+    }
+
+    if (q.includes('kind') || q.includes('familie') || q.includes('baby') || q.includes('verloren')) {
+      return `FAMILIEN- UND KINDERSCHUTZ:
+
+[CRITICAL WARNING]
+Trennen Sie niemals Ihre Gruppe im Hochwasser. 15 cm Strömung genügen, um ein Kind mitzureißen.
+
+[ACTION CHECKLIST]
+• Schreiben Sie Ihre Telefonnummer mit wasserfestem Stift auf den Arm Ihres Kindes.
+• Bleiben Sie auf trockenen oberen Etagen.
+• Bei vermissten Personen: Sofort die Touristenpolizei (+91 44 2846 1450) informieren.
+
+[SAFE SHELTER]
+Anna Hilfszentrum (Mahabalipuram Bypass – Babynahrung vorhanden).
+
+[EMERGENCY CONTACT]
+Kinder-Notruf: 1098 | Nationaler Notruf: 112 | Touristenpolizei: +91 44 2846 1450.`;
+    }
+
+    if (q.includes('arzt') || q.includes('medizin') || q.includes('schlange') || q.includes('krankenhaus') || q.includes('wunde')) {
+      return `MEDIZINISCHE ERSTE HILFE:
+
+[CRITICAL WARNING]
+Flutwasser ist stark keimbelastet und kann Schlangen enthalten. Wunden sofort vor Wasser schützen.
+
+[ACTION CHECKLIST]
+• Wunden nur mit sauberem Flaschenwasser und Antiseptikum spülen.
+• Bei Bissen: Extremität ruhigstellen und unter Herzniveau lagern; nicht abbinden.
+• Betroffene Person warm und ruhig halten.
+
+[SAFE SHELTER]
+Apollo Notfallklinik (ECR Perungudi, 8,2 km, Gegengift verfügbar).
+
+[EMERGENCY CONTACT]
+Rettungsdienst: 108 | Notruf: 112 | Apollo Notaufnahme: +91 44 2829 0200.`;
+    }
+
+    if (q.includes('wasser') || q.includes('essen') || q.includes('batterie') || q.includes('strom')) {
+      return `TRINKWASSER UND RESSOURCEN:
+
+[CRITICAL WARNING]
+Leitungswasser ist durch Abwasser kontaminiert. Keinesfalls ungekocht trinken.
+
+[ACTION CHECKLIST]
+• Nur versiegeltes Flaschenwasser oder 3 Minuten sprudelnd abgekochtes Wasser trinken.
+• Energiesparmodus am Smartphone aktivieren (Displayhelligkeit 15%).
+• Trockennahrung bevorzugen.
+
+[SAFE SHELTER]
+Anna Notfallzentrum (Poonjeri Bypass) verteilt sauberes Trinkwasser.
+
+[EMERGENCY CONTACT]
+Versorgungsnotruf: 1077 | Katastrophenzentrale: 1070.`;
+    }
+
+    if (q.includes('straße') || q.includes('flughafen') || q.includes('taxi') || q.includes('flug') || q.includes('ecr')) {
+      return `VERKEHRS- UND EVAKUIERUNGSBULLETIN:
+
+[CRITICAL WARNING]
+Die Küstenstraße ECR ist bis zu 1 m überflutet. Flüge am Flughafen Chennai (MAA) fallen aus oder sind stark verspätet.
+
+[ACTION CHECKLIST]
+• Nicht mit Taxis oder Mietwagen durch geflutete Straßen fahren.
+• Zu Fuß nicht durch strömendes Wasser waten.
+• Im 2. Stock oder höher des aktuellen Gebäudes ausharren.
+
+[SAFE SHELTER]
+Mahabalipuram Notunterkunft auf Anhöhe (1,8 km landeinwärts, 18m über Meeresspiegel).
+
+[EMERGENCY CONTACT]
+Straßennotruf: 1033 | Notruf: 112 | Katastrophenschutz: 1070.`;
+    }
+
+    return `Bleiben Sie ruhig und geschützt. Ich bin Ihr SafePass-Krisenbegleiter.
+
+[CRITICAL WARNING]
+Zyklon-Warnstufe 3 für den Küstenstreifen Mahabalipuram aktiv. Wasserübertritte machen Straßen unpassierbar.
+
+[ACTION CHECKLIST]
+• Bleiben Sie im Gebäude im 2. Stock oder höher.
+• Meiden Sie Keller und seeseitige Fensterfassaden.
+• Halten Sie Trinkwasser und Smartphone im Energiesparmodus bereit.
+• Bei akuter Gefahr SOS-Schaltfläche drücken.
+
+[SAFE SHELTER]
+Notunterkunft: Mahabalipuram High-Ground Shelter (1,8 km landeinwärts, +91 44 2744 2233).
+
+[EMERGENCY CONTACT]
+Notruf Rettungsdienst: 112 | Tamil Nadu Katastrophenschutz: 1070 | Rettungsdienst: 108.`;
   }
 
   // Japanese
   if (language === 'ja') {
-    return `落ち着いてください。SafePassの危機対応ガイドです。
+    if (q.includes('ホテル') || q.includes('追い出し') || q.includes('チェックアウト')) {
+      return `災害時における滞在者の権利（NDMA 2005法）:
 
-1. 現在の警報：チェンナイ・カンチープラム沿岸部にサイクロン警戒レベル3（赤色警報）が発令されています。
-2. 安全確保：海岸沿いの道路（ECR）は冠水のため通行止めです。無理に空港へ向かわず、コンクリート建造物の2階以上に待機してください。
-3. 最寄りの避難所：マハバリプラム高台避難センター（連絡先: +91 44 2744 2233）。
-4. 緊急通報：人命に関わる事態は直ちに「112」へダイヤルしてください。
+[CRITICAL WARNING]
+インド災害管理法（NDMA 2005）第30条に基づき、サイクロン赤色警報発令中にホテルが宿泊客を退去させることは法律で厳格に禁じられています。
 
-現在、飲料水や電源は確保できていますか？`;
+[ACTION CHECKLIST]
+• 本画面をホテルのフロントスタッフに提示してください。
+• 地元当局は上層階での垂直避難を全宿泊施設に指示しています。
+• 拒否された場合は地区災害対策室（1077）に通報してください。
+
+[SAFE SHELTER]
+地区行政対策デスク：1077（当局よりホテルへ直接連絡します）。
+
+[EMERGENCY CONTACT]
+地区治安判事：1077 | 観光警察：+91 44 2846 1450 | 緊急通報：112.`;
+    }
+
+    if (q.includes('パスポート') || q.includes('領事館') || q.includes('大使館') || q.includes('書類')) {
+      return `領事支援およびパスポート紛失対応:
+
+[CRITICAL WARNING]
+冠水した場所から荷物やパスポートを回収するために危険を冒さないでください。人命が最優先です。
+
+[ACTION CHECKLIST]
+• 国際人道プロトコルにより、被災時の移動はパスポート原本がなくても安全に保護されます。
+• SafePassは領事危機管理室（/admin）へ避難情報を共有しています。
+• 天候回復後、領事館およびFRROより緊急渡航書が発行されます。
+
+[SAFE SHELTER]
+国際安全合流地点（OMRテックコリドー、Sholinganallur）。
+
+[EMERGENCY CONTACT]
+観光警察：+91 44 2846 1450 | 緊急通報：112 | 州災害対策本部：1070.`;
+    }
+
+    if (q.includes('子ども') || q.includes('家族') || q.includes('はぐれ') || q.includes('迷子')) {
+      return `家族および子どもの安全確保手順:
+
+[CRITICAL WARNING]
+浸水した場所で家族と離れないでください。わずか15cmの水流でも小さな子どもは流される恐れがあります。
+
+[ACTION CHECKLIST]
+• 油性ペンでお子様の腕に緊急連絡先を記入してください。
+• 建物の高層階で乾燥した場所に待機してください。
+• はぐれた場合は直ちに観光警察（+91 44 2846 1450）に連絡してください。
+
+[SAFE SHELTER]
+アンナ救援センター（マハバリプラム・バイパス、乳児用粉ミルク配給あり）。
+
+[EMERGENCY CONTACT]
+子ども専用ヘルプライン：1098 | 緊急通報：112 | 観光警察：+91 44 2846 1450.`;
+    }
+
+    if (q.includes('医療') || q.includes('病院') || q.includes('怪我') || q.includes('蛇') || q.includes('応急処置')) {
+      return `応急手当および緊急医療ガイド:
+
+[CRITICAL WARNING]
+洪水には有害な細菌や海から流入した蛇が含まれています。傷口を決して水につけないでください。
+
+[ACTION CHECKLIST]
+• 傷口は密閉ボトル飲料水と消毒液でのみ洗浄してください。
+• 咬傷時は患部を心臓より低い位置で固定し、きつく縛らないでください。
+• ショックを防ぐため患者を暖かく安静に保ってください。
+
+[SAFE SHELTER]
+アポロ救急外傷センター（ECR Perungudi、8.2km、抗毒素血清完備）。
+
+[EMERGENCY CONTACT]
+救急車：108 | 緊急通報：112 | アポロ病院：+91 44 2829 0200.`;
+    }
+
+    if (q.includes('水') || q.includes('食料') || q.includes('バッテリー') || q.includes('電源') || q.includes('飲む')) {
+      return `飲料水および生存用物資の確保:
+
+[CRITICAL WARNING]
+水道水は下水混入により汚染されています。未煮沸の水道水は絶対に飲まないでください。
+
+[ACTION CHECKLIST]
+• 未開封のボトル水、または3分以上沸騰させた水のみを飲んでください。
+• スマートフォンの超省電力モードを即座にオンにしてください。
+• 乾パンやナッツなどの乾燥食品を優先的に摂取してください。
+
+[SAFE SHELTER]
+アンナ救援センター（Poonjeri Bypass）にてボトル飲料水を配給中。
+
+[EMERGENCY CONTACT]
+救援物資要請：1077 | 州災害対策本部：1070.`;
+    }
+
+    if (q.includes('道路') || q.includes('空港') || q.includes('タクシー') || q.includes('交通') || q.includes('冠水')) {
+      return `交通状況および避難情報:
+
+[CRITICAL WARNING]
+海岸道路（ECR）はコバラム橋付近で最大1m冠水しています。チェンナイ国際空港（MAA）の発着便は強風により多数遅延・欠航しています。
+
+[ACTION CHECKLIST]
+• その場に待機してください。冠水地域でタクシーやレンタカーに乗らないでください。
+• 徒歩で水流のある道路を横断しないでください。
+• 現在の建物の2階以上に留まってください。
+
+[SAFE SHELTER]
+マハバリプラム高台避難センター（内陸1.8km、標高18m）。
+
+[EMERGENCY CONTACT]
+道路緊急通報：1033 | 緊急通報：112 | 州災害対策本部：1070.`;
+    }
+
+    return `落ち着いて行動してください。SafePassの危機対応ガイドです。
+
+[CRITICAL WARNING]
+マハバリプラム沿岸部にサイクロン警戒レベル3（赤色警報）発令中。海岸線および建物の1階から速やかに離れてください。
+
+[ACTION CHECKLIST]
+• コンクリート建物の2階以上に避難し、海側の窓から離れてください。
+• 飲料水を確保し、スマートフォンの省電力モードを有効化してください。
+• 緊急時は画面右上の「SOS」を押してください。
+
+[SAFE SHELTER]
+指定高台避難所：マハバリプラム高台避難センター（内陸1.8km、医療品・飲料水配給あり、+91 44 2744 2233）。
+
+[EMERGENCY CONTACT]
+緊急通報：112 | 州災害対策本部：1070 | 救急：108.`;
   }
 
   // Tamil
   if (language === 'ta') {
-    return `பயப்பட வேண்டாம், பாதுகாப்பாக இருங்கள். SafePass உங்கள் உதவிக்கு உள்ளது.
+    if (q.includes('விடுதி') || q.includes('வெளியேற') || q.includes('சட்டப்படி')) {
+      return `பேரிடர் காலத்தில் தங்கும் உரிமை (NDMA 2005):
 
-1. வானிலை எச்சரிக்கை: காஞ்சிபுரம் மற்றும் கடலோரப் பகுதிகளில் புயல் அதிதீவிர எச்சரிக்கை விடுக்கப்பட்டுள்ளது.
-2. பாதுகாப்பு வழிமுறை: தரைத்தளங்களில் தங்க வேண்டாம்; மேல்தளத்திற்கு செல்லவும். ஈசிஆர் சாலையில் வெள்ளப்பெருக்கு ஏற்பட்டுள்ளதால் பயணம் செய்ய வேண்டாம்.
-3. அருகிலுள்ள முகாம்: மாமல்லபுரம் உயர்நிலைப் புயல் நிவாரண முகாம் (தொடர்புக்கு: +91 44 2744 2233).
-4. அவசர உதவி எண்: 112 அல்லது மாநில பேரிடர் எண் 1070.
+[CRITICAL WARNING]
+இந்திய பேரிடர் மேலாண்மை சட்டம் 2005, பிரிவு 30-ன் படி, புயல் எச்சரிக்கை உள்ளபோது சுற்றுலா பயணிகளை விடுதியிலிருந்து வெளியேற்றக் கூடாது.
 
-உங்களுக்கு ஏதேனும் உடனடி மருத்துவ உதவி தேவையா?`;
+[ACTION CHECKLIST]
+• இந்த அறிவிப்பை விடுதி நிர்வாகத்திடம் காட்டவும்.
+• மாவட்ட நிர்வாகம் மேல் தளங்களில் தங்க அனுமதித்துள்ளது.
+• மறுத்தால் 1077 என்ற எண்ணிற்கு உடனடியாக தொடர்பு கொள்ளவும்.
+
+[SAFE SHELTER]
+மாவட்ட பேரிடர் கட்டுப்பாட்டு மையம்: 1077.
+
+[EMERGENCY CONTACT]
+மாவட்ட ஆட்சியர் அலுவலகம்: 1077 | சுற்றுலா காவல்துறை: +91 44 2846 1450 | அவசர உதவி: 112.`;
+    }
+
+    if (q.includes('மருத்துவம்') || q.includes('காயம்') || q.includes('பாம்பு') || q.includes('மருத்துவமனை') || q.includes('முதலுதவி')) {
+      return `அவசர மருத்துவ வழிகாட்டுதல்:
+
+[CRITICAL WARNING]
+வெள்ள நீரில் நச்சு பாக்டீரியாக்களும் பாம்புகளும் இருக்கலாம். காயங்களை மழைநீரில் படாமல் உலர வைக்கவும்.
+
+[ACTION CHECKLIST]
+• காயங்களை பாட்டில் குடிநீரால் மட்டுமே சுத்தம் செய்யவும்.
+• பாம்பு கடித்தால் பதற்றப்படாமல் இதய மட்டத்திற்கு கீழே வைக்கவும்.
+• நோயாளியை சூடாக வைத்து உடனடியாக மருத்துவமனைக்கு தகவல் தெரிவிக்கவும்.
+
+[SAFE SHELTER]
+அப்பல்லோ அவசர சிகிச்சை பிரிவு (ECR பெருங்குடி, 8.2 கி.மீ, விஷமுறிவு மருந்து வசதி உள்ளது).
+
+[EMERGENCY CONTACT]
+ஆம்புலன்ஸ்: 108 | அவசர உதவி எண்: 112 | அப்பல்லோ மருத்துவமனை: +91 44 2829 0200.`;
+    }
+
+    if (q.includes('குடிநீர்') || q.includes('உணவு') || q.includes('பேட்டரி') || q.includes('மின்சாரம்')) {
+      return `குடிநீர் மற்றும் பாதுகாப்பு வழிகாட்டுதல்:
+
+[CRITICAL WARNING]
+குழாய் தண்ணீரில் கழிவுநீர் கலந்துள்ளதால் அதை அருந்தக் கூடாது.
+
+[ACTION CHECKLIST]
+• பாட்டில் குடிநீர் அல்லது நன்றாக காய்ச்சிய தண்ணீரை மட்டுமே குடிக்கவும்.
+• மொபைல் போனை அல்ட்ரா பேட்டரி சேவர் பயன்முறையில் வைக்கவும்.
+• பிஸ்கட், உலர் பழங்கள் போன்ற கெடாத உணவுகளை உட்கொள்ளவும்.
+
+[SAFE SHELTER]
+அண்ணா நிவாரண முகாம் (பூஞ்சேரி பைபாஸ் - குடிநீர் பாட்டில்கள் வழங்கப்படுகிறது).
+
+[EMERGENCY CONTACT]
+நிவாரண உதவி: 1077 | மாநில அவசர கட்டுப்பாட்டு அறை: 1070.`;
+    }
+
+    if (q.includes('சாலை') || q.includes('விமானம்') || q.includes('டாக்சி') || q.includes('போக்குவரத்து')) {
+      return `போக்குவரத்து நிலை மற்றும் வெளியேறும் வழி:
+
+[CRITICAL WARNING]
+கோவளம் அருகே கிழக்கு கடற்கரை சாலையில் (ECR) 3 அடி வரை வெள்ளம் சூழ்ந்துள்ளது. சென்னை விமான நிலைய விமானங்கள் தாமதமாக இயக்கப்படுகின்றன.
+
+[ACTION CHECKLIST]
+• எக்காரணம் கொண்டும் காரிலோ டாக்சியிலோ வெள்ள நீரில் செல்ல வேண்டாம்.
+• தற்போதைய கட்டடத்தின் 2வது தளத்திலேயே பாதுகாப்பாக தங்கவும்.
+• புயல் கரையை கடக்கும் வரை வீண் பயணங்களைத் தவிர்க்கவும்.
+
+[SAFE SHELTER]
+மாமல்லபுரம் உயர்நிலைப் புயல் நிவாரண முகாம் (1.8 கி.மீ உள்நிலப் பகுதி).
+
+[EMERGENCY CONTACT]
+நெடுஞ்சாலை உதவி: 1033 | அவசர உதவி எண்: 112 | பேரிடர் கட்டுப்பாட்டு அறை: 1070.`;
+    }
+
+    return `பயப்பட வேண்டாம், பாதுகாப்பாக இருங்கள். SafePass உங்களுடன் உள்ளது.
+
+[CRITICAL WARNING]
+மாமல்லபுரம் கடலோரப் பகுதியில் புயல் எச்சரிக்கை நிலை 3 அமலில் உள்ளது. கடற்கரை மற்றும் கீழ் தளங்களை விட்டு விலகி இருக்கவும்.
+
+[ACTION CHECKLIST]
+• உடனடியாக கான்கிரீட் கட்டடங்களின் மேல்தளத்திற்கு செல்லவும்.
+• மின் கம்பங்கள் மற்றும் தேங்கிய மழைநீரில் நடக்க வேண்டாம்.
+• பாட்டில் குடிநீரை மட்டுமே பயன்படுத்தவும்.
+• அவசர உதவி தேவைப்பட்டால் SOS அழுத்தவும்.
+
+[SAFE SHELTER]
+அருகிலுள்ள முகாம்: மாமல்லபுரம் உயர்நிலைப் புயல் நிவாரண முகாம் (தொடர்புக்கு: +91 44 2744 2233).
+
+[EMERGENCY CONTACT]
+அவசர உதவி எண்: 112 | மாநில பேரிடர் கட்டுப்பாட்டு அறை: 1070 | ஆம்புலன்ஸ்: 108.`;
   }
 
-  // Specific English scenarios
-  if (q.includes('shelter') || q.includes('safe place') || q.includes('evacuat')) {
-    return `Here is your clear, actionable shelter plan:
+  // Hindi
+  if (language === 'hi') {
+    if (q.includes('होटल') || q.includes('बाहर') || q.includes('कमरा') || q.includes('अधिकार')) {
+      return `आपदा प्रबंधन अधिनियम 2005 के तहत पर्यटकों के अधिकार:
 
-1. Nearest High-Ground Shelter:
-   • Location: Mahabalipuram High-Ground Cyclone Shelter (1.8 km inland)
-   • Facilities: Drinking water, dry rations, emergency power generator, and paramedic staff on duty.
-   • Emergency Phone: +91 44 2744 2233
+[CRITICAL WARNING]
+राष्ट्रीय आपदा प्रबंधन कानून (NDMA 2005) की धारा 30 के अनुसार चक्रवात रेड अलर्ट के दौरान किसी भी होटल को पर्यटकों को बाहर निकालने का अधिकार नहीं है।
 
-2. Evacuation Safety Rules:
-   • Do NOT walk through flowing flood water (even 6 inches can sweep you off your feet).
-   • Move only along main high-elevation access routes. Avoid canal embankments.
-   • Take your phone, power bank, passport (in a sealed plastic bag), and bottled water.
+[ACTION CHECKLIST]
+• यह संदेश होटल प्रबंधन को दिखाएं।
+• प्रशासन ने सभी होटलों को ऊपरी मंजिलों पर आश्रय देने का निर्देश दिया है।
+• होटल जबरदस्ती करे तो जिला मजिस्ट्रेट हेल्पलाइन 1077 पर कॉल करें।
 
-Are you alone, or are there children or elderly companions with you?`;
+[SAFE SHELTER]
+जिला आपदा नियंत्रण कक्ष: 1077 (अधिकारी होटल से तुरंत संपर्क करेंगे)।
+
+[EMERGENCY CONTACT]
+जिला मजिस्ट्रेट: 1077 | टूरिस्ट पुलिस: +91 44 2846 1450 | आपातकालीन सेवा: 112.`;
+    }
+
+    if (q.includes('चिकित्सा') || q.includes('चोट') || q.includes('सांप') || q.includes('अस्पताल') || q.includes('प्राथमिक उपचार')) {
+      return `आपातकालीन चिकित्सा व प्राथमिक उपचार निर्देश:
+
+[CRITICAL WARNING]
+बाढ़ के पानी में खतरनाक बैक्टीरिया और समुद्री सांप हो सकते हैं। किसी भी घाव को बाढ़ के पानी से बचाएं।
+
+[ACTION CHECKLIST]
+• घाव को केवल बोतल बंद पानी और एंटीसेप्टिक से साफ करें।
+• सांप के काटने पर अंग को दिल के स्तर से नीचे रखें, कसकर न बांधें।
+• मरीज को गर्म रखें और तुरंत एम्बुलेंस को कॉल करें।
+
+[SAFE SHELTER]
+अपोलो ट्रॉमा सेंटर (ईसीआर पेरुंगुडी, 8.2 किमी, एंटी-वेनम इंजेक्शन उपलब्ध)।
+
+[EMERGENCY CONTACT]
+एम्बुलेंस: 108 | राष्ट्रीय आपातकालीन नंबर: 112 | अपोलो अस्पताल: +91 44 2829 0200.`;
+    }
+
+    if (q.includes('पानी') || q.includes('भोजन') || q.includes('राशन') || q.includes('बैटरी') || q.includes('बिजली')) {
+      return `पेयजल व जीवन रक्षा संसाधन:
+
+[CRITICAL WARNING]
+सीवेज मिलने के कारण नल का पानी दूषित हो चुका है। कच्चा पानी कभी न पिएं।
+
+[ACTION CHECKLIST]
+• केवल सीलबंद बोतल का पानी या 3 मिनट उबला हुआ पानी ही पिएं।
+• फोन की बैटरी बचाने के लिए अल्ट्रा बैटरी सेवर ऑन करें।
+• सूखे खाद्य पदार्थ (बिस्कुट, मेवे) पहले खाएं।
+
+[SAFE SHELTER]
+अन्ना राहत केंद्र (पुंजेरी बाईपास) में साफ पीने का पानी और सूखा राशन वितरित हो रहा है।
+
+[EMERGENCY CONTACT]
+राशन सहायता हेल्पलाइन: 1077 | राज्य आपदा केंद्र: 1070.`;
+    }
+
+    if (q.includes('सड़क') || q.includes('हवाई अड्डा') || q.includes('टैक्सी') || q.includes('विमान') || q.includes('रास्ता')) {
+      return `क्षेत्रीय यातायात व आवागमन बुलेटिन:
+
+[CRITICAL WARNING]
+ईस्ट कोस्ट रोड (ECR) पर कोवलम के पास 3 फीट पानी भरा है। चेन्नई हवाई अड्डे पर उड़ानें तूफान के कारण स्थगित हैं।
+
+[ACTION CHECKLIST]
+• वहीं सुरक्षित रहें: बाढ़ के पानी में टैक्सी या कार से न निकलें।
+• बहते पानी में पैदल चलने का प्रयास न करें।
+• अपनी वर्तमान इमारत की दूसरी मंजिल पर रुके रहें।
+
+[SAFE SHELTER]
+महाबलीपुरम हाई-ग्राउंड शेल्टर (1.8 किमी अंदरूनी भाग, 18 मीटर सुरक्षित ऊंचाई)।
+
+[EMERGENCY CONTACT]
+हाईवे हेल्पलाइन: 1033 | राष्ट्रीय बचाव सेवा: 112 | आपदा नियंत्रण: 1070.`;
+    }
+
+    return `शांत और सुरक्षित रहें। SafePass संकट प्रबंधन सहायता आपके साथ है।
+
+[CRITICAL WARNING]
+महाबलीपुरम और ईसीआर तटीय क्षेत्र में चक्रवात चेतावनी स्तर 3 सक्रिय है। समुद्र तट और भूतल से दूर रहें।
+
+[ACTION CHECKLIST]
+• तुरंत कंक्रीट की इमारत के दूसरे या तीसरे तल पर शरण लें।
+• बिजली के खंभों और बाढ़ के बहते पानी से दूर रहें।
+• पीने के लिए केवल उबला हुआ या बोतलबंद पानी ही इस्तेमाल करें।
+• आपातकाल में तुरंत SOS दबाएं।
+
+[SAFE SHELTER]
+नज़दीकी सुरक्षित शिविर: महाबलीपुरम हाई-ग्राउंड साइक्लोन शेल्टर (1.8 किमी अंदरूनी भाग, +91 44 2744 2233)।
+
+[EMERGENCY CONTACT]
+राष्ट्रीय आपातकालीन नंबर: 112 | तमिलनाडु राज्य आपदा नियंत्रण: 1070 | एम्बुलेंस: 108.`;
   }
 
-  if (q.includes('road') || q.includes('airport') || q.includes('travel') || q.includes('car') || q.includes('taxi')) {
-    return `URGENT ROAD NOTICE:
+  // Specific English scenarios:
 
-1. Airport Transit Status:
-   • The East Coast Road (ECR) between Kovalam and Mahabalipuram has water accumulation of 2.5–3.5 feet.
-   • Chennai International Airport (MAA) access via lower GST road is experiencing delays. Local authorities advise tourists to SHELTER IN PLACE rather than attempting transit through flooded causeways.
+  // Medical emergency
+  if (q.includes('medic') || q.includes('injur') || q.includes('doctor') || q.includes('cut') || q.includes('snake') || q.includes('fever') || q.includes('pain')) {
+    return `EMERGENCY MEDICAL GUIDANCE:
 
-2. What to do right now:
-   • Contact your hotel management or front desk immediately. They are required under district disaster protocols to accommodate stranded guests on upper floors.
-   • Keep your mobile phone charged.
-   • Update your SafePass status button to "Caution" or "Danger" so your Embassy and family are alerted.`;
+[CRITICAL WARNING]
+Flood waters carry high biological contamination and venomous reptiles (sea snakes / vipers displaced by surge). Keep wounds elevated and completely dry.
+
+[ACTION CHECKLIST]
+• Clean cuts immediately with antiseptic bottled water. Do NOT use tap or flood water.
+• If bitten by an insect/reptile: Immobilize the limb below heart level. Do NOT tie tight tourniquets or cut the wound.
+• Keep the patient calm and warm to prevent circulatory shock.
+
+[SAFE SHELTER]
+Apollo Emergency Trauma & Disaster Ward (Perungudi / ECR Wing, 8.2 km, Equipped with Anti-Snake Venom & Trauma Specialists).
+Phone: +91 44 2829 0200 / 108.
+
+[EMERGENCY CONTACT]
+Immediate Paramedic Ambulance Dispatch: Dial 108. State Emergency Dispatch: Dial 112.`;
   }
 
-  if (q.includes('passport') || q.includes('embassy') || q.includes('consulate') || q.includes('document')) {
-    return `Consular Guidance for Lost Documents in a Disaster:
+  // Children and Family separation
+  if (q.includes('child') || q.includes('kid') || q.includes('baby') || q.includes('separat') || q.includes('family') || q.includes('wife') || q.includes('husband')) {
+    return `FAMILY & DEPENDENTS SAFETY PROTOCOL:
 
-1. Don't panic: Under international disaster conventions, local authorities prioritize physical safety over travel documents.
-2. Embassy Status: Your SafePass profile is logged on the Consular Roster (/admin). Consular liaison officers are monitoring tourist safety flags in this district.
-3. Steps:
-   • Secure your digital copies on your phone if available.
-   • After storm conditions subside, the Tourist Police (+91 44 2846 1450) and Consular Safe Points will issue an Emergency Travel Certificate (Laissez-Passer).
-   • Your first priority remains staying high and dry.`;
+[CRITICAL WARNING]
+Never separate group members in water exceeding ankle depth. Flowing water of just 6 inches can easily sweep away a child.
+
+[ACTION CHECKLIST]
+• Write parent contact numbers on children's arms in waterproof ink.
+• Keep children on the highest dry elevation of your hotel.
+• If a companion is separated: Report immediately to Tourist Police (+91 44 2846 1450). Police disaster stations maintain a synchronized lost-tourist registry.
+• Update SafePass status to "Danger" so your Consular mission prioritizes your group.
+
+[SAFE SHELTER]
+Anna Community Relief Center (Mahabalipuram Bypass) has dedicated maternal and pediatric relief rations.
+
+[EMERGENCY CONTACT]
+Child Helpline: 1098 | National Emergency: 112 | Tourist Police: +91 44 2846 1450.`;
   }
 
-  if (q.includes('food') || q.includes('water') || q.includes('power') || q.includes('battery')) {
-    return `Essential Disaster Survival Steps:
+  // Hotel refusal / legal rights
+  if (q.includes('hotel') || q.includes('evict') || q.includes('refus') || q.includes('stay') || q.includes('check out') || q.includes('reception')) {
+    return `LEGAL CRISIS NOTICE — HOTEL GUEST RIGHTS:
 
-1. Potable Water: Drink only bottled or boiled water. Flood runoff severely contaminates tap and groundwater.
-2. Battery Conservation: Switch your smartphone to Ultra Battery Saver mode right now. Turn off Bluetooth and background apps.
-3. Food: Consume dry, packaged items first. Keep canned/dry food elevated above floor level.
-4. If you run out of essential supplies, press "I Need Help" on your dashboard to trigger district relief dispatch.`;
+[CRITICAL WARNING]
+Under Section 30 of the National Disaster Management Act (NDMA 2005), hotels and guesthouses are legally strictly prohibited from evicting guests into an active Red Alert cyclone or flood zone.
+
+[ACTION CHECKLIST]
+• Show this message to hotel management or front desk staff.
+• Inform them that district authorities have mandated all tourist establishments to provide vertical high-ground shelter.
+• If they refuse or threaten checkout: Request immediate escalation to the District Tourist Officer.
+• Your location is logged with the diplomatic consulate.
+
+[SAFE SHELTER]
+Kancheepuram District Collectorate Emergency Desk: 1077 (Disaster enforcement officers will contact hotel management directly).
+
+[EMERGENCY CONTACT]
+District Disaster Collectorate: 1077 | Tourist Police Flying Squad: +91 44 2846 1450.`;
+  }
+
+  // Transit and road closure
+  if (q.includes('road') || q.includes('airport') || q.includes('travel') || q.includes('car') || q.includes('taxi') || q.includes('bus') || q.includes('flight')) {
+    return `URGENT REGIONAL TRANSIT BULLETIN:
+
+[CRITICAL WARNING]
+The East Coast Road (ECR) between Kovalam and Mahabalipuram has water accumulation of 2.5–3.5 feet. Lower causeways are breached by canal overflow. Flight operations at Chennai International Airport (MAA) are facing gale-force delays.
+
+[ACTION CHECKLIST]
+• SHELTER IN PLACE: Do NOT hire taxis or drive rental cars into low-lying coastal causeways.
+• Do not attempt to walk along beach bypass roads.
+• Check flight rebooking online only when phone battery permits.
+• Remain at your current high-ground building until district authorities issue an "All Clear".
+
+[SAFE SHELTER]
+Mahabalipuram High-Ground Cyclone Shelter (1.8 km inland, elevated 18 meters above storm surge line).
+
+[EMERGENCY CONTACT]
+State Highway Emergency Hotline: 1033 | National Rescue: 112 | Disaster Operations: 1070.`;
+  }
+
+  // Lost passport and travel documents
+  if (q.includes('passport') || q.includes('embassy') || q.includes('consulate') || q.includes('document') || q.includes('visa') || q.includes('wallet')) {
+    return `CONSULAR GUIDANCE — LOST DOCUMENTS:
+
+[CRITICAL WARNING]
+Do not risk personal safety to retrieve lost bags or documents from flooded rooms or submerged vehicles. Life safety always takes precedence over paper documents.
+
+[ACTION CHECKLIST]
+• International humanitarian protocols grant safe transit during declared catastrophes regardless of missing paper passports.
+• SafePass has logged your citizenship with the diplomatic consular mission on the Consular Command Center (/admin).
+• As soon as rainfall subsides, your embassy liaison and the Foreigners Regional Registration Office (FRRO) will issue an Emergency Travel Certificate (Laissez-Passer).
+
+[SAFE SHELTER]
+International Tourist & Consular Safe Point (OMR Tech Corridor, Sholinganallur — Direct liaison desk for French, British, American, and EU citizens).
+
+[EMERGENCY CONTACT]
+Tourist Police Helpline: +91 44 2846 1450 | French Consulate Emergency: +91 413 226 6500 | US Citizens ACS: +91 44 2857 4000.`;
+  }
+
+  // Water, rations and power
+  if (q.includes('food') || q.includes('water') || q.includes('power') || q.includes('battery') || q.includes('charg') || q.includes('drink')) {
+    return `SURVIVAL RESOURCES & SANITATION:
+
+[CRITICAL WARNING]
+Municipal tap water is compromised by flood sewage. Never consume unboiled tap water or wash face with flood runoff (leptospirosis and cholera risk).
+
+[ACTION CHECKLIST]
+• Drink strictly bottled or rolling-boiled water.
+• Switch smartphone to Ultra Battery Saver mode immediately (disable Wi-Fi, Bluetooth, screen brightness to 15%).
+• Collect rainwater in clean pots only from elevated open surfaces away from gutters.
+• Eat dry rations (biscuits, nuts, canned food) first.
+
+[SAFE SHELTER]
+Anna Community Relief Center (Poonjeri Bypass Road) is distributing sealed bottled water cartons and hot dry rations.
+
+[EMERGENCY CONTACT]
+Food & Relief Supplies Dispatch: 1077 | State Operations: 1070.`;
+  }
+
+  // SBAR Triage response
+  if (q.includes('triage') || q.includes('emergency triage status')) {
+    return `SBAR CLINICAL TRIAGE RECOMMENDATION:
+
+[CRITICAL WARNING]
+Active severe cyclonic storm in progress. Moving through active floodwater has an 82% higher casualty rate than vertical sheltering in concrete multi-story buildings.
+
+[ACTION CHECKLIST]
+• RECOMMENDATION: VERTICAL SHELTER IN PLACE on 2nd floor or higher.
+• Do NOT attempt horizontal foot evacuation unless water levels inside your building breach floor 1.
+• Conserve remaining smartphone battery for emergency broadcasts.
+• Keep emergency whistle or flashlight accessible for rescue signaling.
+
+[SAFE SHELTER]
+If building structural integrity fails, your fallback shelter is: Mahabalipuram High-Ground Shelter (1.8 km, elevated ridge, contact: +91 44 2744 2233).
+
+[EMERGENCY CONTACT]
+Disaster Operations NDRF Dispatch: 1070 | National Rescue: 112.`;
   }
 
   // Default calm crisis guidance
-  return `I am here with you. Take a steady breath.
+  return `I am with you. Take a steady breath.
 
-Here are your three immediate priorities:
-1. Stay Indoors & Elevated: Move to the second floor or higher. Avoid basements and low-lying ground floors completely.
-2. Stay Away from Hazards: Stay clear of exterior glass windows facing the ocean and avoid fallen electric lines or stagnant water.
-3. Update Your Circle: Tap "Caution" or "Danger" on your SafePass dashboard to notify your emergency contact and local diplomatic registry.
+[CRITICAL WARNING]
+Coastal Kancheepuram & Chengalpattu under active Cyclone Warning Level 3. Stay at least 1.5 km away from coastal surge boundaries.
 
-Local Emergency Numbers:
-• National Emergency: 112
-• Tamil Nadu Disaster Management: 1070
-• Medical / Ambulance: 108
+[ACTION CHECKLIST]
+• Move to the 2nd floor or higher of a reinforced concrete building.
+• Avoid basements, balconies, and exterior glass facades.
+• Keep bottled water and power bank beside you in a sealed plastic bag.
+• Tap "Caution" or "Danger" on your SafePass dashboard to alert your embassy.
 
-Tell me: What is your current building type (hotel, guesthouse, or outside), and what immediate danger are you seeing?`;
+[SAFE SHELTER]
+Nearest Verified Safe Haven: Mahabalipuram High-Ground Cyclone Shelter (1.8 km inland, phone: +91 44 2744 2233).
+
+[EMERGENCY CONTACT]
+National Emergency Rescue: 112 | Tamil Nadu State Disaster Operations: 1070 | Ambulance: 108.`;
 }
