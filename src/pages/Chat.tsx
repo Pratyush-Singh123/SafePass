@@ -5,29 +5,21 @@ import type { ChatMessage, SafePassUser } from '@/lib/types';
 import { generateLocalCrisisAdvice } from '@/lib/crisisData';
 import {
   Send,
-  MessageCircle,
   Loader2,
   ArrowLeft,
   Shield,
   Phone,
-  Volume2,
-  VolumeX,
   Globe2,
   Sparkles,
   HelpCircle,
   HeartPulse,
   Activity,
-  CheckCircle2,
-  AlertTriangle,
   X,
   Copy,
   Download,
-  Share2,
   Check,
   Radio,
-  Sliders,
   FileText,
-  LifeBuoy,
 } from 'lucide-react';
 
 const LANGUAGES = [
@@ -87,8 +79,7 @@ export default function Chat() {
   const [loading, setLoading] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(true);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-  const [speakingId, setSpeakingId] = useState<string | null>(null);
-  const [speechSpeed, setSpeechSpeed] = useState<number>(0.88); // Soothing slow cadence
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<SafePassUser | null>(null);
 
   // Modals & Enhanced Features
@@ -139,14 +130,6 @@ export default function Chat() {
 
     return () => clearInterval(interval);
   }, [breathingModalOpen]);
-
-  useEffect(() => {
-    return () => {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
 
   useEffect(() => {
     (async () => {
@@ -216,33 +199,10 @@ I am here to guide you step-by-step through current cyclone conditions. Tell me 
     }
   }, [messages, loading]);
 
-  const speakMessage = (id: string, text: string) => {
-    if (!('speechSynthesis' in window)) return;
-
-    if (speakingId === id) {
-      window.speechSynthesis.cancel();
-      setSpeakingId(null);
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = speechSpeed; // Calming cadence
-    utterance.pitch = 1.0;
-
-    if (selectedLanguage === 'fr') utterance.lang = 'fr-FR';
-    else if (selectedLanguage === 'es') utterance.lang = 'es-ES';
-    else if (selectedLanguage === 'de') utterance.lang = 'de-DE';
-    else if (selectedLanguage === 'ja') utterance.lang = 'ja-JP';
-    else if (selectedLanguage === 'ta') utterance.lang = 'ta-IN';
-    else if (selectedLanguage === 'hi') utterance.lang = 'hi-IN';
-    else utterance.lang = 'en-US';
-
-    utterance.onend = () => setSpeakingId(null);
-    utterance.onerror = () => setSpeakingId(null);
-
-    setSpeakingId(id);
-    window.speechSynthesis.speak(utterance);
+  const copyGuidance = (id: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   const sendMessage = async (overrideText?: string) => {
@@ -459,7 +419,7 @@ Based on this assessment, should I evacuate to the nearest high-ground shelter o
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
           {messages.map((msg) => {
             const isUser = msg.role === 'user';
-            const isSpeaking = speakingId === msg.id;
+            const isCopied = copiedId === msg.id;
 
             return (
               <div
@@ -480,50 +440,20 @@ Based on this assessment, should I evacuate to the nearest high-ground shelter o
                   }`}>
                     <p className="whitespace-pre-wrap">{msg.content}</p>
 
-                    {/* Audio read-aloud controls for AI answers */}
+                    {/* Action footer for AI answers */}
                     {!isUser && (
-                      <div className="mt-3 pt-2.5 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => speakMessage(msg.id, msg.content)}
-                            className="flex items-center gap-1.5 font-bold hover:text-cyan-700 transition-colors bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs"
-                            title="Listen to Calm Voice"
-                          >
-                            {isSpeaking ? (
-                              <>
-                                <VolumeX className="w-3.5 h-3.5 text-rose-600 animate-pulse" />
-                                <span className="text-rose-600">Stop Audio</span>
-                              </>
-                            ) : (
-                              <>
-                                <Volume2 className="w-3.5 h-3.5 text-cyan-600" />
-                                <span>Listen to Calm Voice</span>
-                              </>
-                            )}
-                          </button>
-
-                          {/* Soundwave Animation while speaking */}
-                          {isSpeaking && (
-                            <div className="flex items-center gap-1 px-2 py-1 bg-cyan-50 rounded-lg">
-                              <span className="w-1 h-3 bg-cyan-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                              <span className="w-1 h-5 bg-cyan-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                              <span className="w-1 h-4 bg-cyan-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                              <span className="w-1 h-2 bg-cyan-600 rounded-full animate-bounce" style={{ animationDelay: '450ms' }} />
-                              <span className="text-[10px] font-bold text-cyan-800 ml-1">Calm Voice Active</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Pace controller */}
-                        <div className="flex items-center gap-1 text-[11px] text-slate-400">
-                          <Sliders className="w-3 h-3" />
-                          <button
-                            onClick={() => setSpeechSpeed(speechSpeed === 0.88 ? 1.0 : 0.88)}
-                            className="hover:underline font-semibold text-slate-600"
-                          >
-                            Pace: {speechSpeed === 0.88 ? 'Soothing (0.88x)' : 'Normal (1.0x)'}
-                          </button>
-                        </div>
+                      <div className="mt-3 pt-2.5 border-t border-slate-200/80 flex items-center justify-between text-xs text-slate-500">
+                        <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1">
+                          <Shield className="w-3 h-3 text-cyan-600" /> Verified Crisis Protocol
+                        </span>
+                        <button
+                          onClick={() => copyGuidance(msg.id, msg.content)}
+                          className="flex items-center gap-1 text-[11px] font-bold text-slate-500 hover:text-cyan-700 transition-colors bg-white px-2 py-0.5 rounded-lg border border-slate-200 shadow-2xs"
+                          title="Copy Guidance to Clipboard"
+                        >
+                          {isCopied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                          <span>{isCopied ? 'Copied' : 'Copy Advice'}</span>
+                        </button>
                       </div>
                     )}
                   </div>
@@ -809,7 +739,6 @@ Based on this assessment, should I evacuate to the nearest high-ground shelter o
                 href={`sms:112?body=${encodeURIComponent(getCompressedSmsText())}`}
                 className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
               >
-                <Send className="w-3.5 h-3.5" />
                 Launch Native SMS
               </a>
             </div>
