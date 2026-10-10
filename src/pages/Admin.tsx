@@ -20,8 +20,6 @@ import {
   Lock,
 } from 'lucide-react';
 
-import { FRESH_TEN_RECORDS } from '@/lib/auth';
-
 const statusConfig: Record<SafetyStatus, { label: string; dot: string; bg: string; text: string }> = {
   safe: { label: 'Safe', dot: 'bg-emerald-400', bg: 'bg-emerald-950/60 text-emerald-300 border-emerald-800/60', text: 'text-emerald-400' },
   caution: { label: 'Caution', dot: 'bg-amber-400', bg: 'bg-amber-950/60 text-amber-300 border-amber-800/60', text: 'text-amber-400' },
@@ -115,9 +113,6 @@ const getPlace = (u: SafePassUser): { state: string; city: string } => {
   return { state: 'Other', city: 'Other' };
 };
 
-// Seeded 10 realistic consular records for Tamil Nadu / Chennai / Kancheepuram disaster zone
-const DEMO_CONSULAR_ROSTER: SafePassUser[] = FRESH_TEN_RECORDS;
-
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [users, setUsers] = useState<SafePassUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -138,27 +133,19 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
   const fetchUsers = async () => {
     setLoading(true);
-    const demoStatus = (localStorage.getItem('safepass_demo_status') as SafetyStatus) || null;
-    const localizedDemoRoster = DEMO_CONSULAR_ROSTER.map((demo) => {
-      if (demo.id === FRESH_TEN_RECORDS[0].id && demoStatus) {
-        return { ...demo, status: demoStatus, updated_at: new Date().toISOString() };
-      }
-      return demo;
-    });
-
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('users')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         setUsers(data as SafePassUser[]);
       } else {
-        setUsers(localizedDemoRoster);
+        setUsers([]);
       }
     } catch {
-      setUsers(localizedDemoRoster);
+      setUsers([]);
     }
     setLoading(false);
   };
@@ -625,7 +612,9 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="text-center py-12 text-neutral-400">
-                    No citizens match the selected filter criteria.
+                    {users.length === 0
+                      ? 'No travelers currently registered in the crisis database.'
+                      : 'No citizens match the selected filter criteria.'}
                   </td>
                 </tr>
               ) : (
