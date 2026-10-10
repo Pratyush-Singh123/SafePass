@@ -18,10 +18,9 @@ import {
   Radio,
   FileSpreadsheet,
   Lock,
-  RotateCcw,
 } from 'lucide-react';
 
-import { FRESH_TEN_RECORDS, resetToFreshTenRecords } from '@/lib/auth';
+import { FRESH_TEN_RECORDS } from '@/lib/auth';
 
 const statusConfig: Record<SafetyStatus, { label: string; dot: string; bg: string; text: string }> = {
   safe: { label: 'Safe', dot: 'bg-emerald-500', bg: 'bg-emerald-50 text-emerald-800 border-emerald-200', text: 'text-emerald-700' },
@@ -53,6 +52,69 @@ const loadRecords = (): Record<string, RescueRecord> => {
   }
 };
 
+// Built-in place list (no internet needed). Used to work out each citizen's state and city.
+interface KnownPlace {
+  state: string;
+  city: string;
+  lat: number;
+  lng: number;
+  keys: string[];
+}
+
+const KNOWN_PLACES: KnownPlace[] = [
+  { state: 'Tamil Nadu', city: 'Mahabalipuram', lat: 12.6269, lng: 80.1932, keys: ['mahabalipuram', 'mamallapuram'] },
+  { state: 'Tamil Nadu', city: 'Kovalam', lat: 12.7956, lng: 80.2185, keys: ['kovalam'] },
+  { state: 'Tamil Nadu', city: 'Kancheepuram', lat: 12.8342, lng: 79.7036, keys: ['kancheepuram', 'kanchipuram'] },
+  { state: 'Tamil Nadu', city: 'Chengalpattu', lat: 12.6819, lng: 79.9888, keys: ['chengalpattu'] },
+  { state: 'Tamil Nadu', city: 'Chennai', lat: 13.0827, lng: 80.2707, keys: ['chennai', 'sholinganallur'] },
+  { state: 'Tamil Nadu', city: 'Madurai', lat: 9.9252, lng: 78.1198, keys: ['madurai'] },
+  { state: 'Tamil Nadu', city: 'Coimbatore', lat: 11.0168, lng: 76.9558, keys: ['coimbatore'] },
+  { state: 'Tamil Nadu', city: 'Ooty', lat: 11.4102, lng: 76.695, keys: ['ooty', 'udhagamandalam'] },
+  { state: 'Tamil Nadu', city: 'Kodaikanal', lat: 10.2381, lng: 77.4892, keys: ['kodaikanal'] },
+  { state: 'Tamil Nadu', city: 'Rameswaram', lat: 9.2876, lng: 79.3129, keys: ['rameswaram'] },
+  { state: 'Tamil Nadu', city: 'Kanyakumari', lat: 8.0883, lng: 77.5385, keys: ['kanyakumari'] },
+  { state: 'Tamil Nadu', city: 'Thanjavur', lat: 10.787, lng: 79.1378, keys: ['thanjavur'] },
+  { state: 'Tamil Nadu', city: 'Tiruchirappalli', lat: 10.7905, lng: 78.7047, keys: ['tiruchirappalli', 'trichy'] },
+  { state: 'Puducherry', city: 'Puducherry', lat: 11.9416, lng: 79.8083, keys: ['puducherry', 'pondicherry'] },
+  { state: 'Kerala', city: 'Kochi', lat: 9.9312, lng: 76.2673, keys: ['kochi', 'cochin'] },
+  { state: 'Kerala', city: 'Thiruvananthapuram', lat: 8.5241, lng: 76.9366, keys: ['thiruvananthapuram', 'trivandrum'] },
+  { state: 'Karnataka', city: 'Bengaluru', lat: 12.9716, lng: 77.5946, keys: ['bengaluru', 'bangalore'] },
+  { state: 'Andhra Pradesh', city: 'Tirupati', lat: 13.6288, lng: 79.4192, keys: ['tirupati'] },
+  { state: 'Maharashtra', city: 'Mumbai', lat: 19.076, lng: 72.8777, keys: ['mumbai'] },
+  { state: 'Delhi', city: 'New Delhi', lat: 28.6139, lng: 77.209, keys: ['delhi'] },
+];
+
+const distanceKm = (aLat: number, aLng: number, bLat: number, bLng: number) => {
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(bLat - aLat);
+  const dLng = toRad(bLng - aLng);
+  const h =
+    Math.pow(Math.sin(dLat / 2), 2) +
+    Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * Math.pow(Math.sin(dLng / 2), 2);
+  return 6371 * 2 * Math.asin(Math.sqrt(h));
+};
+
+// 1) match a place name in the location text, 2) otherwise use the nearest known place (within 60 km)
+const getPlace = (u: SafePassUser): { state: string; city: string } => {
+  const label = (u.location_label || '').toLowerCase();
+  const byName = KNOWN_PLACES.find((pl) => pl.keys.some((k) => label.includes(k)));
+  if (byName) return { state: byName.state, city: byName.city };
+
+  if (u.location_lat != null && u.location_lng != null) {
+    let best: KnownPlace | null = null;
+    let bestDist = Infinity;
+    for (const pl of KNOWN_PLACES) {
+      const d = distanceKm(u.location_lat, u.location_lng, pl.lat, pl.lng);
+      if (d < bestDist) {
+        best = pl;
+        bestDist = d;
+      }
+    }
+    if (best && bestDist <= 60) return { state: best.state, city: best.city };
+  }
+  return { state: 'Other', city: 'Other' };
+};
+
 // Seeded 10 realistic consular records for Tamil Nadu / Chennai / Kancheepuram disaster zone
 const DEMO_CONSULAR_ROSTER: SafePassUser[] = FRESH_TEN_RECORDS;
 
@@ -62,11 +124,11 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<SafetyStatus | 'all'>('all');
   const [nationalityFilter, setNationalityFilter] = useState<string>('all');
+  const [stateFilter, setStateFilter] = useState<string>('all');
+  const [cityFilter, setCityFilter] = useState<string>('all');
   const [redZoneOnly, setRedZoneOnly] = useState(false);
   const [broadcastModal, setBroadcastModal] = useState(false);
   const [broadcastSent, setBroadcastSent] = useState(false);
-  const [resetting, setResetting] = useState(false);
-  const [resetFeedback, setResetFeedback] = useState(false);
 
   const [records, setRecords] = useState<Record<string, RescueRecord>>(loadRecords);
   const [pending, setPending] = useState<{ user: SafePassUser; kind: 'rescued' | 'deceased' } | null>(null);
@@ -105,15 +167,6 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     fetchUsers();
   }, []);
 
-  const handleResetToFresh10 = async () => {
-    setResetting(true);
-    await resetToFreshTenRecords();
-    await fetchUsers();
-    setResetting(false);
-    setResetFeedback(true);
-    setTimeout(() => setResetFeedback(false), 2500);
-  };
-
   const isClosed = (u: SafePassUser) => {
     const s = records[u.id]?.state;
     return s === 'rescued' || s === 'deceased';
@@ -131,6 +184,17 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   };
 
   const nationalitiesList = ['all', ...Array.from(new Set(users.map((u) => u.nationality)))];
+  const statesList = ['all', ...Array.from(new Set(users.map((u) => getPlace(u).state))).sort()];
+  const citiesList = [
+    'all',
+    ...Array.from(
+      new Set(
+        users
+          .filter((u) => stateFilter === 'all' || getPlace(u).state === stateFilter)
+          .map((u) => getPlace(u).city),
+      ),
+    ).sort(),
+  ];
 
   const filtered = users.filter((u) => {
     const matchesSearch =
@@ -141,8 +205,11 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     const matchesStatus = filter === 'all' || (u.status === filter && !isClosed(u));
     const matchesNationality = nationalityFilter === 'all' || u.nationality === nationalityFilter;
     const matchesRedZone = !redZoneOnly || (u.status === 'danger' && !isClosed(u));
+    const place = getPlace(u);
+    const matchesState = stateFilter === 'all' || place.state === stateFilter;
+    const matchesCity = cityFilter === 'all' || place.city === cityFilter;
 
-    return matchesSearch && matchesStatus && matchesNationality && matchesRedZone;
+    return matchesSearch && matchesStatus && matchesNationality && matchesRedZone && matchesState && matchesCity;
   });
 
   const openCases = users.filter((u) => !isClosed(u));
@@ -153,12 +220,14 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     danger: openCases.filter((u) => u.status === 'danger').length,
   };
 
-  const hasActiveFilters = redZoneOnly || filter !== 'all' || nationalityFilter !== 'all' || search !== '';
+  const hasActiveFilters = redZoneOnly || filter !== 'all' || nationalityFilter !== 'all' || stateFilter !== 'all' || cityFilter !== 'all' || search !== '';
 
   const clearFilters = () => {
     setRedZoneOnly(false);
     setFilter('all');
     setNationalityFilter('all');
+    setStateFilter('all');
+    setCityFilter('all');
     setSearch('');
   };
 
@@ -241,6 +310,8 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       'Traveler Name',
       'Nationality',
       'Location',
+      'State',
+      'City',
       'Latitude',
       'Longitude',
       'Safety Status',
@@ -270,6 +341,8 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         csvCell(u.name),
         csvCell(u.nationality),
         csvCell(u.location_label || '-'),
+        csvCell(getPlace(u).state),
+        csvCell(getPlace(u).city),
         csvCell(u.location_lat != null ? u.location_lat.toFixed(4) : '-'),
         csvCell(u.location_lng != null ? u.location_lng.toFixed(4) : '-'),
         csvCell(statusConfig[u.status].label),
@@ -336,21 +409,6 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <button
-            onClick={handleResetToFresh10}
-            disabled={resetting}
-            className="bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold px-3.5 py-2.5 rounded-xl text-xs sm:text-sm transition-all border border-amber-500/40 flex items-center gap-1.5"
-            title="Purge existing records and re-seed 10 fresh diverse international traveler records"
-          >
-            {resetting ? (
-              <Loader2 className="w-4 h-4 animate-spin text-amber-300" />
-            ) : resetFeedback ? (
-              <Check className="w-4 h-4 text-emerald-400" />
-            ) : (
-              <RotateCcw className="w-4 h-4 text-amber-300" />
-            )}
-            <span>{resetFeedback ? '✓ Seeded 10 Fresh!' : 'Reset 10 Fresh Records'}</span>
-          </button>
           <button
             onClick={() => setBroadcastModal(true)}
             className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer"
@@ -449,6 +507,53 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             {nationalitiesList.map((nat) => (
               <option key={nat} value={nat} className="bg-neutral-900 text-white">
                 {nat === 'all' ? 'All Nationalities' : nat}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* State Dropdown */}
+        <div className="flex items-center gap-2 bg-neutral-800 px-3 py-2 rounded-xl border border-neutral-700 text-base sm:text-sm">
+          <MapPin className="w-4 h-4 text-neutral-400" />
+          <select
+            value={stateFilter}
+            onChange={(e) => {
+              setStateFilter(e.target.value);
+              setCityFilter('all');
+            }}
+            className="bg-transparent font-semibold text-white outline-none cursor-pointer text-base sm:text-sm"
+            style={{
+              color: '#ffffff',
+              WebkitTextFillColor: '#ffffff',
+              backgroundColor: '#262626',
+              fontSize: '14px',
+            }}
+          >
+            {statesList.map((st) => (
+              <option key={st} value={st} className="bg-neutral-900 text-white">
+                {st === 'all' ? 'All States' : st}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* City Dropdown */}
+        <div className="flex items-center gap-2 bg-neutral-800 px-3 py-2 rounded-xl border border-neutral-700 text-base sm:text-sm">
+          <Building2 className="w-4 h-4 text-neutral-400" />
+          <select
+            value={cityFilter}
+            onChange={(e) => setCityFilter(e.target.value)}
+            className="bg-transparent font-semibold text-white outline-none cursor-pointer text-base sm:text-sm"
+            style={{
+              color: '#ffffff',
+              WebkitTextFillColor: '#ffffff',
+              backgroundColor: '#262626',
+              fontSize: '14px',
+            }}
+          >
+            {citiesList.map((c) => (
+              <option key={c} value={c} className="bg-neutral-900 text-white">
+                {c === 'all' ? 'All Cities' : c}
               </option>
             ))}
           </select>

@@ -336,9 +336,9 @@ export default function StatusPage() {
           <button
             type="button"
             onClick={() => setUser(FRESH_TEN_RECORDS[0])}
-            className="w-full bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-medium py-2.5 rounded-xl text-xs transition-all border border-neutral-700 cursor-pointer"
+            className="w-full bg-neutral-800 hover:bg-neutral-750 text-neutral-200 font-medium py-2.5 rounded-xl text-xs transition-all border border-neutral-700 cursor-pointer"
           >
-            ⚡ Test with Demo Persona (Alex Mercer)
+            View Sample Traveler Status (Alex Mercer)
           </button>
         </form>
       </div>
