@@ -393,7 +393,7 @@ Nationaler Notruf: 112 | Katastrophenschutz: 1070 | Rettungsdienst: 108.`;
 緊急通報: 112 | 州災害対策本部: 1070 | 救急: 108.`;
   } else {
     // English default
-    content = `Hello ${firstName}. I am SafePass, your calm crisis companion.
+    content = `Hello ${firstName}. I am SafePass, your AI Assistant.
 
 [CRITICAL WARNING]
 Active Cyclone Warning Level 3 in effect for coastal Mahabalipuram & Chengalpattu. Moving through floodwaters has an 82% higher casualty rate than vertical sheltering.
@@ -1048,7 +1048,7 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                <h1 className="text-sm sm:text-base font-extrabold tracking-tight truncate text-white">The Calm Voice</h1>
+                <h1 className="text-sm sm:text-base font-extrabold tracking-tight truncate text-white">AI Assistant</h1>
                 <span
                   className={`flex items-center gap-1 text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full shrink-0 ${
                     batterySaver
@@ -1215,7 +1215,7 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
                     <span className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                     <span className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
-                  <span className="text-xs font-medium">Formulating calm evacuation advice...</span>
+                  <span className="text-xs font-medium">Formulating evacuation advice...</span>
                 </div>
               </div>
             </div>

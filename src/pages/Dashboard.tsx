@@ -534,7 +534,7 @@ export default function Dashboard() {
             to="/chat"
             className="bg-red-800/80 hover:bg-red-900 text-white font-medium px-4 py-2 rounded-xl text-xs sm:text-sm transition-all border border-red-400/40 flex items-center gap-1.5"
           >
-            <MessageCircle className="w-4 h-4 text-white" /> Ask Calm Voice
+            <MessageCircle className="w-4 h-4 text-white" /> Ask AI Assistant
           </Link>
         </div>
       </div>
@@ -1252,7 +1252,7 @@ export default function Dashboard() {
                 to="/chat"
                 className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-1.5"
               >
-                <MessageCircle className="w-4 h-4" /> Talk with Calm Voice
+                <MessageCircle className="w-4 h-4" /> Talk with AI Assistant
               </Link>
               <button
                 onClick={() => setSosModalOpen(false)}

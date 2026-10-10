@@ -91,7 +91,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const navItems = authenticated
     ? [
         { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { to: '/chat', label: 'Calm Voice AI', icon: MessageCircle },
+        { to: '/chat', label: 'AI Assistant', icon: MessageCircle },
         { to: '/status', label: 'Family Status', icon: Eye },
         { to: '/admin', label: 'Consular Admin', icon: Building2 },
       ]
@@ -221,7 +221,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-2">
               <WifiOff className="w-4 h-4 text-amber-200 animate-pulse flex-shrink-0" />
               <span>
-                <strong>CELLULAR / INTERNET OFFLINE:</strong> SafePass Offline Protocol active. Local Calm Voice AI, cached high-ground shelters, and 2G SMS strings are 100% operational without data.
+                <strong>CELLULAR / INTERNET OFFLINE:</strong> SafePass Offline Protocol active. Local AI Assistant, cached high-ground shelters, and 2G SMS strings are 100% operational without data.
               </span>
             </div>
             <span className="hidden sm:inline-block text-[10px] bg-amber-950/70 border border-amber-300/40 px-2.5 py-0.5 rounded-full font-mono uppercase tracking-wider flex-shrink-0">

@@ -25,7 +25,7 @@ During extreme coastal weather events (such as Bay of Bengal cyclones and flash 
 **SafePass** is an offline-first, mobile-responsive crisis companion that bridges tourists, local disaster responders, and diplomatic embassies:
 
 1. **🗺️ Geospatial Evacuation Navigator**: Interactive Leaflet maps rendering dynamic storm surge hazard zones, safe corridors, and 20 verified high-ground relief shelters.
-2. **🗣️ "The Calm Voice" Multilingual AI**: Empathetic psychological crisis triage with audio voice synthesis across 7 languages (English, French, German, Spanish, Japanese, Hindi, Tamil) with box-breathing regulation and offline 2G SMS distress fallback.
+2. **🗣️ Multilingual AI Assistant**: Empathetic psychological crisis triage with audio voice synthesis across 7 languages (English, French, German, Spanish, Japanese, Hindi, Tamil) with box-breathing regulation and offline 2G SMS distress fallback.
 3. **🏛️ Consular Command Center (`/admin`)**: Restricted embassy & TNDMA liaison portal tracking foreign citizen safety manifests, Red Zone search-and-rescue triage, and mass consular advisories. *(Demo Credentials: Username `admin` | Password `admin@123`)*
 4. **👨‍👩‍👧 Zero-Friction Family Status Link (`/status`)**: Public read-only verification link with live safety status, device telemetry, and 1-tap WhatsApp alert for families abroad.
 
