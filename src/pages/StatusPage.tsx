@@ -392,7 +392,6 @@ export default function StatusPage() {
           <ShieldCheck className="w-4 h-4 text-cyan-400" />
           <span>Public Read-Only Family Verification Link</span>
         </div>
-<<<<<<< HEAD
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={shareViaWhatsApp}
@@ -408,7 +407,6 @@ export default function StatusPage() {
             {copied ? 'Link Copied!' : 'Copy Permanent Share Link'}
           </button>
         </div>
-=======
         <button
           onClick={copyShareLink}
           className="flex items-center gap-1.5 text-xs font-bold text-white bg-neutral-900 hover:bg-neutral-800 px-3 py-1.5 rounded-xl border border-neutral-700 transition-all shadow-sm"
@@ -416,7 +414,6 @@ export default function StatusPage() {
           {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-neutral-400" />}
           <span>{copied ? 'Link Copied!' : 'Copy Permanent Share Link'}</span>
         </button>
->>>>>>> 627130406af3d1f5878fa4a4d30801e244c470b1
       </div>
 
       {/* Main Status Container */}

@@ -17,11 +17,8 @@ import {
   X,
   Radio,
   FileSpreadsheet,
-<<<<<<< HEAD
   Lock,
-=======
   RotateCcw,
->>>>>>> 627130406af3d1f5878fa4a4d30801e244c470b1
 } from 'lucide-react';
 
 import { FRESH_TEN_RECORDS, resetToFreshTenRecords } from '@/lib/auth';
@@ -32,7 +29,6 @@ const statusConfig: Record<SafetyStatus, { label: string; dot: string; bg: strin
   danger: { label: 'Danger / SOS', dot: 'bg-rose-500', bg: 'bg-rose-50 text-rose-800 border-rose-200', text: 'text-rose-700' },
 };
 
-<<<<<<< HEAD
 // Rescue progress is saved in the browser (localStorage) so it works with no database.
 // The family StatusPage reads the same key.
 type RescueState = 'searching' | 'rescued' | 'deceased';
@@ -57,97 +53,8 @@ const loadRecords = (): Record<string, RescueRecord> => {
   }
 };
 
-// Seeded realistic consular roster for Tamil Nadu / Chennai / Kancheepuram disaster zone
-const DEMO_CONSULAR_ROSTER: SafePassUser[] = [
-  {
-    id: 'demo-alex-mercer',
-    name: 'Alex Mercer',
-    nationality: 'France',
-    location_lat: 12.6269,
-    location_lng: 80.1932,
-    location_label: 'Mahabalipuram Coastal Heritage Zone',
-    emergency_contact_name: 'Claire Mercer',
-    emergency_contact_phone: '+33 6 42 19 88 01',
-    status: 'caution',
-    share_token: 'alex-demo-token-994',
-    created_at: new Date(Date.now() - 3600000 * 5).toISOString(),
-    updated_at: new Date(Date.now() - 900000).toISOString(),
-  },
-  {
-    id: 'demo-emma-watson',
-    name: 'Emma Watson',
-    nationality: 'United Kingdom',
-    location_lat: 12.6185,
-    location_lng: 80.1989,
-    location_label: 'Fishermans Cove Beach Resort, Kovalam / ECR',
-    emergency_contact_name: 'Arthur Watson',
-    emergency_contact_phone: '+44 7700 900123',
-    status: 'danger',
-    share_token: 'emma-uk-token-112',
-    created_at: new Date(Date.now() - 3600000 * 8).toISOString(),
-    updated_at: new Date(Date.now() - 600000).toISOString(),
-  },
-  {
-    id: 'demo-kenji-sato',
-    name: 'Kenji Sato',
-    nationality: 'Japan',
-    location_lat: 12.8399,
-    location_lng: 80.1558,
-    location_label: 'Sholinganallur Tech Corridor, OMR',
-    emergency_contact_name: 'Yuki Sato',
-    emergency_contact_phone: '+81 90 1234 5678',
-    status: 'safe',
-    share_token: 'kenji-jp-token-883',
-    created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
-    updated_at: new Date(Date.now() - 1800000).toISOString(),
-  },
-  {
-    id: 'demo-michael-schmidt',
-    name: 'Michael Schmidt',
-    nationality: 'Germany',
-    location_lat: 12.6512,
-    location_lng: 80.1850,
-    location_label: 'Buckingham Canal Heritage Guesthouse, Chengalpattu',
-    emergency_contact_name: 'Hanna Schmidt',
-    emergency_contact_phone: '+49 151 23456789',
-    status: 'danger',
-    share_token: 'michael-de-token-442',
-    created_at: new Date(Date.now() - 3600000 * 6).toISOString(),
-    updated_at: new Date(Date.now() - 300000).toISOString(),
-  },
-  {
-    id: 'demo-carlos-gomez',
-    name: 'Carlos Gomez',
-    nationality: 'Spain',
-    location_lat: 12.8387,
-    location_lng: 79.7036,
-    location_label: 'Kancheepuram Temple Heritage Inn',
-    emergency_contact_name: 'Elena Gomez',
-    emergency_contact_phone: '+34 600 123 456',
-    status: 'safe',
-    share_token: 'carlos-es-token-319',
-    created_at: new Date(Date.now() - 3600000 * 14).toISOString(),
-    updated_at: new Date(Date.now() - 2400000).toISOString(),
-  },
-  {
-    id: 'demo-sarah-miller',
-    name: 'Sarah Miller',
-    nationality: 'United States',
-    location_lat: 12.7956,
-    location_lng: 80.2185,
-    location_label: 'Kovalam Surf Point / ECR Highway',
-    emergency_contact_name: 'David Miller',
-    emergency_contact_phone: '+1 202 555 0192',
-    status: 'caution',
-    share_token: 'sarah-us-token-771',
-    created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
-    updated_at: new Date(Date.now() - 1200000).toISOString(),
-  },
-];
-=======
 // Seeded 10 realistic consular records for Tamil Nadu / Chennai / Kancheepuram disaster zone
 const DEMO_CONSULAR_ROSTER: SafePassUser[] = FRESH_TEN_RECORDS;
->>>>>>> 627130406af3d1f5878fa4a4d30801e244c470b1
 
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [users, setUsers] = useState<SafePassUser[]>([]);
@@ -161,23 +68,12 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [resetting, setResetting] = useState(false);
   const [resetFeedback, setResetFeedback] = useState(false);
 
-<<<<<<< HEAD
   const [records, setRecords] = useState<Record<string, RescueRecord>>(loadRecords);
   const [pending, setPending] = useState<{ user: SafePassUser; kind: 'rescued' | 'deceased' } | null>(null);
   const [shelterInput, setShelterInput] = useState('');
   const [hospitalInput, setHospitalInput] = useState('');
   const [medicalNeeded, setMedicalNeeded] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      const demoStatus = (localStorage.getItem('safepass_demo_status') as SafetyStatus) || null;
-      const localizedDemoRoster = DEMO_CONSULAR_ROSTER.map((demo) => {
-        if (demo.id === 'demo-alex-mercer' && demoStatus) {
-          return { ...demo, status: demoStatus, updated_at: new Date().toISOString() };
-        }
-        return demo;
-      });
-=======
   const fetchUsers = async () => {
     setLoading(true);
     const demoStatus = (localStorage.getItem('safepass_demo_status') as SafetyStatus) || null;
@@ -187,7 +83,6 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       }
       return demo;
     });
->>>>>>> 627130406af3d1f5878fa4a4d30801e244c470b1
 
     try {
       const { data } = await supabase
@@ -210,7 +105,15 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     fetchUsers();
   }, []);
 
-<<<<<<< HEAD
+  const handleResetToFresh10 = async () => {
+    setResetting(true);
+    await resetToFreshTenRecords();
+    await fetchUsers();
+    setResetting(false);
+    setResetFeedback(true);
+    setTimeout(() => setResetFeedback(false), 2500);
+  };
+
   const isClosed = (u: SafePassUser) => {
     const s = records[u.id]?.state;
     return s === 'rescued' || s === 'deceased';
@@ -225,15 +128,6 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       return { label: 'Deceased', dot: 'bg-white', bg: 'bg-slate-700 text-white border-slate-700' };
     }
     return statusConfig[u.status];
-=======
-  const handleResetToFresh10 = async () => {
-    setResetting(true);
-    await resetToFreshTenRecords();
-    await fetchUsers();
-    setResetting(false);
-    setResetFeedback(true);
-    setTimeout(() => setResetFeedback(false), 2500);
->>>>>>> 627130406af3d1f5878fa4a4d30801e244c470b1
   };
 
   const nationalitiesList = ['all', ...Array.from(new Set(users.map((u) => u.nationality)))];
