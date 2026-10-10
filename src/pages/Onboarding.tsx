@@ -16,6 +16,7 @@ import {
   Zap,
   Shield,
   LifeBuoy,
+  Sparkles,
   Smartphone,
   RotateCcw,
   MessageSquare,
@@ -28,6 +29,70 @@ const nationalities = [
   'United States', 'United Kingdom', 'Canada', 'Australia', 'Germany',
   'France', 'Japan', 'Brazil', 'India', 'Mexico', 'Spain', 'Italy',
   'Netherlands', 'Sweden', 'South Korea', 'Other',
+];
+
+interface DemoPersona {
+  id: string;
+  name: string;
+  phone: string;
+  nationality: string;
+  flag: string;
+  location_label: string;
+  lat: number;
+  lng: number;
+  emergency_contact_name: string;
+  emergency_contact_phone: string;
+  zoneTag: string;
+  badgeColor: string;
+  scenarioHighlight: string;
+}
+
+const DEMO_PERSONAS: DemoPersona[] = [
+  {
+    id: 'alex',
+    name: 'Alex Mercer',
+    phone: '+33 6 42 19 88 01',
+    nationality: 'France',
+    flag: '🇫🇷',
+    location_label: 'Mahabalipuram Coastal Heritage Zone, Chengalpattu / Kancheepuram',
+    lat: 12.6269,
+    lng: 80.1932,
+    emergency_contact_name: 'Claire Mercer (Sister)',
+    emergency_contact_phone: '+33 6 12 34 56 78',
+    zoneTag: 'Mahabalipuram Coastal Zone',
+    badgeColor: 'bg-red-100 text-red-700 border-red-200',
+    scenarioHighlight: 'Storm Surge Danger Zone • French Consular Protection',
+  },
+  {
+    id: 'kenji',
+    name: 'Kenji Sato',
+    phone: '+81 90 1234 5678',
+    nationality: 'Japan',
+    flag: '🇯🇵',
+    location_label: 'Sholinganallur Tech Corridor, Chennai OMR',
+    lat: 12.9010,
+    lng: 80.2279,
+    emergency_contact_name: 'Yuki Sato (Wife)',
+    emergency_contact_phone: '+81 80 9876 5432',
+    zoneTag: 'Sholinganallur Tech Corridor',
+    badgeColor: 'bg-indigo-100 text-indigo-700 border-indigo-200',
+    scenarioHighlight: 'OMR Safe Haven Corridor • Japanese Consular Liaison',
+  },
+  {
+    id: 'emma',
+    name: 'Emma Watson',
+    phone: '+44 7911 123456',
+    nationality: 'United Kingdom',
+    flag: '🇬🇧',
+    location_label: 'Kovalam ECR Beachfront, Tamil Nadu',
+    lat: 12.7892,
+    lng: 80.2520,
+    emergency_contact_name: 'Arthur Watson (Father)',
+    emergency_contact_phone: '+44 7822 654321',
+    zoneTag: 'Kovalam ECR Beachfront',
+    badgeColor: 'bg-amber-100 text-amber-700 border-amber-200',
+    scenarioHighlight: 'Backwaters Caution Zone • UK High Commission Tracking',
+  },
 ];
 
 export default function Onboarding() {
@@ -46,20 +111,26 @@ export default function Onboarding() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [selectedPersonaId, setSelectedPersonaId] = useState<string | null>(null);
   const [otpCode, setOtpCode] = useState('');
   const [enteredOtp, setEnteredOtp] = useState('');
 
-  const fillDemoScenario = () => {
+  const applyDemoPersona = (persona: DemoPersona) => {
+    setSelectedPersonaId(persona.id);
     setFormData({
-      name: 'Alex Mercer',
-      phone: '+33 6 42 19 88 01',
-      nationality: 'France',
-      location_label: 'Mahabalipuram Coastal Heritage Zone, Chengalpattu / Kancheepuram',
-      emergency_contact_name: 'Claire Mercer (Sister)',
-      emergency_contact_phone: '+33 6 12 34 56 78',
+      name: persona.name,
+      phone: persona.phone,
+      nationality: persona.nationality,
+      location_label: persona.location_label,
+      emergency_contact_name: persona.emergency_contact_name,
+      emergency_contact_phone: persona.emergency_contact_phone,
     });
-    setLocation({ lat: 12.6269, lng: 80.1932 });
+    setLocation({ lat: persona.lat, lng: persona.lng });
     setError('');
+  };
+
+  const fillDemoScenario = () => {
+    applyDemoPersona(DEMO_PERSONAS[0]);
   };
 
   const handleGetLocation = () => {
@@ -219,75 +290,139 @@ export default function Onboarding() {
   if (success) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center animate-fade-in bg-white p-8 rounded-2xl border border-slate-200 shadow-sm max-w-md w-full">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-emerald-100 rounded-full mb-6">
-            <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+        <div className="text-center animate-fade-in bg-neutral-900 text-white p-8 rounded-2xl border border-neutral-800 shadow-xl max-w-md w-full">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-emerald-950 text-emerald-400 border border-emerald-700/60 rounded-full mb-6">
+            <CheckCircle2 className="w-10 h-10 text-emerald-400" />
           </div>
-          <h2 className="text-2xl font-extrabold text-slate-900 mb-2">SafePass Profile Activated</h2>
-          <p className="text-slate-600 text-sm">
+          <h2 className="text-2xl font-extrabold text-white mb-2">SafePass Profile Activated</h2>
+          <p className="text-neutral-300 text-sm">
             Mobile number verified & consular safety token securely logged. Launching Crisis Dashboard...
           </p>
-          <Loader2 className="w-6 h-6 text-cyan-600 animate-spin mx-auto mt-6" />
+          <Loader2 className="w-6 h-6 text-cyan-400 animate-spin mx-auto mt-6" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto animate-fade-in pb-12">
+    <div className="max-w-2xl mx-auto animate-fade-in pb-12 text-white">
       {/* Header banner */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-100 text-cyan-800 text-xs font-bold mb-3">
-          <Shield className="w-3.5 h-3.5" /> 20-Second Tourist Crisis Registration
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-700/60 text-xs font-bold mb-3 shadow-xs">
+          <Shield className="w-3.5 h-3.5 text-cyan-400" /> 20-Second Tourist Crisis Registration
         </div>
-        <h1 className="text-3xl font-extrabold text-slate-900 mb-2">Welcome to SafePass</h1>
-        <p className="text-slate-600 text-sm max-w-lg mx-auto">
+        <h1 className="text-3xl font-extrabold text-white mb-2 tracking-tight">Welcome to SafePass</h1>
+        <p className="text-neutral-300 text-sm max-w-lg mx-auto leading-relaxed">
           Instant real-time safety monitoring, multilingual crisis guidance, and consular check-in for foreign travelers during localized weather disasters.
         </p>
 
-        {/* 1-Click Demo Scenario Button */}
-        <div className="mt-4">
-          <button
-            type="button"
-            onClick={fillDemoScenario}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow"
-          >
-            <Zap className="w-3.5 h-3.5" /> ⚡ Pre-fill Hackathon Demo (Alex Mercer — French Tourist in Mahabalipuram)
-          </button>
+        {/* 3-Button Demo Persona Switcher */}
+        <div className="mt-5 bg-neutral-900 border border-neutral-800 rounded-2xl p-4 text-left shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-cyan-600 text-white text-xs font-bold shadow-xs">
+                <Sparkles className="w-3.5 h-3.5" />
+              </span>
+              <div>
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-white">
+                  Judges & Demo Persona Switcher (1-Click)
+                </h3>
+                <p className="text-[11px] text-neutral-400">
+                  Instantly populates traveler identity, coordinates, and emergency contact
+                </p>
+              </div>
+            </div>
+            {selectedPersonaId && (
+              <span className="text-[11px] font-semibold text-emerald-300 bg-emerald-950/90 px-2.5 py-0.5 rounded-full border border-emerald-700/60 flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Persona Loaded
+              </span>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            {DEMO_PERSONAS.map((p) => {
+              const isSelected = selectedPersonaId === p.id;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => applyDemoPersona(p)}
+                  className={`group relative text-left p-3.5 rounded-xl border transition-all duration-150 flex flex-col justify-between cursor-pointer ${
+                    isSelected
+                      ? 'bg-neutral-800 border-cyan-500 ring-2 ring-cyan-400/40 shadow-sm'
+                      : 'bg-neutral-950/80 border-neutral-800 hover:border-cyan-500 hover:bg-neutral-800'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-2xl" role="img" aria-label={p.nationality}>
+                        {p.flag}
+                      </span>
+                      <span
+                        className={`text-[10px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-wider ${
+                          isSelected ? 'bg-cyan-600 text-white border-cyan-600' : 'bg-neutral-800 text-neutral-300 border-neutral-700'
+                        }`}
+                      >
+                        {isSelected ? '✓ ACTIVE' : p.nationality}
+                      </span>
+                    </div>
+                    <div className="font-extrabold text-white text-sm group-hover:text-cyan-400 transition-colors">
+                      {p.name}
+                    </div>
+                    <div className="text-[11px] text-neutral-300 font-semibold line-clamp-1 mt-0.5">
+                      {p.zoneTag}
+                    </div>
+                    <div className="text-[10px] text-neutral-400 line-clamp-1 mt-1 font-medium">
+                      {p.scenarioHighlight}
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-2 border-t border-neutral-800 flex items-center justify-between text-[10px]">
+                    <span className="font-mono text-neutral-400 font-semibold">
+                      {p.lat.toFixed(4)}°, {p.lng.toFixed(4)}°
+                    </span>
+                    <span className={`font-bold transition-all ${isSelected ? 'text-cyan-400' : 'text-neutral-400 group-hover:text-cyan-400'}`}>
+                      {isSelected ? 'Selected' : 'Load Persona →'}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="mt-3 text-xs text-slate-500">
+        <div className="mt-3 text-xs text-neutral-400">
           Already registered?{' '}
-          <Link to="/login" className="text-cyan-700 font-extrabold hover:underline">
+          <Link to="/login" className="text-cyan-400 font-extrabold hover:underline">
             Log in with your verified mobile number →
           </Link>
         </div>
       </div>
 
       {step === 'form' ? (
-        <form onSubmit={handleInitiateOtp} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
+        <form onSubmit={handleInitiateOtp} className="bg-neutral-900 text-white rounded-2xl shadow-xl border border-neutral-800 p-6 sm:p-8 space-y-6">
           {/* Primary Traveler Identity Section */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-              <User className="w-4 h-4 text-cyan-600" />
-              <h2 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+            <div className="flex items-center gap-2 pb-2 border-b border-neutral-800">
+              <User className="w-4 h-4 text-cyan-400" />
+              <h2 className="text-xs font-bold text-neutral-300 uppercase tracking-wider">
                 Traveler Profile & Mobile Verification
               </h2>
             </div>
 
             {/* Traveler Full Name */}
             <div>
-              <label className="block text-sm font-bold text-slate-800 mb-2">
+              <label className="block text-sm font-bold text-white mb-2">
                 Traveler Full Name *
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g. Alex Mercer"
-                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm"
                   required
                 />
               </div>
@@ -296,45 +431,45 @@ export default function Onboarding() {
             {/* Traveler Mobile Number (Used for Login & OTP) */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-bold text-slate-800">
+                <label className="block text-sm font-bold text-white">
                   Traveler Mobile Number * (Receives OTP & Used for Login)
                 </label>
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded-md border border-cyan-200">
-                  <Lock className="w-3 h-3" /> Login ID
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded-md border border-cyan-700/60">
+                  <Lock className="w-3 h-3 text-cyan-400" /> Login ID
                 </span>
               </div>
               <div className="relative">
-                <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="+33 6 42 19 88 01 or +91 98765 43210"
-                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm font-mono"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm font-mono"
                   required
                 />
               </div>
-              <p className="mt-1.5 text-xs text-slate-500">
+              <p className="mt-1.5 text-xs text-neutral-400">
                 🔒 You will receive a 4-digit verification code before registration completes. For your security, future logins are strictly tied to this mobile number.
               </p>
             </div>
 
             {/* Nationality */}
             <div>
-              <label className="block text-sm font-bold text-slate-800 mb-2">
+              <label className="block text-sm font-bold text-white mb-2">
                 Country of Citizenship (Consular Liaison) *
               </label>
               <div className="relative">
-                <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+                <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 pointer-events-none" />
                 <select
                   value={formData.nationality}
                   onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
-                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 appearance-none bg-white text-sm"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all appearance-none text-sm"
                   required
                 >
-                  <option value="">Select your nationality</option>
+                  <option value="" className="bg-neutral-800 text-neutral-400">Select your nationality</option>
                   {nationalities.map((n) => (
-                    <option key={n} value={n}>{n}</option>
+                    <option key={n} value={n} className="bg-neutral-800 text-white">{n}</option>
                   ))}
                 </select>
               </div>
@@ -343,34 +478,34 @@ export default function Onboarding() {
             {/* Location */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-bold text-slate-800">
+                <label className="block text-sm font-bold text-white">
                   Current Location / Hotel Landmark
                 </label>
                 <button
                   type="button"
                   onClick={handleGetLocation}
                   disabled={locating}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-cyan-600 hover:text-cyan-700 transition-colors"
+                  className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors cursor-pointer"
                 >
                   {locating ? (
-                    <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Detecting...</>
+                    <><Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-400" /> Detecting...</>
                   ) : (
-                    <><Navigation className="w-3.5 h-3.5" /> Auto-Detect GPS</>
+                    <><Navigation className="w-3.5 h-3.5 text-cyan-400" /> Auto-Detect GPS</>
                   )}
                 </button>
               </div>
               <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
                 <input
                   type="text"
                   value={formData.location_label}
                   onChange={(e) => setFormData({ ...formData, location_label: e.target.value })}
                   placeholder="e.g. Mahabalipuram Beach Resort, ECR Road, Tamil Nadu"
-                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm"
                 />
               </div>
               {location && (
-                <p className="mt-2 text-xs text-emerald-600 font-semibold flex items-center gap-1">
+                <p className="mt-2 text-xs text-emerald-400 font-semibold flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   GPS locked: {location.lat.toFixed(4)}° N, {location.lng.toFixed(4)}° E (Tamil Nadu Coastal Zone)
                 </p>
@@ -379,10 +514,10 @@ export default function Onboarding() {
           </div>
 
           {/* Emergency Contact (Next of Kin / Family) */}
-          <div className="border-t border-slate-200 pt-6">
+          <div className="border-t border-neutral-800 pt-6">
             <div className="flex items-center gap-2 mb-4">
-              <LifeBuoy className="w-4 h-4 text-cyan-600" />
-              <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+              <LifeBuoy className="w-4 h-4 text-cyan-400" />
+              <h3 className="text-xs font-bold text-neutral-300 uppercase tracking-wider">
                 Emergency Contact (Next of Kin / Family Notification)
               </h3>
             </div>
@@ -390,34 +525,34 @@ export default function Onboarding() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Contact Name */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
                   Emergency Contact Full Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                   <input
                     type="text"
                     value={formData.emergency_contact_name}
                     onChange={(e) => setFormData({ ...formData, emergency_contact_name: e.target.value })}
                     placeholder="e.g. Claire Mercer (Sister)"
-                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm"
                   />
                 </div>
               </div>
 
               {/* Secondary Contact Phone */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
                   Emergency Contact Phone Number
                 </label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                   <input
                     type="tel"
                     value={formData.emergency_contact_phone}
                     onChange={(e) => setFormData({ ...formData, emergency_contact_phone: e.target.value })}
                     placeholder="+33 6 12 34 56 78"
-                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 text-sm"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm"
                   />
                 </div>
               </div>
@@ -425,8 +560,8 @@ export default function Onboarding() {
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 text-red-600 text-xs sm:text-sm bg-red-50 rounded-xl p-3 border border-red-100">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <div className="flex items-center gap-2 text-red-300 text-xs sm:text-sm bg-red-950/60 rounded-xl p-3 border border-red-800/60">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-400" />
               {error}
             </div>
           )}
@@ -434,7 +569,7 @@ export default function Onboarding() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-700 hover:to-sky-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-60 flex items-center justify-center gap-2 text-sm sm:text-base"
+            className="w-full bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-60 flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer"
           >
             {submitting ? (
               <><Loader2 className="w-5 h-5 animate-spin" /> Dispatching Mobile OTP...</>
@@ -448,50 +583,50 @@ export default function Onboarding() {
         </form>
       ) : (
         /* STEP 2: MOBILE OTP VERIFICATION */
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6 animate-fade-in">
+        <div className="bg-neutral-900 text-white rounded-2xl shadow-xl border border-neutral-800 p-6 sm:p-8 space-y-6 animate-fade-in">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-cyan-100 text-cyan-800 rounded-2xl">
+            <div className="p-3 bg-cyan-950 text-cyan-400 border border-cyan-800/60 rounded-2xl">
               <Smartphone className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-slate-900">Verify Traveler Mobile Number</h2>
-              <p className="text-xs text-slate-500">
-                4-digit crisis authorization code sent to personal mobile <span className="font-mono font-bold text-slate-800">{formData.phone}</span>
+              <h2 className="text-xl font-extrabold text-white">Verify Traveler Mobile Number</h2>
+              <p className="text-xs text-neutral-300">
+                4-digit crisis authorization code sent to personal mobile <span className="font-mono font-bold text-white">{formData.phone}</span>
               </p>
             </div>
           </div>
 
           {/* Incoming SMS Banner / Simulation */}
-          <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-900">
+          <div className="bg-amber-950/40 border border-amber-800/60 rounded-2xl p-4 text-xs text-amber-200">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-bold flex items-center gap-1.5 text-amber-900">
-                <MessageSquare className="w-4 h-4 text-amber-600" />
+              <span className="font-bold flex items-center gap-1.5 text-amber-300">
+                <MessageSquare className="w-4 h-4 text-amber-400" />
                 📲 Incoming Mobile SMS from SafePass Dispatch
               </span>
               <button
                 type="button"
                 onClick={() => setEnteredOtp(otpCode)}
-                className="font-extrabold text-[11px] text-amber-800 underline hover:text-amber-950"
+                className="font-extrabold text-[11px] text-amber-300 underline hover:text-amber-100 cursor-pointer"
               >
                 ⚡ Auto-Fill Code
               </button>
             </div>
 
-            <p className="text-[11px] text-amber-700 mb-2">
+            <p className="text-[11px] text-amber-300/80 mb-2">
               Message dispatched to traveler device <strong>{formData.phone}</strong>:
             </p>
 
-            <div className="flex items-center justify-between bg-white/90 border border-amber-300/80 rounded-xl px-3.5 py-2.5 shadow-2xs">
-              <div className="font-mono text-base font-black tracking-widest text-slate-900">
+            <div className="flex items-center justify-between bg-neutral-950/80 border border-amber-600/50 rounded-xl px-3.5 py-2.5 shadow-2xs">
+              <div className="font-mono text-base font-black tracking-widest text-amber-300">
                 {otpCode}
               </div>
-              <span className="text-[10px] text-slate-400">Valid 10 mins</span>
+              <span className="text-[10px] text-neutral-400">Valid 10 mins</span>
             </div>
 
             <div className="mt-2.5 flex items-center gap-3 text-[11px]">
               <a
                 href={getMobileSmsDeepLink(formData.phone, otpCode)}
-                className="inline-flex items-center gap-1 text-cyan-700 hover:text-cyan-900 font-bold underline"
+                className="inline-flex items-center gap-1 text-cyan-400 hover:text-cyan-300 font-bold underline"
               >
                 <ExternalLink className="w-3 h-3" /> Open in Phone Messages App
               </a>
@@ -500,7 +635,7 @@ export default function Onboarding() {
 
           <form onSubmit={handleVerifyAndRegister} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 text-center">
+              <label className="block text-xs font-bold text-neutral-300 uppercase tracking-wider mb-2 text-center">
                 Enter 4-Digit Verification Code
               </label>
               <input
@@ -510,7 +645,7 @@ export default function Onboarding() {
                 value={enteredOtp}
                 onChange={(e) => setEnteredOtp(e.target.value.replace(/\D/g, ''))}
                 placeholder="• • • •"
-                className="w-full text-center text-2xl font-mono tracking-widest border border-slate-300 rounded-2xl px-4 py-3.5 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
+                className="w-full text-center text-2xl font-mono tracking-widest border border-neutral-700 bg-neutral-800 text-white rounded-2xl px-4 py-3.5 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all outline-none"
                 disabled={submitting}
                 autoFocus
                 required
@@ -518,8 +653,8 @@ export default function Onboarding() {
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 text-red-600 text-xs sm:text-sm bg-red-50 rounded-xl p-3 border border-red-100">
-                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <div className="flex items-center gap-2 text-red-300 text-xs sm:text-sm bg-red-950/60 rounded-xl p-3 border border-red-800/60">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-400" />
                 {error}
               </div>
             )}
@@ -527,7 +662,7 @@ export default function Onboarding() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-700 hover:to-sky-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-60 flex items-center justify-center gap-2 text-sm sm:text-base"
+              className="w-full bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-60 flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer"
             >
               {submitting ? (
                 <><Loader2 className="w-5 h-5 animate-spin" /> Verifying Mobile & Activating Profile...</>
@@ -537,21 +672,21 @@ export default function Onboarding() {
             </button>
           </form>
 
-          <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-100">
+          <div className="flex items-center justify-between text-xs pt-2 border-t border-neutral-800">
             <button
               type="button"
               onClick={() => {
                 setStep('form');
                 setError('');
               }}
-              className="text-slate-500 hover:text-slate-700 font-medium"
+              className="text-neutral-400 hover:text-neutral-200 font-medium cursor-pointer"
             >
               ← Back to Edit Details
             </button>
             <button
               type="button"
               onClick={handleResendOtp}
-              className="text-cyan-700 hover:text-cyan-800 font-bold flex items-center gap-1"
+              className="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1 cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" /> Resend SMS Code
             </button>

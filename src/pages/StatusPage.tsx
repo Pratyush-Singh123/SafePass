@@ -159,12 +159,12 @@ export default function StatusPage() {
 
   if (!user && searched) {
     return (
-      <div className="max-w-md mx-auto text-center py-16 animate-fade-in bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-rose-100 rounded-full mb-4">
-          <AlertTriangle className="w-8 h-8 text-rose-600" />
+      <div className="max-w-md mx-auto text-center py-16 animate-fade-in bg-neutral-900 text-white p-8 rounded-2xl border border-neutral-800 shadow-xl">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-rose-950 text-rose-400 border border-rose-800/60 rounded-full mb-4">
+          <AlertTriangle className="w-8 h-8 text-rose-400" />
         </div>
-        <h2 className="text-xl font-bold text-slate-900 mb-2">Token Not Found</h2>
-        <p className="text-slate-600 text-sm mb-6">
+        <h2 className="text-xl font-bold text-white mb-2">Token Not Found</h2>
+        <p className="text-neutral-300 text-sm mb-6">
           No traveler profile found for the entered share token. You can test with our demo token.
         </p>
         <div className="flex flex-col gap-2">
@@ -176,7 +176,7 @@ export default function StatusPage() {
           </button>
           <button
             onClick={() => { setSearched(false); setTokenInput(''); }}
-            className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl text-sm transition-all"
+            className="bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold py-2.5 rounded-xl text-sm transition-all border border-neutral-700"
           >
             Search Another Token
           </button>
@@ -187,34 +187,34 @@ export default function StatusPage() {
 
   if (!user) {
     return (
-      <div className="max-w-md mx-auto animate-fade-in py-8">
+      <div className="max-w-md mx-auto animate-fade-in py-8 text-white">
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-cyan-100 rounded-full mb-4">
-            <Search className="w-8 h-8 text-cyan-600" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-cyan-950 text-cyan-400 border border-cyan-800/60 rounded-full mb-4">
+            <Search className="w-8 h-8 text-cyan-400" />
           </div>
-          <h1 className="text-2xl font-extrabold text-slate-900 mb-2">Family Safety Portal</h1>
-          <p className="text-slate-600 text-sm">
+          <h1 className="text-2xl font-extrabold text-white mb-2">Family Safety Portal</h1>
+          <p className="text-neutral-300 text-sm">
             Enter the unique SafePass token sent to you to view live crisis location and status.
           </p>
         </div>
-        <form onSubmit={searchByToken} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+        <form onSubmit={searchByToken} className="bg-neutral-900 rounded-2xl shadow-xl border border-neutral-800 p-6 space-y-4">
           <input
             type="text"
             value={tokenInput}
             onChange={(e) => setTokenInput(e.target.value)}
             placeholder="e.g. alex-demo-token-994"
-            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all text-slate-900 font-mono text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-white font-mono text-sm"
           />
           <button
             type="submit"
-            className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md text-sm"
+            className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md text-sm cursor-pointer"
           >
             Verify Traveler Status
           </button>
           <button
             type="button"
             onClick={() => setUser(FRESH_TEN_RECORDS[0])}
-            className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-xs transition-all"
+            className="w-full bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-medium py-2.5 rounded-xl text-xs transition-all border border-neutral-700 cursor-pointer"
           >
             ⚡ Test with Demo Persona (Alex Mercer)
           </button>
@@ -227,11 +227,11 @@ export default function StatusPage() {
   const StatusIcon = statusInfo.icon;
 
   return (
-    <div className="max-w-2xl mx-auto animate-fade-in pb-12">
+    <div className="max-w-2xl mx-auto animate-fade-in pb-12 text-white">
       {/* Quick Switcher for 10 Fresh Travelers */}
-      <div className="mb-3 bg-white border border-slate-200 rounded-2xl p-3 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-        <span className="font-bold text-slate-700 flex items-center gap-1.5">
-          <User className="w-3.5 h-3.5 text-cyan-600" /> Switch Traveler Status Card:
+      <div className="mb-3 bg-neutral-900 border border-neutral-800 rounded-2xl p-3 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+        <span className="font-bold text-neutral-200 flex items-center gap-1.5">
+          <User className="w-3.5 h-3.5 text-cyan-400" /> Switch Traveler Status Card:
         </span>
         <select
           value={user.id}
@@ -239,7 +239,7 @@ export default function StatusPage() {
             const found = FRESH_TEN_RECORDS.find((p) => p.id === e.target.value);
             if (found) setUser(found);
           }}
-          className="text-xs bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1.5 text-slate-800 font-semibold focus:ring-2 focus:ring-cyan-200 outline-none"
+          className="text-xs bg-neutral-800 border border-neutral-700 rounded-xl px-2.5 py-1.5 text-white font-semibold focus:ring-2 focus:ring-cyan-400 outline-none"
         >
           {FRESH_TEN_RECORDS.map((p) => (
             <option key={p.id} value={p.id}>
@@ -248,19 +248,18 @@ export default function StatusPage() {
           ))}
         </select>
       </div>
-
       {/* Share / Verification Top Strip */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 bg-cyan-50/80 border border-cyan-200 rounded-2xl p-3.5">
-        <div className="flex items-center gap-2 text-xs font-semibold text-cyan-900">
-          <ShieldCheck className="w-4 h-4 text-cyan-700" />
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 bg-cyan-950/70 border border-cyan-800/80 rounded-2xl p-3.5">
+        <div className="flex items-center gap-2 text-xs font-semibold text-cyan-300">
+          <ShieldCheck className="w-4 h-4 text-cyan-400" />
           <span>Public Read-Only Family Verification Link</span>
         </div>
         <button
           onClick={copyShareLink}
-          className="flex items-center gap-1.5 text-xs font-bold text-cyan-800 bg-white hover:bg-cyan-100 px-3 py-1.5 rounded-xl border border-cyan-200 transition-all shadow-sm"
+          className="flex items-center gap-1.5 text-xs font-bold text-white bg-neutral-900 hover:bg-neutral-800 px-3 py-1.5 rounded-xl border border-neutral-700 transition-all shadow-sm"
         >
-          {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-          {copied ? 'Link Copied!' : 'Copy Permanent Share Link'}
+          {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-neutral-400" />}
+          <span>{copied ? 'Link Copied!' : 'Copy Permanent Share Link'}</span>
         </button>
       </div>
 

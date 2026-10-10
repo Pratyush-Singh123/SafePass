@@ -999,7 +999,7 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
   return (
     <div
       className={`max-w-3xl mx-auto transition-colors duration-300 flex flex-col h-[calc(100vh-140px)] pb-2 ${
-        batterySaver ? 'bg-black text-slate-100' : 'animate-fade-in'
+        batterySaver ? 'bg-black text-slate-100' : 'animate-fade-in text-white'
       }`}
     >
       {/* Battery Saver Minimal Status Strip */}
@@ -1022,7 +1022,7 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
         className={`flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-3 mb-2.5 p-2.5 sm:p-3 rounded-2xl border transition-all ${
           batterySaver
             ? 'bg-slate-950 border-slate-800 text-slate-100'
-            : 'bg-white border-slate-200 text-slate-900 shadow-sm'
+            : 'bg-neutral-900 border-neutral-800 text-white shadow-sm'
         }`}
       >
         <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
@@ -1035,19 +1035,19 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-              <h1 className="text-sm sm:text-base font-extrabold tracking-tight truncate">The Calm Voice</h1>
+              <h1 className="text-sm sm:text-base font-extrabold tracking-tight truncate text-white">The Calm Voice</h1>
               <span
                 className={`flex items-center gap-1 text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full flex-shrink-0 ${
                   batterySaver
                     ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
-                    : 'bg-emerald-100 text-emerald-800'
+                    : 'bg-emerald-950 text-emerald-300 border border-emerald-700/60'
                 }`}
               >
-                <span className={`w-1.5 h-1.5 rounded-full bg-emerald-500 ${batterySaver ? '' : 'animate-pulse'}`} />
+                <span className={`w-1.5 h-1.5 rounded-full bg-emerald-400 ${batterySaver ? '' : 'animate-pulse'}`} />
                 SafePass AI
               </span>
             </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate hidden xs:block sm:block">
+            <p className="text-[10px] sm:text-[11px] text-neutral-300 truncate hidden xs:block sm:block">
               Calm crisis guidance • Mahabalipuram Zone
             </p>
           </div>
@@ -1058,17 +1058,17 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
           {/* Language Selector */}
           <div
             className={`flex items-center gap-1 border rounded-xl px-1.5 sm:px-2 py-1.5 text-xs ${
-              batterySaver ? 'bg-slate-900 border-slate-700' : 'bg-slate-50 border-slate-200'
+              batterySaver ? 'bg-slate-900 border-slate-700 text-white' : 'bg-neutral-900 border-neutral-700 text-white'
             }`}
           >
-            <Globe2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+            <Globe2 className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0" />
             <select
               value={selectedLanguage}
               onChange={(e) => handleLanguageChange(e.target.value)}
-              className="bg-transparent font-bold text-xs outline-none cursor-pointer max-w-[85px] sm:max-w-none"
+              className="bg-transparent font-bold text-xs outline-none cursor-pointer max-w-[85px] sm:max-w-none text-white"
             >
               {LANGUAGES.map((lang) => (
-                <option key={lang.code} value={lang.code} className="bg-slate-900 text-white">
+                <option key={lang.code} value={lang.code} className="bg-neutral-900 text-white">
                   {lang.flag} {lang.label}
                 </option>
               ))}
@@ -1081,11 +1081,11 @@ Direct French Consular Emergency Liaison: +91 413 226 6500 | District Collectora
             className={`flex items-center gap-1 sm:gap-1.5 text-xs font-bold px-2 sm:px-3 py-1.5 rounded-xl border transition-all flex-shrink-0 ${
               batterySaver
                 ? 'bg-slate-900 hover:bg-slate-800 border-slate-700 text-slate-200'
-                : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 shadow-2xs'
+                : 'bg-neutral-900 hover:bg-neutral-800 border-neutral-700 text-white shadow-xs'
             }`}
             title="Open Emergency Toolkit"
           >
-            <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-600 flex-shrink-0" />
+            <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
             <span className="hidden sm:inline">Crisis Tools</span>
             <span className="sm:hidden">Tools</span>
           </button>
