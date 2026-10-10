@@ -7,7 +7,6 @@ import {
   Radio,
   Navigation,
   AlertTriangle,
-  User,
   Key,
   ArrowRight,
   Loader2,
@@ -19,12 +18,13 @@ import {
   Clock,
   Smartphone,
   RotateCcw,
-  Sparkles,
   ExternalLink,
+  Lock,
 } from 'lucide-react';
 import {
   isLoggedIn,
-  findRegisteredUser,
+  findRegisteredUserByPhone,
+  extractPhoneDigits,
   generateLoginOtp,
   verifyLoginOtp,
   createSession,
@@ -38,13 +38,12 @@ import type { SafePassUser } from '@/lib/types';
 export default function Login() {
   const navigate = useNavigate();
   const [step, setStep] = useState<'lookup' | 'otp'>('lookup');
-  const [identifier, setIdentifier] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [pendingUser, setPendingUser] = useState<SafePassUser | null>(null);
   const [generatedOtp, setGeneratedOtp] = useState('');
   const [enteredOtp, setEnteredOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [otpCopied, setOtpCopied] = useState(false);
   const [sosModalOpen, setSosModalOpen] = useState(false);
   const [copiedSms, setCopiedSms] = useState(false);
 
@@ -78,45 +77,51 @@ export default function Login() {
     }
   }, []);
 
-  // Step 1: Validate input & Look up registered profile
+  // Step 1: Validate input & Look up registered profile SOLELY by mobile phone number
   const handleLookup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    const query = identifier.trim();
+    const query = phoneNumber.trim();
     if (!query) {
-      setError('Please enter your registered name, phone number, or SafePass token.');
+      setError('Please enter your registered mobile phone number.');
       return;
     }
 
-    if (query.length < 2) {
-      setError('Identifier must be at least 2 characters.');
+    const cleanDigits = extractPhoneDigits(query);
+    if (cleanDigits.length < 7) {
+      setError(
+        'Please enter a valid registered mobile phone number with country code (e.g. +33 6 42 19 88 01 or +91 98765 43210). SafePass logins are strictly restricted to verified mobile numbers to prevent unauthorized account access.'
+      );
       return;
     }
 
     setLoading(true);
 
     try {
-      const user = await findRegisteredUser(query);
+      const user = await findRegisteredUserByPhone(query);
 
       if (!user) {
         setError(
-          'No registered SafePass profile found matching this information. Login is restricted to pre-registered travelers. Please register below first.'
+          `No registered SafePass profile found with mobile number "${query}". SafePass login is strictly restricted to pre-registered travelers. Please check your number or register below.`
         );
         setLoading(false);
         return;
       }
 
-      // Generate 4-digit emergency verification code and dispatch SMS
+      // Generate 4-digit emergency verification code and dispatch SMS to the user's mobile
       const { code } = generateLoginOtp(user);
       setPendingUser(user);
       setGeneratedOtp(code);
       setEnteredOtp('');
-      await sendOtpToMobilePhone(user.emergency_contact_phone || 'Emergency Mobile', code, user.name);
+
+      const targetMobile = user.phone || user.emergency_contact_phone || query;
+      await sendOtpToMobilePhone(targetMobile, code, user.name);
+
       setStep('otp');
       setLoading(false);
     } catch {
-      setError('Error verifying registration. Please try again.');
+      setError('Error verifying registered phone number. Please try again.');
       setLoading(false);
     }
   };
@@ -162,10 +167,11 @@ export default function Login() {
     setError('');
     const demo = DEMO_USER_PERSONA;
     const { code } = generateLoginOtp(demo);
+    setPhoneNumber(demo.phone || '+33 6 42 19 88 01');
     setPendingUser(demo);
     setGeneratedOtp(code);
     setEnteredOtp(code); // Pre-fill for instant demo access
-    await sendOtpToMobilePhone(demo.emergency_contact_phone, code, demo.name);
+    await sendOtpToMobilePhone(demo.phone || demo.emergency_contact_phone, code, demo.name);
     setStep('otp');
     setLoading(false);
   };
@@ -176,7 +182,11 @@ export default function Login() {
     const { code } = generateLoginOtp(pendingUser);
     setGeneratedOtp(code);
     setError('');
-    await sendOtpToMobilePhone(pendingUser.emergency_contact_phone || 'Emergency Mobile', code, pendingUser.name);
+    await sendOtpToMobilePhone(
+      pendingUser.phone || pendingUser.emergency_contact_phone || 'Emergency Mobile',
+      code,
+      pendingUser.name
+    );
   };
 
   const handleAutoFillOtp = () => {
@@ -239,7 +249,7 @@ export default function Login() {
             <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">SafePass Log In</h1>
             <p className="text-xs text-slate-500">
               {step === 'lookup'
-                ? 'Registered Traveler Identity Verification'
+                ? 'Mobile-Verified Traveler Authentication'
                 : 'Emergency OTP & Device Verification'}
             </p>
           </div>
@@ -262,28 +272,31 @@ export default function Login() {
           </div>
         )}
 
-        {/* STEP 1: LOOKUP REGISTERED USER */}
+        {/* STEP 1: LOOKUP REGISTERED USER SOLELY BY MOBILE NUMBER */}
         {step === 'lookup' && (
           <>
             <form onSubmit={handleLookup} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Registered Name, Phone, or SafePass Token *
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                  <span>Registered Mobile Number *</span>
+                  <span className="text-[10px] text-cyan-700 font-bold lowercase flex items-center gap-1">
+                    <Lock className="w-3 h-3" /> strictly mobile only
+                  </span>
                 </label>
                 <div className="relative">
+                  <Smartphone className="w-4 h-4 text-slate-400 absolute left-4 top-3.5" />
                   <input
-                    type="text"
-                    value={identifier}
-                    onChange={(e) => setIdentifier(e.target.value)}
-                    placeholder="e.g. Alex Mercer, +33 6 42 19 88 01, or token"
-                    className="w-full border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    placeholder="e.g. +33 6 42 19 88 01 or +91 98765 43210"
+                    className="w-full border border-slate-300 rounded-2xl pl-11 pr-4 py-3 text-sm font-mono focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all outline-none"
                     disabled={loading}
                     required
                   />
-                  <User className="w-4 h-4 text-slate-400 absolute right-4 top-3.5" />
                 </div>
-                <p className="text-[11px] text-slate-400 mt-1.5">
-                  Must be an existing registered account. Unregistered users cannot sign in.
+                <p className="text-[11px] text-slate-500 mt-1.5 leading-snug">
+                  🔒 SafePass logins are strictly restricted to verified mobile numbers. Login by traveler name is prohibited to safeguard your identity.
                 </p>
               </div>
 
@@ -295,26 +308,35 @@ export default function Login() {
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Checking Database...</span>
+                    <span>Verifying Mobile Number...</span>
                   </>
                 ) : (
                   <>
-                    <span>Verify Registered Profile</span>
+                    <span>Send Emergency Login OTP</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
               </button>
             </form>
 
-            {/* Demo Persona Shortcut */}
-            <div className="mt-4 pt-4 border-t border-slate-100">
+            {/* Quick Demo Pre-fill Shortcut */}
+            <div className="mt-4 pt-4 border-t border-slate-100 space-y-2">
               <button
+                type="button"
+                onClick={() => setPhoneNumber('+33 6 42 19 88 01')}
+                className="w-full text-center text-[11px] font-bold text-cyan-700 hover:text-cyan-900 underline"
+              >
+                ⚡ Pre-fill Alex's Phone: +33 6 42 19 88 01
+              </button>
+
+              <button
+                type="button"
                 onClick={handleQuickDemoLogin}
                 disabled={loading}
                 className="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold py-2.5 rounded-2xl text-xs transition-all flex items-center justify-center gap-2"
               >
                 <Key className="w-3.5 h-3.5 text-cyan-600" />
-                <span>Quick Demo: Alex Mercer (France Demo Profile)</span>
+                <span>1-Click Demo Login: +33 6 42 19 88 01 (Alex Mercer)</span>
               </button>
             </div>
           </>
@@ -327,19 +349,19 @@ export default function Login() {
             <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                  Profile Located
+                  Mobile Verified
                 </span>
                 <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
-                  <CheckCircle2 className="w-3 h-3" /> Registered
+                  <CheckCircle2 className="w-3 h-3" /> Registered Traveler
                 </span>
               </div>
               <p className="font-extrabold text-slate-900 text-sm">{pendingUser.name}</p>
               <p className="text-slate-500 text-[11px]">
-                {pendingUser.nationality} • Emergency Contact: {pendingUser.emergency_contact_phone || 'Logged'}
+                {pendingUser.nationality} • Verified Mobile: {pendingUser.phone || pendingUser.emergency_contact_phone}
               </p>
             </div>
 
-            {/* Emergency OTP Dispatch Banner (Simulated for zero-fail hackathon / emergency demonstration) */}
+            {/* Emergency OTP Dispatch Banner */}
             <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-3.5 text-xs text-amber-900">
               <div className="flex items-center justify-between mb-1">
                 <span className="font-bold flex items-center gap-1.5 text-amber-800">
@@ -354,7 +376,7 @@ export default function Login() {
                 </button>
               </div>
               <p className="text-[11px] text-amber-700 mb-2">
-                Dispatched to emergency device registered for {pendingUser.name}:
+                Dispatched to verified traveler mobile <strong>{pendingUser.phone || pendingUser.emergency_contact_phone}</strong>:
               </p>
               <div className="flex items-center justify-between bg-white/80 border border-amber-200 rounded-xl px-3 py-2">
                 <span className="font-mono text-base font-black tracking-widest text-slate-900">
@@ -365,7 +387,7 @@ export default function Login() {
 
               <div className="mt-2.5 flex items-center gap-3 text-[11px]">
                 <a
-                  href={getMobileSmsDeepLink(pendingUser.emergency_contact_phone || '', generatedOtp)}
+                  href={getMobileSmsDeepLink(pendingUser.phone || pendingUser.emergency_contact_phone || '', generatedOtp)}
                   className="inline-flex items-center gap-1 text-cyan-700 hover:text-cyan-900 font-bold underline"
                 >
                   <ExternalLink className="w-3 h-3" /> Open in Phone Messages App
@@ -430,7 +452,7 @@ export default function Login() {
                 }}
                 className="text-slate-500 hover:text-slate-700 font-medium"
               >
-                ← Back to Identity
+                ← Back to Mobile Number
               </button>
               <button
                 type="button"
