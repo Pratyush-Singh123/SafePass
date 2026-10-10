@@ -16,6 +16,7 @@ import {
   Zap,
   Shield,
   LifeBuoy,
+  Sparkles,
   Smartphone,
   RotateCcw,
   MessageSquare,
@@ -28,6 +29,70 @@ const nationalities = [
   'United States', 'United Kingdom', 'Canada', 'Australia', 'Germany',
   'France', 'Japan', 'Brazil', 'India', 'Mexico', 'Spain', 'Italy',
   'Netherlands', 'Sweden', 'South Korea', 'Other',
+];
+
+interface DemoPersona {
+  id: string;
+  name: string;
+  phone: string;
+  nationality: string;
+  flag: string;
+  location_label: string;
+  lat: number;
+  lng: number;
+  emergency_contact_name: string;
+  emergency_contact_phone: string;
+  zoneTag: string;
+  badgeColor: string;
+  scenarioHighlight: string;
+}
+
+const DEMO_PERSONAS: DemoPersona[] = [
+  {
+    id: 'alex',
+    name: 'Alex Mercer',
+    phone: '+33 6 42 19 88 01',
+    nationality: 'France',
+    flag: '🇫🇷',
+    location_label: 'Mahabalipuram Coastal Heritage Zone, Chengalpattu / Kancheepuram',
+    lat: 12.6269,
+    lng: 80.1932,
+    emergency_contact_name: 'Claire Mercer (Sister)',
+    emergency_contact_phone: '+33 6 12 34 56 78',
+    zoneTag: 'Mahabalipuram Coastal Zone',
+    badgeColor: 'bg-red-100 text-red-700 border-red-200',
+    scenarioHighlight: 'Storm Surge Danger Zone • French Consular Protection',
+  },
+  {
+    id: 'kenji',
+    name: 'Kenji Sato',
+    phone: '+81 90 1234 5678',
+    nationality: 'Japan',
+    flag: '🇯🇵',
+    location_label: 'Sholinganallur Tech Corridor, Chennai OMR',
+    lat: 12.9010,
+    lng: 80.2279,
+    emergency_contact_name: 'Yuki Sato (Wife)',
+    emergency_contact_phone: '+81 80 9876 5432',
+    zoneTag: 'Sholinganallur Tech Corridor',
+    badgeColor: 'bg-indigo-100 text-indigo-700 border-indigo-200',
+    scenarioHighlight: 'OMR Safe Haven Corridor • Japanese Consular Liaison',
+  },
+  {
+    id: 'emma',
+    name: 'Emma Watson',
+    phone: '+44 7911 123456',
+    nationality: 'United Kingdom',
+    flag: '🇬🇧',
+    location_label: 'Kovalam ECR Beachfront, Tamil Nadu',
+    lat: 12.7892,
+    lng: 80.2520,
+    emergency_contact_name: 'Arthur Watson (Father)',
+    emergency_contact_phone: '+44 7822 654321',
+    zoneTag: 'Kovalam ECR Beachfront',
+    badgeColor: 'bg-amber-100 text-amber-700 border-amber-200',
+    scenarioHighlight: 'Backwaters Caution Zone • UK High Commission Tracking',
+  },
 ];
 
 export default function Onboarding() {
@@ -46,20 +111,26 @@ export default function Onboarding() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [selectedPersonaId, setSelectedPersonaId] = useState<string | null>(null);
   const [otpCode, setOtpCode] = useState('');
   const [enteredOtp, setEnteredOtp] = useState('');
 
-  const fillDemoScenario = () => {
+  const applyDemoPersona = (persona: DemoPersona) => {
+    setSelectedPersonaId(persona.id);
     setFormData({
-      name: 'Alex Mercer',
-      phone: '+33 6 42 19 88 01',
-      nationality: 'France',
-      location_label: 'Mahabalipuram Coastal Heritage Zone, Chengalpattu / Kancheepuram',
-      emergency_contact_name: 'Claire Mercer (Sister)',
-      emergency_contact_phone: '+33 6 12 34 56 78',
+      name: persona.name,
+      phone: persona.phone,
+      nationality: persona.nationality,
+      location_label: persona.location_label,
+      emergency_contact_name: persona.emergency_contact_name,
+      emergency_contact_phone: persona.emergency_contact_phone,
     });
-    setLocation({ lat: 12.6269, lng: 80.1932 });
+    setLocation({ lat: persona.lat, lng: persona.lng });
     setError('');
+  };
+
+  const fillDemoScenario = () => {
+    applyDemoPersona(DEMO_PERSONAS[0]);
   };
 
   const handleGetLocation = () => {
@@ -245,15 +316,79 @@ export default function Onboarding() {
           Instant real-time safety monitoring, multilingual crisis guidance, and consular check-in for foreign travelers during localized weather disasters.
         </p>
 
-        {/* 1-Click Demo Scenario Button */}
-        <div className="mt-4">
-          <button
-            type="button"
-            onClick={fillDemoScenario}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow"
-          >
-            <Zap className="w-3.5 h-3.5" /> ⚡ Pre-fill Hackathon Demo (Alex Mercer — French Tourist in Mahabalipuram)
-          </button>
+        {/* 3-Button Demo Persona Switcher */}
+        <div className="mt-5 bg-gradient-to-b from-slate-50 to-cyan-50/30 border border-slate-200 rounded-2xl p-4 text-left shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-cyan-600 text-white text-xs font-bold shadow-xs">
+                <Sparkles className="w-3.5 h-3.5" />
+              </span>
+              <div>
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
+                  Judges & Demo Persona Switcher (1-Click)
+                </h3>
+                <p className="text-[11px] text-slate-500">
+                  Instantly populates traveler identity, coordinates, and emergency contact
+                </p>
+              </div>
+            </div>
+            {selectedPersonaId && (
+              <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-100/90 px-2.5 py-0.5 rounded-full border border-emerald-300/60 flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3" /> Persona Loaded
+              </span>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            {DEMO_PERSONAS.map((p) => {
+              const isSelected = selectedPersonaId === p.id;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => applyDemoPersona(p)}
+                  className={`group relative text-left p-3.5 rounded-xl border transition-all duration-150 flex flex-col justify-between ${
+                    isSelected
+                      ? 'bg-white border-cyan-500 ring-2 ring-cyan-400/40 shadow-sm'
+                      : 'bg-white/90 border-slate-200/90 hover:border-cyan-300 hover:bg-white hover:shadow-xs'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-2xl" role="img" aria-label={p.nationality}>
+                        {p.flag}
+                      </span>
+                      <span
+                        className={`text-[10px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-wider ${
+                          isSelected ? 'bg-cyan-600 text-white border-cyan-600' : p.badgeColor
+                        }`}
+                      >
+                        {isSelected ? '✓ ACTIVE' : p.nationality}
+                      </span>
+                    </div>
+                    <div className="font-extrabold text-slate-900 text-sm group-hover:text-cyan-700 transition-colors">
+                      {p.name}
+                    </div>
+                    <div className="text-[11px] text-slate-600 font-semibold line-clamp-1 mt-0.5">
+                      {p.zoneTag}
+                    </div>
+                    <div className="text-[10px] text-slate-500 line-clamp-1 mt-1 font-medium">
+                      {p.scenarioHighlight}
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px]">
+                    <span className="font-mono text-slate-500 font-semibold">
+                      {p.lat.toFixed(4)}°, {p.lng.toFixed(4)}°
+                    </span>
+                    <span className={`font-bold transition-all ${isSelected ? 'text-cyan-600' : 'text-slate-400 group-hover:text-cyan-600'}`}>
+                      {isSelected ? 'Selected' : 'Load Persona →'}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="mt-3 text-xs text-slate-500">
