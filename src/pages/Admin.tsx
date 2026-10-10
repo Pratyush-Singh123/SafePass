@@ -19,7 +19,6 @@ import {
   FileSpreadsheet,
   Lock,
   RefreshCw,
-  Trash2,
 } from 'lucide-react';
 
 const statusConfig: Record<SafetyStatus, { label: string; dot: string; bg: string; text: string }> = {
@@ -228,27 +227,6 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     }, 2000);
   };
 
-  const handleClearDatabase = async () => {
-    if (!window.confirm('Are you sure you want to completely clear the traveler database? All registered records will be deleted.')) {
-      return;
-    }
-    setLoading(true);
-    try {
-      await supabase
-        .from('users')
-        .delete()
-        .neq('id', '00000000-0000-0000-0000-000000000000');
-      try {
-        localStorage.removeItem('safepass_rescue_records');
-      } catch {}
-      setUsers([]);
-      setRecords({});
-    } catch (err) {
-      console.error(err);
-    }
-    setLoading(false);
-  };
-
   const formatDate = (iso: string) => {
     return new Date(iso).toLocaleString(undefined, {
       dateStyle: 'short',
@@ -427,15 +405,6 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
           >
             <RefreshCw className={`w-4 h-4 text-cyan-400 ${loading ? 'animate-spin' : ''}`} />
             Refresh
-          </button>
-          <button
-            onClick={handleClearDatabase}
-            disabled={loading}
-            className="bg-rose-950/60 hover:bg-rose-900 text-rose-300 font-semibold px-3.5 py-2.5 rounded-xl text-xs sm:text-sm transition-all border border-rose-800/60 flex items-center gap-1.5 cursor-pointer"
-            title="Clear Traveler Database"
-          >
-            <Trash2 className="w-4 h-4 text-rose-400" />
-            Clear Database
           </button>
           <button
             onClick={() => setBroadcastModal(true)}
