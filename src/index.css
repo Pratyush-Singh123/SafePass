@@ -35,8 +35,9 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f1f5f9;
-  color: #0f172a;
+  background-color: #000000;
+  color: #ffffff;
+  color-scheme: dark;
 }
 
 #root {
@@ -170,13 +171,47 @@ textarea:focus {
   outline: none;
 }
 
-/* Ensure all form inputs have sharp, visible text contrast and dark autofill */
+/* Ensure all form inputs have sharp, visible text contrast and prevent iOS zoom bug */
 input, select, textarea {
   color-scheme: dark;
+  font-size: 16px !important; /* Critical: Prevents iOS Safari 16px auto-zoom on focus */
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #22d3ee !important;
+  -webkit-appearance: none;
+}
+
+@media (min-width: 640px) {
+  input.text-sm, select.text-sm, textarea.text-sm {
+    font-size: 0.875rem !important;
+  }
+  input.text-xs, select.text-xs, textarea.text-xs {
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Bulletproof WebKit autofill styling for dark backgrounds */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0px 1000px #262626 inset !important;
+  box-shadow: 0 0 0px 1000px #262626 inset !important;
+  caret-color: #22d3ee !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #737373;
+  color: #a3a3a3 !important;
+  -webkit-text-fill-color: #a3a3a3 !important;
+  opacity: 1;
 }
 

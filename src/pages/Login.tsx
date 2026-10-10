@@ -291,7 +291,14 @@ export default function Login() {
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     placeholder="e.g. +33 6 42 19 88 01 or +91 98765 43210"
-                    className="w-full border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 rounded-2xl pl-11 pr-4 py-3 text-sm font-mono focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all outline-none"
+                    className="w-full border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-400 rounded-2xl pl-11 pr-4 py-3 text-base sm:text-sm font-mono focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all outline-none"
+                    style={{
+                      color: '#ffffff',
+                      WebkitTextFillColor: '#ffffff',
+                      caretColor: '#22d3ee',
+                      backgroundColor: '#262626',
+                      fontSize: '16px',
+                    }}
                     disabled={loading}
                     required
                   />
@@ -337,7 +344,13 @@ export default function Login() {
                       setPhoneNumber(found.phone);
                     }
                   }}
-                  className="w-full text-xs bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-white font-semibold focus:ring-2 focus:ring-cyan-400 outline-none cursor-pointer"
+                  className="w-full text-base sm:text-xs bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-white font-semibold focus:ring-2 focus:ring-cyan-400 outline-none cursor-pointer"
+                  style={{
+                    color: '#ffffff',
+                    WebkitTextFillColor: '#ffffff',
+                    backgroundColor: '#262626',
+                    fontSize: '16px',
+                  }}
                 >
                   <option value="">⚡ Select Any Traveler to Pre-Fill Phone...</option>
                   {FRESH_TEN_RECORDS.map((p) => (
@@ -424,10 +437,19 @@ export default function Login() {
                     type="text"
                     maxLength={4}
                     inputMode="numeric"
+                    pattern="[0-9]*"
                     value={enteredOtp}
                     onChange={(e) => setEnteredOtp(e.target.value.replace(/\D/g, ''))}
                     placeholder="• • • •"
-                    className="w-full text-center text-2xl font-mono tracking-widest border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-500 rounded-2xl px-4 py-3.5 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all outline-none"
+                    className="w-full text-center text-3xl font-mono tracking-widest border border-neutral-700 bg-neutral-800 text-white placeholder-neutral-400 rounded-2xl px-4 py-3.5 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all outline-none"
+                    style={{
+                      color: '#ffffff',
+                      WebkitTextFillColor: '#ffffff',
+                      caretColor: '#22d3ee',
+                      backgroundColor: '#262626',
+                      fontSize: '28px',
+                      letterSpacing: '0.25em',
+                    }}
                     disabled={loading}
                     autoFocus
                     required

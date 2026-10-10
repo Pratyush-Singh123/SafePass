@@ -318,7 +318,14 @@ export default function StatusPage() {
             value={tokenInput}
             onChange={(e) => setTokenInput(e.target.value)}
             placeholder="e.g. alex-demo-token-994"
-            className="w-full px-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-white font-mono text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-neutral-700 bg-neutral-800 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all text-white placeholder-neutral-400 font-mono text-base sm:text-sm"
+            style={{
+              color: '#ffffff',
+              WebkitTextFillColor: '#ffffff',
+              caretColor: '#22d3ee',
+              backgroundColor: '#262626',
+              fontSize: '16px',
+            }}
           />
           <button
             type="submit"
@@ -365,9 +372,15 @@ export default function StatusPage() {
             if (found) setUser(found);
           }}
           className="text-xs bg-neutral-800 border border-neutral-700 rounded-xl px-2.5 py-1.5 text-white font-semibold focus:ring-2 focus:ring-cyan-400 outline-none"
+          style={{
+            color: '#ffffff',
+            WebkitTextFillColor: '#ffffff',
+            backgroundColor: '#262626',
+            fontSize: '14px',
+          }}
         >
           {FRESH_TEN_RECORDS.map((p) => (
-            <option key={p.id} value={p.id}>
+            <option key={p.id} value={p.id} className="bg-neutral-900 text-white">
               {p.name} ({p.nationality}) — {p.status.toUpperCase()}
             </option>
           ))}
@@ -407,20 +420,20 @@ export default function StatusPage() {
       </div>
 
       {/* Main Status Container */}
-      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-neutral-900 rounded-3xl shadow-xl border border-neutral-800 overflow-hidden text-white">
         {/* Top Colored Status Ribbon */}
         <div className={`h-3 w-full ${statusInfo.banner}`} />
 
         <div className="p-6 sm:p-8">
           {/* Status Badge Hero */}
-          <div className="flex flex-col items-center text-center mb-8 pb-6 border-b border-slate-100">
+          <div className="flex flex-col items-center text-center mb-8 pb-6 border-b border-neutral-800">
             <div className={`w-20 h-20 rounded-full ${statusInfo.bg} ${statusInfo.ring} flex items-center justify-center mb-3.5 shadow-sm`}>
               <StatusIcon className={`w-10 h-10 ${statusInfo.text}`} />
             </div>
             <span className={`text-xl sm:text-2xl font-extrabold ${statusInfo.text}`}>
               {statusInfo.label}
             </span>
-            <p className="text-xs text-slate-400 mt-1 flex items-center gap-1 font-medium">
+            <p className="text-xs text-neutral-400 mt-1 flex items-center gap-1 font-medium">
               <Clock className="w-3.5 h-3.5" /> Last Verified Update: {formatDate(user.updated_at)}
             </p>
           </div>
@@ -477,37 +490,37 @@ export default function StatusPage() {
 
           {/* Traveler Details Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-6">
-            <div className="flex items-center gap-3 bg-slate-50/80 rounded-2xl p-3.5 border border-slate-100">
-              <div className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs">
-                <User className="w-5 h-5 text-slate-700" />
+            <div className="flex items-center gap-3 bg-neutral-800/80 rounded-2xl p-3.5 border border-neutral-700/80">
+              <div className="bg-neutral-900 p-2.5 rounded-xl border border-neutral-700 shadow-2xs">
+                <User className="w-5 h-5 text-cyan-400" />
               </div>
               <div className="min-w-0">
-                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Traveler</p>
-                <p className="text-sm font-extrabold text-slate-900 truncate">{user.name}</p>
+                <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-wider">Traveler</p>
+                <p className="text-sm font-extrabold text-white truncate">{user.name}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 bg-slate-50/80 rounded-2xl p-3.5 border border-slate-100">
-              <div className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs">
-                <Globe className="w-5 h-5 text-slate-700" />
+            <div className="flex items-center gap-3 bg-neutral-800/80 rounded-2xl p-3.5 border border-neutral-700/80">
+              <div className="bg-neutral-900 p-2.5 rounded-xl border border-neutral-700 shadow-2xs">
+                <Globe className="w-5 h-5 text-cyan-400" />
               </div>
               <div>
-                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Nationality</p>
-                <p className="text-sm font-extrabold text-slate-900">{user.nationality}</p>
+                <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-wider">Nationality</p>
+                <p className="text-sm font-extrabold text-white">{user.nationality}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 bg-slate-50/80 rounded-2xl p-3.5 border border-slate-100 sm:col-span-2">
-              <div className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs">
-                <MapPin className="w-5 h-5 text-cyan-600" />
+            <div className="flex items-center gap-3 bg-neutral-800/80 rounded-2xl p-3.5 border border-neutral-700/80 sm:col-span-2">
+              <div className="bg-neutral-900 p-2.5 rounded-xl border border-neutral-700 shadow-2xs">
+                <MapPin className="w-5 h-5 text-cyan-400" />
               </div>
               <div className="min-w-0">
-                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Last Reported Location</p>
-                <p className="text-sm font-bold text-slate-800 truncate">
+                <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-wider">Last Reported Location</p>
+                <p className="text-sm font-bold text-white truncate">
                   {user.location_label || 'Mahabalipuram Coastal Zone, Tamil Nadu'}
                 </p>
                 {user.location_lat && user.location_lng && (
-                  <p className="text-xs font-mono text-slate-500 mt-0.5">
+                  <p className="text-xs font-mono text-neutral-400 mt-0.5">
                     Coordinates: {user.location_lat.toFixed(4)}° N, {user.location_lng.toFixed(4)}° E
                   </p>
                 )}
@@ -553,14 +566,14 @@ export default function StatusPage() {
           </div>
 
           {/* Emergency Contact & Consular Hotlines */}
-          <div className="bg-slate-50 rounded-2xl p-4 sm:p-5 border border-slate-200 space-y-4">
+          <div className="bg-neutral-800/80 rounded-2xl p-4 sm:p-5 border border-neutral-700/80 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
                   Emergency Contact On File
                 </span>
-                <p className="text-sm font-extrabold text-slate-900 mt-0.5">{user.emergency_contact_name}</p>
-                <p className="text-xs text-slate-600 font-mono">{user.emergency_contact_phone}</p>
+                <p className="text-sm font-extrabold text-white mt-0.5">{user.emergency_contact_name}</p>
+                <p className="text-xs text-neutral-300 font-mono">{user.emergency_contact_phone}</p>
               </div>
               <a
                 href={`tel:${user.emergency_contact_phone}`}
@@ -570,14 +583,14 @@ export default function StatusPage() {
               </a>
             </div>
 
-            <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2 text-xs text-slate-600">
-                <Building2 className="w-4 h-4 text-indigo-600" />
-                <span>Consular Liaison Helpline: <strong>+91 44 2857 4000</strong></span>
+            <div className="pt-3 border-t border-neutral-700 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-xs text-neutral-300">
+                <Building2 className="w-4 h-4 text-cyan-400" />
+                <span>Consular Liaison Helpline: <strong className="text-white">+91 44 2857 4000</strong></span>
               </div>
               <a
                 href="tel:112"
-                className="text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 px-3 py-1.5 rounded-lg transition-colors"
+                className="text-xs font-bold text-rose-300 bg-rose-950/70 hover:bg-rose-900/80 border border-rose-800 px-3 py-1.5 rounded-lg transition-colors"
               >
                 Dial Local 112
               </a>
@@ -605,11 +618,11 @@ export default function StatusPage() {
           </div>
 
           {/* Footer Navigation */}
-          <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <Link to="/dashboard" className="hover:text-cyan-600 font-semibold flex items-center gap-1">
-              Back to Tourist Dashboard <ArrowRight className="w-3 h-3" />
+          <div className="mt-6 pt-4 border-t border-neutral-800 flex items-center justify-between text-xs text-neutral-400">
+            <Link to="/dashboard" className="hover:text-cyan-400 font-semibold flex items-center gap-1 text-white">
+              Back to Tourist Dashboard <ArrowRight className="w-3 h-3 text-cyan-400" />
             </Link>
-            <span className="font-mono text-slate-400">Token: {effectiveToken}</span>
+            <span className="font-mono text-neutral-400">Token: {effectiveToken}</span>
           </div>
         </div>
       </div>
