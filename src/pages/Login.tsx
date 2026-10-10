@@ -15,7 +15,6 @@ import {
   Copy,
   Check,
   Building2,
-  Clock,
   Smartphone,
   RotateCcw,
   ExternalLink,
@@ -499,13 +498,7 @@ export default function Login() {
           </div>
         )}
 
-        {/* Persistent Session Notice */}
-        <div className="mt-5 p-3 rounded-2xl bg-cyan-950/80 border border-cyan-800/60 text-[11px] text-cyan-300 flex items-start gap-2">
-          <Clock className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
-          <p className="leading-snug">
-            <strong className="text-white">Indefinite Crisis Session:</strong> Once logged in, this device remains connected until you deliberately click Log Out, ensuring zero delay during power outages or panic.
-          </p>
-        </div>
+
 
         {/* New Registration Link */}
         <div className="mt-6 text-center text-xs text-neutral-400 pt-4 border-t border-neutral-800">
