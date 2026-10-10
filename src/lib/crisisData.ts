@@ -443,10 +443,10 @@ export const EMERGENCY_CONTACTS: EmergencyContactInfo[] = [
 export interface DynamicWeatherStage extends WeatherData {
   stageNumber: number; // 1 to 4
   stageTitle: string;
-  windGusts: number;
-  pressureHpa: number;
-  rainfallRateMm: number;
-  officialWarningHeadline: string;
+  windGusts?: number;
+  pressureHpa?: number;
+  rainfallRateMm?: number;
+  officialWarningHeadline?: string;
 }
 
 // Signature 4-Stage Timelines for the 3 Evaluator Demo Personas (Cycles every 3 mins)
